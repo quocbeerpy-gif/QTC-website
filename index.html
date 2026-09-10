@@ -1,196 +1,174 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Chatbot Demo</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --bot-msg: #334155;
-      --user-msg: #2563eb;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 16px;
-    }
-    .chat-container {
-      width: 100%;
-      max-width: 500px;
-      height: 650px;
-      background: var(--card);
-      border-radius: 16px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      overflow: hidden;
-    }
-    .header {
-      padding: 16px 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .avatar {
-      width: 40px;
-      height: 40px;
-      background: var(--accent);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-    .title h3 {
-      font-size: 16px;
-      font-weight: 600;
-    }
-    .status {
-      font-size: 12px;
-      color: #4ade80;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .status::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      background: #4ade80;
-      border-radius: 50%;
-      display: inline-block;
-    }
-    .messages {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .message {
-      max-width: 80%;
-      padding: 12px 16px;
-      border-radius: 14px;
-      font-size: 14px;
-      line-height: 1.5;
-      word-break: break-word;
-    }
-    .bot-msg {
-      background: var(--bot-msg);
-      align-self: flex-start;
-      border-bottom-left-radius: 2px;
-    }
-    .user-msg {
-      background: var(--user-msg);
-      align-self: flex-end;
-      border-bottom-right-radius: 2px;
-    }
-    .input-area {
-      padding: 16px 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      gap: 10px;
-    }
-    input {
-      flex: 1;
-      padding: 12px 16px;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    input:focus {
-      border-color: var(--accent);
-    }
-    button {
-      padding: 12px 20px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    button:hover {
-      background: var(--accent-hover);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QTC AI - Giải Pháp Trí Tuệ Nhân Tạo Hàng Đầu</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 25px;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+        nav a:hover {
+            color: var(--accent);
+        }
+        .hero {
+            padding: 180px 8% 100px 8%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(37,99,235,0.15) 0%, transparent 70%);
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #60a5fa, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin-bottom: 40px;
+        }
+        .cta-btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.6);
+        }
+        .features {
+            padding: 80px 8%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .feature-card {
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+        .feature-card p {
+            color: var(--text-muted);
+        }
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+        @media(max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            nav { display: none; }
+        }
+    </style>
 </head>
 <body>
-  <div class="chat-container">
-    <div class="header">
-      <div class="avatar">🤖</div>
-      <div class="title">
-        <h3>AI Assistant</h3>
-        <div class="status">Online trên GitHub Pages</div>
-      </div>
-    </div>
-    <div class="messages" id="messages">
-      <div class="message bot-msg">
-        Xin chào! Đây là trang web chatbot được host trực tiếp từ GitHub Pages của bạn 🎉
-      </div>
-    </div>
-    <div class="input-area">
-      <input type="text" id="userInput" placeholder="Nhập tin nhắn..." autocomplete="off" />
-      <button id="sendBtn">Gửi</button>
-    </div>
-  </div>
 
-  <script>
-    const messagesContainer = document.getElementById('messages');
-    const userInput = document.getElementById('userInput');
-    const sendBtn = document.getElementById('sendBtn');
+    <header>
+        <a href="#" class="logo">⚡ QTC AI</a>
+        <nav>
+            <a href="#features">Tính Năng</a>
+            <a href="#about">Về Chúng Tôi</a>
+            <a href="#contact">Liên Hệ</a>
+        </nav>
+    </header>
 
-    function appendMessage(text, isUser = false) {
-      const msg = document.createElement('div');
-      msg.className = `message ${isUser ? 'user-msg' : 'bot-msg'}`;
-      msg.innerText = text;
-      messagesContainer.appendChild(msg);
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
+    <section class="hero">
+        <h1>Khám Phá Sức Mạnh Trí Tuệ Nhân Tạo Cùng QTC AI</h1>
+        <p>Giải pháp Tự động hóa & Trợ lý Chatbot AI chuyên nghiệp hàng đầu giúp doanh nghiệp bứt phá doanh thu và tối ưu hóa vận hành.</p>
+        <a href="#contact" class="cta-btn">Trải Nghiệm Ngay</a>
+    </section>
 
-    async function handleSend() {
-      const text = userInput.value.trim();
-      if (!text) return;
+    <section id="features" class="features">
+        <div class="feature-card">
+            <h3>🤖 Chatbot AI 24/7</h3>
+            <p>Phản hồi khách hàng tự nhiên, thấu hiểu ngữ cảnh và chốt đơn tự động không ngừng nghỉ.</p>
+        </div>
+        <div class="feature-card">
+            <h3>⚡ Tốc Độ Vượt Trội</h3>
+            <p>Hệ thống xử lý siêu tốc, tích hợp đa nền tảng (Web, Zalo, Facebook) mượt mà.</p>
+        </div>
+        <div class="feature-card">
+            <h3>🔒 Bảo Mật Tuyệt Đối</h3>
+            <p>Dữ liệu doanh nghiệp và khách hàng được mã hóa và bảo vệ theo tiêu chuẩn cao nhất.</p>
+        </div>
+    </section>
 
-      appendMessage(text, true);
-      userInput.value = '';
+    <footer>
+        <p>&copy; 2026 QTC AI. All rights reserved.</p>
+    </footer>
 
-      // Tạm thời mô phỏng phản hồi AI thông minh trên trang tĩnh
-      setTimeout(() => {
-        appendMessage(`Bot phản hồi: "Cảm ơn bạn đã gửi tin nhắn: '${text}'!"`);
-      }, 500);
-    }
-
-    sendBtn.addEventListener('click', handleSend);
-    userInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') handleSend();
-    });
-  </script>
 </body>
 </html>
