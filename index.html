@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Chatbot Demo</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --bot-msg: #334155;
+      --user-msg: #2563eb;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .chat-container {
+      width: 100%;
+      max-width: 500px;
+      height: 650px;
+      background: var(--card);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+    .header {
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .title h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .status {
+      font-size: 12px;
+      color: #4ade80;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .status::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #4ade80;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .message {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+    .bot-msg {
+      background: var(--bot-msg);
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+    }
+    .user-msg {
+      background: var(--user-msg);
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+    }
+    .input-area {
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      gap: 10px;
+    }
+    input {
+      flex: 1;
+      padding: 12px 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      border-color: var(--accent);
+    }
+    button {
+      padding: 12px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: var(--accent-hover);
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="header">
+      <div class="avatar">🤖</div>
+      <div class="title">
+        <h3>AI Assistant</h3>
+        <div class="status">Online trên GitHub Pages</div>
+      </div>
+    </div>
+    <div class="messages" id="messages">
+      <div class="message bot-msg">
+        Xin chào! Đây là trang web chatbot được host trực tiếp từ GitHub Pages của bạn 🎉
+      </div>
+    </div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Nhập tin nhắn..." autocomplete="off" />
+      <button id="sendBtn">Gửi</button>
+    </div>
+  </div>
+
+  <script>
+    const messagesContainer = document.getElementById('messages');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    function appendMessage(text, isUser = false) {
+      const msg = document.createElement('div');
+      msg.className = `message ${isUser ? 'user-msg' : 'bot-msg'}`;
+      msg.innerText = text;
+      messagesContainer.appendChild(msg);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    async function handleSend() {
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      appendMessage(text, true);
+      userInput.value = '';
+
+      // Tạm thời mô phỏng phản hồi AI thông minh trên trang tĩnh
+      setTimeout(() => {
+        appendMessage(`Bot phản hồi: "Cảm ơn bạn đã gửi tin nhắn: '${text}'!"`);
+      }, 500);
+    }
+
+    sendBtn.addEventListener('click', handleSend);
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleSend();
+    });
+  </script>
+</body>
+</html>
