@@ -1158,7 +1158,7 @@ Nhiệm vụ: Trả lời ngắn gọn, lịch sự, chuyên nghiệp bằng ti�
       parts: [{ text: userMessage }]
     });
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
     const payload = {
       system_instruction: {
@@ -1178,12 +1178,18 @@ Nhiệm vụ: Trả lời ngắn gọn, lịch sự, chuyên nghiệp bằng ti�
         body: JSON.stringify(payload)
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error(`API response status: ${response.status}`);
+        const apiMessage =
+          data?.error?.message ||
+          `API response status: ${response.status}`;
+        throw new Error(apiMessage);
       }
 
-      const data = await response.json();
-      const botReply = data.candidates[0].content.parts[0].text;
+      const botReply =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        'Gemini không trả về nội dung. Vui lòng thử lại.';
 
       conversationHistory.push({
         role: "model",
