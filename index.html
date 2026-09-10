@@ -365,8 +365,6 @@
     50%{ transform: translate(-50%,-50%) translateY(-6px); }
   }
 
-  /* Below ~680px: swap the animated orbit for a static grid — steadier
-     on phones and avoids crowding/overlap at narrow widths. */
   .agent-grid-mobile{ display:none; }
   @media (max-width: 680px){
     .orbit-stage{ display:none; }
@@ -546,8 +544,6 @@
     .chat-panel{ width: calc(100vw - 28px); height: 65vh; bottom: 70px; }
   }
 
-  /* ---------- CHAT WIDGET END ---------- */
-
   :focus-visible{ outline: 2px solid var(--cyan); outline-offset: 2px; }
 </style>
 </head>
@@ -699,7 +695,6 @@
         </div>
       </div>
 
-      <!-- Simplified static layout shown on small screens instead of the orbit -->
       <div class="agent-grid-mobile">
         <div class="mobile-hub">
           <svg width="18" height="18" viewBox="0 0 40 40" fill="none"><path d="M20 3 L34 11 V29 L20 37 L6 29 V11 Z" stroke="url(#g1)" stroke-width="2"/></svg>
@@ -1036,7 +1031,7 @@ Thời gian phản hồi chatbot TB:  0.8s
         <span class="status-dot"></span>
         <div>
           <b>Trợ lý AI QTC</b>
-          <span>Bản demo trải nghiệm</span>
+          <span>Hỗ trợ tư vấn 24/7</span>
         </div>
       </div>
       <button class="chat-close-btn" id="chatCloseBtn" aria-label="Đóng chat">
@@ -1065,21 +1060,39 @@ Thời gian phản hồi chatbot TB:  0.8s
 </div>
 
 <script>
-  // Stack strip content (duplicated for seamless scroll)
+  // Stack strip content
   const items = ["ZALO OA", "ZALO ZNS", "GPU CLUSTER", "PYTORCH", "LLM FINE-TUNING", "CRM SYNC", "PRIVATE CLOUD", "REALTIME INFERENCE", "DATA ENCRYPTION", "ON-PREMISE DEPLOY"];
   const track = document.getElementById('stackTrack');
   const full = [...items, ...items].map(i => `<span>${i}</span><span style="color:var(--line-bright)">/</span>`).join('');
   track.innerHTML = full;
 
-  // Respect reduced-motion preference for the orbit's SVG animations
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.querySelectorAll('.orbit-lines').forEach(svg => { try { svg.pauseAnimations(); } catch(e){} });
   }
 
-  // ---------- DEMO CHAT WIDGET ----------
-  // Đây là bản demo trả lời theo kịch bản dựng sẵn (rule-based) để khách trải
-  // nghiệm giao diện chatbot — khi triển khai thật, phần trả lời sẽ được nối
-  // với hệ thống AI / API xử lý ngôn ngữ tự nhiên thực tế của QTC.
+  // ==========================================
+  // CONFIG & INTEGRATION FOR GOOGLE GEMINI API
+  // ==========================================
+  
+  // API Key đã được cập nhật
+  const GEMINI_API_KEY = "AQ.Ab8RN6KLqe_Vx11mfNXD42Eiy7hAB5PqQAGWWspK1nO42Zq_cg";
+
+  // Định nghĩa ngữ cảnh cho AI
+  const SYSTEM_INSTRUCTION = `
+Bạn là Trợ lý AI thông minh của QTC (QTC AI) - Doanh nghiệp chuyên cung cấp giải pháp AI cho doanh nghiệp tại Việt Nam.
+Thông tin liên hệ & Dịch vụ của QTC:
+- Người phụ trách: Nguyễn Hữu Bảo Quốc (SĐT/Zalo: 0912 223 103)
+- Địa chỉ: 220 Trần Hưng Đạo, P. Tuy Hòa, Đắk Lắk
+- Dịch vụ cốt lõi:
+  1. Giải pháp AI doanh nghiệp: Tư vấn, xây dựng mô hình AI theo bài toán vận hành thực tế.
+  2. Chatbot Zalo OA: Tự động hóa tư vấn, chốt đơn, chăm sóc khách hàng, kết nối CRM/ZNS.
+  3. Hạ tầng AI Server: Thiết kế, vận hành máy chủ AI riêng (GPU Cluster), On-premise hoặc Private Cloud.
+Nhiệm vụ: Trả lời ngắn gọn, lịch sự, chuyên nghiệp bằng tiếng Việt. Nếu khách hỏi giá cụ thể hoặc cần tư vấn chuyên sâu, hãy khéo léo mời họ điền form "Đặt lịch tư vấn" trên website hoặc nhắn trực tiếp Zalo 0912 223 103.
+`;
+
+  // Mảng lưu trữ lịch sử cuộc trò chuyện
+  let conversationHistory = [];
+
   const chatWidget = document.getElementById('chatWidget');
   const chatToggleBtn = document.getElementById('chatToggleBtn');
   const chatCloseBtn = document.getElementById('chatCloseBtn');
@@ -1095,7 +1108,7 @@ Thời gian phản hồi chatbot TB:  0.8s
     chatWidget.classList.add('open');
     if(!chatStarted){
       chatStarted = true;
-      addBotMessage('Xin chào! Mình là trợ lý AI demo của QTC 👋 Bạn có thể hỏi mình về giải pháp AI doanh nghiệp, chatbot Zalo, hạ tầng AI Server, hoặc chi phí — hoặc bấm nhanh các gợi ý bên dưới.');
+      addBotMessage('Xin chào! Mình là trợ lý AI của QTC 👋 Bạn có thể hỏi mình về giải pháp AI doanh nghiệp, chatbot Zalo, hạ tầng AI Server, hoặc bấm chọn các gợi ý nhanh bên dưới nhé!');
     }
     setTimeout(() => chatInput.focus(), 250);
   }
@@ -1111,7 +1124,7 @@ Thời gian phản hồi chatbot TB:  0.8s
   function addUserMessage(text){
     const el = document.createElement('div');
     el.className = 'msg user';
-    el.textContent = text; // textContent only — never render as HTML
+    el.textContent = text;
     chatMessages.appendChild(el);
     scrollToBottom();
   }
@@ -1132,58 +1145,82 @@ Thời gian phản hồi chatbot TB:  0.8s
     chatMessages.appendChild(el);
     scrollToBottom();
   }
+  
   function hideTyping(){
     const el = document.getElementById('typingIndicator');
     if(el) el.remove();
   }
 
-  // Simple keyword-based reply logic for the demo
-  function getBotReply(raw){
-    const t = raw.toLowerCase();
+  // Hàm tương tác trực tiếp với Google Gemini API
+  async function fetchGeminiResponse(userMessage) {
+    conversationHistory.push({
+      role: "user",
+      parts: [{ text: userMessage }]
+    });
 
-    if(/zalo/.test(t)){
-      return 'Chatbot Zalo của QTC chạy trên Zalo OA/ZNS — có thể tư vấn khách hàng, chốt đơn tự động và đồng bộ với CRM. Mình có thể kết nối bạn với đội kỹ thuật để xem demo thật trên Zalo, bạn muốn không?';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+    const payload = {
+      system_instruction: {
+        parts: [{ text: SYSTEM_INSTRUCTION }]
+      },
+      contents: conversationHistory,
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 300
+      }
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`API response status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const botReply = data.candidates[0].content.parts[0].text;
+
+      conversationHistory.push({
+        role: "model",
+        parts: [{ text: botReply }]
+      });
+
+      return botReply;
+
+    } catch (error) {
+      console.error("Gemini API Error:", error);
+      conversationHistory.pop();
+
+      if(/đặt lịch|tư vấn|liên hệ|hẹn/.test(userMessage.toLowerCase())){
+        closeChat();
+        const target = document.getElementById('booking');
+        if(target) target.scrollIntoView({ behavior: 'smooth' });
+        return 'Mình đã đưa bạn đến mục đặt lịch tư vấn. Bạn vui lòng điền thông tin để anh Nguyễn Hữu Bảo Quốc liên hệ nhé!';
+      }
+
+      return 'Rất tiếc, kết nối AI đang gián đoạn. Bạn có thể nhắn trực tiếp qua Zalo 0912 223 103 để được hỗ trợ nhanh nhất!';
     }
-    if(/giá|chi phí|bao nhiêu|phí/.test(t)){
-      return 'Chi phí tùy vào quy mô và độ phức tạp của giải pháp (chatbot đơn giản, tích hợp CRM, hay hạ tầng AI Server riêng). Cách nhanh nhất để có báo giá chính xác là điền form ở mục "Đặt lịch tư vấn" — đội QTC sẽ khảo sát miễn phí và báo giá cụ thể.';
-    }
-    if(/server|hạ tầng|gpu/.test(t)){
-      return 'QTC thiết kế và vận hành hạ tầng AI Server riêng (on-premise hoặc private cloud), tối ưu chi phí GPU và đảm bảo bảo mật dữ liệu khi mở rộng quy mô. Bạn đang cần chạy mô hình nào — inference hay huấn luyện (training)?';
-    }
-    if(/doanh nghiệp|giải pháp ai|ai cho/.test(t)){
-      return 'Giải pháp AI doanh nghiệp của QTC bắt đầu từ khảo sát quy trình thực tế, sau đó xây mô hình AI phù hợp — ví dụ dự báo nhu cầu, phân loại dữ liệu, tự động hoá quyết định — rồi tích hợp vào hệ thống bạn đang dùng.';
-    }
-    if(/đặt lịch|tư vấn|liên hệ|hẹn/.test(t)){
-      closeChat();
-      const target = document.getElementById('booking');
-      if(target) target.scrollIntoView({ behavior: 'smooth' });
-      return 'Mình vừa đưa bạn tới mục đặt lịch tư vấn — điền thông tin ở đó, anh Nguyễn Hữu Bảo Quốc sẽ liên hệ lại trong 24 giờ.';
-    }
-    if(/sđt|số điện thoại|phone|hotline/.test(t)){
-      return 'Bạn có thể gọi hoặc nhắn Zalo trực tiếp: 0912 223 103 (Nguyễn Hữu Bảo Quốc).';
-    }
-    if(/chào|hi|hello|xin chào/.test(t)){
-      return 'Chào bạn! Bạn đang quan tâm giải pháp AI doanh nghiệp, chatbot Zalo, hay hạ tầng AI Server?';
-    }
-    if(/cảm ơn|thank/.test(t)){
-      return 'Không có gì! Nếu cần tư vấn kỹ hơn, cứ để lại thông tin ở mục đặt lịch tư vấn nhé.';
-    }
-    return 'Đây là bản demo nên mình chỉ trả lời được một số câu hỏi mẫu 🙂 Bạn thử hỏi về "chatbot Zalo", "chi phí", "AI Server", hoặc bấm "Đặt lịch tư vấn" để được đội ngũ QTC hỗ trợ trực tiếp nhé.';
   }
 
-  function sendMessage(text){
+  async function sendMessage(text){
     const clean = text.trim();
     if(!clean) return;
+
     addUserMessage(clean);
     chatInput.value = '';
     chatSendBtn.disabled = true;
     showTyping();
-    const delay = 500 + Math.random() * 500;
-    setTimeout(() => {
-      hideTyping();
-      addBotMessage(getBotReply(clean));
-      chatSendBtn.disabled = false;
-    }, delay);
+
+    const reply = await fetchGeminiResponse(clean);
+
+    hideTyping();
+    addBotMessage(reply);
+    chatSendBtn.disabled = false;
   }
 
   chatForm.addEventListener('submit', (e) => {
@@ -1197,7 +1234,7 @@ Thời gian phản hồi chatbot TB:  0.8s
     sendMessage(btn.dataset.q);
   });
 
-  // Booking form: builds a summary message, copies it, and opens Zalo chat
+  // Booking form JS
   const bookingForm = document.getElementById('bookingForm');
   const formNote = document.getElementById('formNote');
 
