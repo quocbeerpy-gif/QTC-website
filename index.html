@@ -1183,6 +1183,7 @@ Nhiệm vụ: Trả lời ngắn gọn, lịch sự, chuyên nghiệp bằng ti�
       if (!response.ok) {
         const apiMessage =
           data?.error?.message ||
+          data?.error?.status ||
           `API response status: ${response.status}`;
         throw new Error(apiMessage);
       }
@@ -1199,7 +1200,7 @@ Nhiệm vụ: Trả lời ngắn gọn, lịch sự, chuyên nghiệp bằng ti�
       return botReply;
 
     } catch (error) {
-      console.error("Gemini API Error:", error);
+      console.error("Gemini API Error:", error?.message || error);
       conversationHistory.pop();
 
       if(/đặt lịch|tư vấn|liên hệ|hẹn/.test(userMessage.toLowerCase())){
