@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MotoHub — Thuê xe máy tự lái</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js" onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';s.onload=function(){window.dispatchEvent(new Event('chartjs-ready'));};document.head.appendChild(s);})()"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+  :root{
+    --ink:#12151C;
+    --asphalt:#262B36;
+    --asphalt-2:#343B49;
+    --paper:#F6F4EF;
+    --card:#FFFFFF;
+    --line:#E6E2D8;
+    --amber:#FFB020;
+    --amber-ink:#5C3A00;
+    --teal:#0FB89C;
+    --coral:#FF5A5F;
+    --sub:#6B7280;
+    --text:#181B22;
+    --shadow: 0 1px 2px rgba(18,21,28,.06), 0 8px 24px -12px rgba(18,21,28,.18);
+  }
+  :root:not([data-theme="light"]){
+    @media (prefers-color-scheme: dark){
+      --paper:#0E1015;
+      --card:#181B22;
+      --line:#2A2E38;
+      --text:#F1F0EC;
+      --sub:#9AA0AC;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0E1015;
+    --card:#181B22;
+    --line:#2A2E38;
+    --text:#F1F0EC;
+    --sub:#9AA0AC;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+  }
+  .shell{
+    width:100%;
+    max-width:460px;
+    min-height:100vh;
+    background:var(--paper);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{ font-family:'Manrope',sans-serif; letter-spacing:-0.01em; }
+  .hidden{ display:none !important; }
+
+  /* ---------- Shared header bar ---------- */
+  .topbar{
+    background: linear-gradient(135deg, var(--ink) 0%, var(--asphalt) 55%, var(--asphalt-2) 100%);
+    color:#fff;
+    padding:22px 20px 26px;
+    position:relative;
+    overflow:hidden;
+  }
+  .topbar::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0; height:6px;
+    background-image: repeating-linear-gradient(90deg, #fff 0 18px, transparent 18px 34px);
+    opacity:.35;
+  }
+  .brand-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .brand{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .brand .mark{
+    width:38px;height:38px; border-radius:11px;
+    background:var(--amber);
+    display:flex;align-items:center;justify-content:center;
+    font-size:19px; flex-shrink:0;
+    box-shadow: 0 4px 14px -4px rgba(255,176,32,.7);
+  }
+  .brand .name{ font-weight:800; font-size:18px; line-height:1.1; }
+  .brand .tag{ font-size:11.5px; color:#C9CCD3; margin-top:1px; }
+  .icon-btn{
+    width:34px;height:34px;border-radius:50%; flex-shrink:0;
+    background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18);
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px; cursor:pointer; color:#fff;
+  }
+  .header-actions{ display:flex; align-items:center; gap:8px; }
+
+  /* ---------- Content ---------- */
+  .content{ flex:1; padding:16px 16px 96px; }
+  .section-title{
+    display:flex; align-items:center; justify-content:space-between;
+    margin: 18px 2px 10px;
+  }
+  .section-title h2{ font-size:15.5px; font-weight:800; margin:0; }
+  .section-title a{ font-size:12.5px; color:var(--sub); text-decoration:none; font-weight:600; cursor:pointer;}
+  .road-divider{
+    height:1px; margin:18px 0;
+    background-image: repeating-linear-gradient(90deg, var(--line) 0 10px, transparent 10px 18px);
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+  }
+
+  /* ---------- Tabs / bottom nav ---------- */
+  .tabbar{
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+    width:100%; max-width:460px;
+    background:var(--card);
+    border-top:1px solid var(--line);
+    display:flex;
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+    z-index:40;
+  }
+  .tab-btn{
+    flex:1; border:none; background:transparent; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    padding:6px 2px; color:var(--sub); font-family:'Inter',sans-serif;
+  }
+  .tab-btn .ico{ font-size:19px; }
+  .tab-btn .lb{ font-size:10.5px; font-weight:600; }
+  .tab-btn.active{ color:var(--ink); }
+  :root[data-theme="dark"] .tab-btn.active, :root:not([data-theme="light"]) .tab-btn.active{ color:var(--amber); }
+
+  .view{ display:none; }
+  .view.active{ display:block; animation: fadeUp .25s ease; }
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    border:none; cursor:pointer; font-family:'Inter',sans-serif; font-weight:700;
+    border-radius:12px; padding:11px 16px; font-size:13.5px;
+  }
+  .btn-primary{ background:var(--amber); color:var(--amber-ink); }
+  .btn-primary:active{ transform: scale(.98); }
+  .btn-primary:disabled{ opacity:.5; cursor:not-allowed; }
+  .btn-outline{ background:transparent; border:1.5px solid var(--line); color:var(--text); }
+  .btn-ghost{ background:var(--paper); color:var(--text); }
+  .btn-block{ width:100%; }
+  .btn-sm{ padding:7px 11px; font-size:12px; border-radius:9px; }
+  .fab{
+    position:fixed; right:calc(50% - 214px); bottom:86px; z-index:41;
+    width:52px; height:52px; border-radius:50%;
+    background:var(--amber); color:var(--amber-ink); border:none;
+    font-size:22px; box-shadow:0 10px 24px -8px rgba(255,176,32,.8);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+
+  /* ---------- KPI grid ---------- */
+  .kpi-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .kpi{ padding:14px; }
+  .kpi .k-ico{ font-size:16px; margin-bottom:6px; }
+  .kpi .k-val{ font-size:20px; font-weight:800; font-family:'Manrope',sans-serif; }
+  .kpi .k-lb{ font-size:11.5px; color:var(--sub); margin-top:1px;}
+
+  .chart-card{ padding:16px; }
+  .chart-card h3{ font-size:13.5px; margin:0 0 12px; font-weight:700;}
+  .legend-row{ display:flex; gap:14px; margin-top:12px; flex-wrap:wrap; }
+  .legend-row .lg{ display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--sub);}
+  .legend-row .dot{ width:8px; height:8px; border-radius:50%; }
+
+  /* ---------- Vehicle list (admin) ---------- */
+  .veh-card{ display:flex; gap:12px; padding:13px; align-items:center; margin-bottom:10px; }
+  .veh-img{
+    width:52px; height:52px; border-radius:13px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:24px;
+    background:var(--paper); border:1px solid var(--line);
+  }
+  .veh-info{ flex:1; min-width:0; }
+  .veh-info .vn{ font-weight:700; font-size:14px; }
+  .veh-info .vm{ font-size:11.5px; color:var(--sub); margin-top:1px;}
+  .veh-price{ font-size:12.5px; font-weight:700; margin-top:3px; }
+  .badge{
+    font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px;
+    display:inline-block; white-space:nowrap;
+  }
+  .b-available{ background:rgba(15,184,156,.14); color:var(--teal); }
+  .b-rented{ background:rgba(255,176,32,.16); color:#B87400; }
+  .b-maint{ background:rgba(255,90,95,.14); color:var(--coral); }
+  .b-pending{ background:rgba(255,176,32,.16); color:#B87400; }
+  .b-confirmed{ background:rgba(64,120,255,.14); color:#3E64D6; }
+  .b-ongoing{ background:rgba(15,184,156,.14); color:var(--teal); }
+  .b-completed{ background:rgba(120,120,130,.14); color:var(--sub); }
+  .b-cancelled{ background:rgba(255,90,95,.14); color:var(--coral); }
+  :root[data-theme="dark"] .veh-img, :root:not([data-theme="light"]) .veh-img{ background:var(--asphalt); }
+
+  .gallery{ display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; margin:0 -2px; }
+  .gallery::-webkit-scrollbar{ display:none; }
+  .g-item{
+    flex:0 0 118px; border-radius:14px; padding:12px 10px;
+    border:1px solid var(--line); background:var(--card); cursor:pointer;
+  }
+  .g-item .gi-img{ font-size:26px; }
+  .g-item .gi-name{ font-size:12px; font-weight:700; margin-top:8px; }
+  .g-item .gi-price{ font-size:11px; color:var(--sub); margin-top:2px;}
+
+  .order-card{ padding:13px; margin-bottom:10px; }
+  .oc-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .oc-cust{ font-weight:700; font-size:13.5px; }
+  .oc-veh{ font-size:12px; color:var(--sub); margin-top:2px;}
+  .oc-meta{ display:flex; gap:14px; margin-top:10px; flex-wrap:wrap; }
+  .oc-meta div{ font-size:11px; color:var(--sub); }
+  .oc-meta b{ display:block; font-size:12.5px; color:var(--text); font-weight:700; margin-top:1px;}
+  .oc-actions{ display:flex; gap:8px; margin-top:12px; }
+
+  .pillrow{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
+  .pillrow::-webkit-scrollbar{ display:none; }
+  .pill{
+    flex:0 0 auto; padding:7px 13px; border-radius:20px; font-size:12px; font-weight:700;
+    border:1.5px solid var(--line); background:var(--card); color:var(--sub); cursor:pointer; white-space:nowrap;
+  }
+  .pill.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
+  :root[data-theme="dark"] .pill.active, :root:not([data-theme="light"]) .pill.active{ background:var(--amber); color:var(--amber-ink); border-color:var(--amber); }
+
+  .empty{ text-align:center; padding:40px 20px; color:var(--sub); }
+  .empty .e-ico{ font-size:32px; margin-bottom:10px; }
+  .empty .e-t{ font-weight:700; color:var(--text); font-size:14px; margin-bottom:4px;}
+  .empty .e-s{ font-size:12.5px; }
+
+  .rank-row{ display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--line); }
+  .rank-row:last-child{ border-bottom:none; }
+  .rank-n{ width:22px; height:22px; border-radius:7px; background:var(--paper); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; flex-shrink:0;}
+  .rank-bar-bg{ flex:1; height:7px; border-radius:4px; background:var(--paper); overflow:hidden; }
+  .rank-bar{ height:100%; background:var(--amber); border-radius:4px; }
+  .rank-val{ font-size:12px; font-weight:700; width:52px; text-align:right; flex-shrink:0;}
+
+  /* ---------- Modal ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(10,12,16,.5);
+    display:none; align-items:flex-end; justify-content:center; z-index:60;
+  }
+  .overlay.open{ display:flex; }
+  .modal{
+    width:100%; max-width:460px; background:var(--card);
+    border-radius:22px 22px 0 0; padding:20px 20px calc(20px + env(safe-area-inset-bottom));
+    max-height:88vh; overflow-y:auto;
+    animation: slideUp .28s ease;
+  }
+  @keyframes slideUp{ from{ transform:translateY(30px); opacity:0;} to{ transform:translateY(0); opacity:1;} }
+  .modal-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+  .modal-head h3{ font-size:16px; margin:0; font-weight:800;}
+  .modal-close{ background:var(--paper); border:none; width:30px; height:30px; border-radius:50%; font-size:14px; cursor:pointer; color:var(--text);}
+  .field{ margin-bottom:13px; }
+  .field label{ display:block; font-size:12px; font-weight:700; color:var(--sub); margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%; padding:11px 12px; border-radius:11px; border:1.5px solid var(--line);
+    background:var(--paper); color:var(--text); font-family:'Inter',sans-serif; font-size:13.5px;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{ outline:2px solid var(--amber); outline-offset:0; }
+  .field-row{ display:flex; gap:10px; }
+  .field-row .field{ flex:1; }
+  .price-preview{
+    background:var(--paper); border:1px dashed var(--line); border-radius:12px; padding:12px 14px;
+    display:flex; justify-content:space-between; align-items:center; margin:6px 0 16px;
+  }
+  .price-preview .pv-lb{ font-size:12px; color:var(--sub); }
+  .price-preview .pv-val{ font-size:18px; font-weight:800; font-family:'Manrope',sans-serif; }
+  .field-hint{ font-size:11px; color:var(--sub); margin-top:6px; text-align:center; }
+
+  .toast{
+    position:fixed; top:16px; left:50%; transform:translateX(-50%) translateY(-60px);
+    background:var(--ink); color:#fff; padding:12px 18px; border-radius:12px; font-size:13px; font-weight:600;
+    z-index:80; transition: transform .3s ease; box-shadow:0 10px 30px -8px rgba(0,0,0,.4);
+    max-width:90%; text-align:center;
+  }
+  .toast.show{ transform:translateX(-50%) translateY(0); }
+
+  ::selection{ background: rgba(255,176,32,.35); }
+  a{ color:inherit; }
+
+  /* ================= CUSTOMER STOREFRONT ================= */
+  .customer-hero{
+    background: linear-gradient(160deg, var(--ink) 0%, var(--asphalt) 60%, #2E3644 100%);
+    color:#fff; padding:22px 20px 30px; position:relative; overflow:hidden;
+  }
+  .customer-hero::before{
+    content:"";
+    position:absolute; right:-40px; top:-40px; width:180px; height:180px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,176,32,.35), transparent 70%);
+  }
+  .customer-hero::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0; height:6px;
+    background-image: repeating-linear-gradient(90deg, #fff 0 18px, transparent 18px 34px);
+    opacity:.3;
+  }
+  .ch-top{ display:flex; justify-content:space-between; align-items:center; position:relative; z-index:1;}
+  .ch-headline{ position:relative; z-index:1; margin-top:22px; }
+  .ch-headline h1{ font-size:24px; line-height:1.25; margin:0 0 8px; font-weight:800; }
+  .ch-headline p{ font-size:13px; color:#C9CCD3; margin:0; line-height:1.5; max-width:300px; }
+  .ch-stats{ display:flex; gap:10px; margin-top:18px; position:relative; z-index:1;}
+  .ch-stats .chip{
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14);
+    border-radius:12px; padding:9px 12px; flex:1;
+  }
+  .ch-stats .chip b{ display:block; font-size:17px; font-family:'Manrope',sans-serif;}
+  .ch-stats .chip span{ font-size:10.5px; color:#C9CCD3; }
+
+  .shop-contact{
+    display:flex; flex-direction:column; gap:5px; margin-top:14px; position:relative; z-index:1;
+  }
+  .shop-contact a, .shop-contact .sc-row{
+    display:flex; align-items:center; gap:7px; font-size:12px; color:#DCDFE5; text-decoration:none;
+  }
+  .shop-contact .sc-ico{ font-size:12.5px; }
+
+  .perks{ display:flex; gap:10px; margin:16px 0 4px; }
+  .perk{ flex:1; text-align:center; padding:12px 8px; }
+  .perk .p-ico{ font-size:20px; margin-bottom:6px;}
+  .perk .p-t{ font-size:11px; font-weight:700; line-height:1.3;}
+
+  .search-row{ display:flex; gap:8px; margin-top:4px;}
+  .search-row input{
+    flex:1; padding:11px 14px; border-radius:12px; border:1.5px solid var(--line);
+    background:var(--card); color:var(--text); font-family:'Inter',sans-serif; font-size:13.5px;
+  }
+  .search-row input:focus{ outline:2px solid var(--amber); }
+
+  .cveh-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .cveh-card{ padding:0; overflow:hidden; display:flex; flex-direction:column; }
+  .cveh-media{
+    height:76px; display:flex; align-items:center; justify-content:center; font-size:32px;
+    background: linear-gradient(140deg, var(--paper), var(--line));
+    position:relative;
+  }
+  :root[data-theme="dark"] .cveh-media, :root:not([data-theme="light"]) .cveh-media{
+    background: linear-gradient(140deg, var(--asphalt), #20242D);
+  }
+  .cveh-media .cveh-badge{ position:absolute; top:8px; left:8px; }
+  .cveh-body{ padding:11px 12px 12px; }
+  .cveh-name{ font-size:13px; font-weight:700; line-height:1.3; min-height:34px;}
+  .cveh-price{ font-size:14px; font-weight:800; font-family:'Manrope',sans-serif; margin-top:4px; }
+  .cveh-price span{ font-size:10.5px; font-weight:600; color:var(--sub); }
+  .cveh-body .btn{ width:100%; margin-top:9px; }
+
+  .admin-entry{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    padding:14px 0 4px; font-size:12px; color:var(--sub); cursor:pointer; font-weight:600;
+  }
+
+  .pin-dots{ display:flex; gap:10px; justify-content:center; margin:6px 0 4px; }
+  .pin-dots .dot{ width:12px; height:12px; border-radius:50%; border:1.5px solid var(--line); }
+  .pin-dots .dot.filled{ background:var(--amber); border-color:var(--amber); }
+
+  /* ---------- Sync status badge ---------- */
+  #syncBadge{
+    position:fixed; top:3px; left:50%; transform:translateX(-50%); z-index:80;
+    display:flex; align-items:center; gap:6px; cursor:pointer;
+    padding:2px 9px; border-radius:99px;
+    background:rgba(18,21,28,.78); color:#fff;
+    font:600 10.5px/15px 'Inter',sans-serif; white-space:nowrap;
+  }
+  #syncBadge .sd{ width:7px; height:7px; border-radius:50%; background:#8B8F99; }
+  #syncBadge.ok .sd{ background:var(--teal); }
+  #syncBadge.saving .sd{ background:var(--amber); animation:syncPulse 1s ease-in-out infinite; }
+  #syncBadge.error .sd{ background:var(--coral); }
+  @keyframes syncPulse{ 50%{ opacity:.35; } }
+</style>
+</head>
+<body>
+
+<!-- =========================================================== -->
+<!-- ==================  CUSTOMER STOREFRONT  ================== -->
+<!-- =========================================================== -->
+<div class="shell" id="customerApp">
+  <div class="customer-hero">
+    <div class="ch-top">
+      <div class="brand">
+        <div class="mark">🏍️</div>
+        <div>
+          <div class="name" id="custShopName">MotoHub</div>
+          <div class="tag" id="custShopTagline">Thuê xe máy tự lái</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="icon-btn" id="themeToggleCustomer" title="Đổi giao diện">🌙</div>
+      </div>
+    </div>
+    <div class="ch-headline">
+      <h1>Chọn xe, đặt lịch,<br>nhận xe trong ngày</h1>
+      <p>Xem xe còn trống theo thời gian thực và gửi yêu cầu đặt xe chỉ trong 1 phút.</p>
+    </div>
+    <div class="ch-stats">
+      <div class="chip"><b id="custAvailCount">0</b><span>Xe sẵn sàng</span></div>
+      <div class="chip"><b id="custFleetCount">0</b><span>Tổng số xe</span></div>
+      <div class="chip"><b>15p</b><span>Xác nhận đơn</span></div>
+    </div>
+    <div class="shop-contact" id="custShopContact"></div>
+  </div>
+
+  <div class="content" style="padding-top:14px;">
+    <div class="perks">
+      <div class="card perk"><div class="p-ico">🛡️</div><div class="p-t">Xe bảo dưỡng định kỳ</div></div>
+      <div class="card perk"><div class="p-ico">🚚</div><div class="p-t">Giao xe tận nơi</div></div>
+      <div class="card perk"><div class="p-ico">💳</div><div class="p-t">Giá minh bạch/ngày</div></div>
+    </div>
+
+    <div class="section-title" style="margin-top:20px;"><h2>Tìm xe phù hợp</h2></div>
+    <div class="search-row">
+      <input id="custSearch" placeholder="Tìm theo tên xe...">
+    </div>
+    <div class="pillrow" id="custTypeFilter" style="margin-top:10px;">
+      <div class="pill active" data-t="all">Tất cả</div>
+      <div class="pill" data-t="🛵">🛵 Tay ga</div>
+      <div class="pill" data-t="🏍️">🏍️ Số / Côn tay</div>
+      <div class="pill" data-t="⚡">⚡ Xe điện</div>
+    </div>
+
+    <div class="road-divider"></div>
+    <div class="cveh-grid" id="custVehicleGrid"></div>
+
+    <div class="admin-entry" id="openAdminGate">🔒 Chủ xe — Đăng nhập quản lý</div>
+  </div>
+</div>
+
+<!-- =========================================================== -->
+<!-- ======================  ADMIN APP  ========================= -->
+<!-- =========================================================== -->
+<div class="shell hidden" id="adminApp">
+
+  <div class="topbar">
+    <div class="brand-row">
+      <div class="brand">
+        <div class="icon-btn" id="backToCustomer" title="Về trang khách" style="margin-right:2px;">←</div>
+        <div class="mark">🏍️</div>
+        <div>
+          <div class="name">MotoHub</div>
+          <div class="tag">Trang quản lý</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="icon-btn" id="openShopInfo" title="Thông tin cửa hàng">⚙️</div>
+        <div class="theme-toggle icon-btn" id="themeToggle" title="Đổi giao diện">🌙</div>
+      </div>
+    </div>
+
+    <div class="hero-stat">
+      <div class="label">Doanh thu hôm nay</div>
+      <div class="big"><span id="heroRevenue">0đ</span> <span class="delta" id="heroDelta">+0%</span></div>
+    </div>
+    <div class="hero-mini">
+      <div class="chip"><b id="miniRented">0</b><span>Xe đang thuê</span></div>
+      <div class="chip"><b id="miniAvail">0</b><span>Xe sẵn sàng</span></div>
+      <div class="chip"><b id="miniPending">0</b><span>Đơn chờ duyệt</span></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== VIEW: DASHBOARD ===== -->
+    <div class="view active" id="view-dashboard">
+      <div class="section-title"><h2>Chỉ số nhanh</h2></div>
+      <div class="kpi-grid">
+        <div class="card kpi"><div class="k-ico">💰</div><div class="k-val" id="kpiRevenue7">0đ</div><div class="k-lb">Doanh thu 7 ngày</div></div>
+        <div class="card kpi"><div class="k-ico">📦</div><div class="k-val" id="kpiOrders7">0</div><div class="k-lb">Đơn 7 ngày qua</div></div>
+        <div class="card kpi"><div class="k-ico">🛵</div><div class="k-val" id="kpiFleet">0</div><div class="k-lb">Tổng số xe</div></div>
+        <div class="card kpi"><div class="k-ico">📈</div><div class="k-val" id="kpiUtil">0%</div><div class="k-lb">Tỉ lệ khai thác xe</div></div>
+      </div>
+
+      <div class="section-title"><h2>Doanh thu 7 ngày gần đây</h2></div>
+      <div class="card chart-card">
+        <canvas id="revenueChart" height="150"></canvas>
+      </div>
+
+      <div class="section-title"><h2>Trạng thái đơn hàng</h2></div>
+      <div class="card chart-card">
+        <canvas id="statusChart" height="160"></canvas>
+        <div class="legend-row" id="statusLegend"></div>
+      </div>
+
+      <div class="road-divider"></div>
+      <div class="section-title"><h2>Đơn mới nhất</h2><a data-goto="orders">Xem tất cả</a></div>
+      <div id="recentOrders"></div>
+    </div>
+
+    <!-- ===== VIEW: VEHICLES ===== -->
+    <div class="view" id="view-vehicles">
+      <div class="section-title"><h2>Đội xe (<span id="fleetCount">0</span>)</h2></div>
+      <div class="pillrow" id="vehicleFilter">
+        <div class="pill active" data-f="all">Tất cả</div>
+        <div class="pill" data-f="available">Sẵn sàng</div>
+        <div class="pill" data-f="rented">Đang thuê</div>
+        <div class="pill" data-f="maintenance">Bảo dưỡng</div>
+      </div>
+      <div style="margin-top:14px;" id="vehicleList"></div>
+    </div>
+
+    <!-- ===== VIEW: ORDERS ===== -->
+    <div class="view" id="view-orders">
+      <div class="section-title"><h2>Đặt xe nhanh cho khách</h2></div>
+      <div class="gallery" id="quickGallery"></div>
+
+      <div class="road-divider"></div>
+
+      <div class="section-title"><h2>Danh sách đơn hàng</h2></div>
+      <div class="pillrow" id="orderFilter">
+        <div class="pill active" data-f="all">Tất cả</div>
+        <div class="pill" data-f="pending">Chờ duyệt</div>
+        <div class="pill" data-f="confirmed">Đã xác nhận</div>
+        <div class="pill" data-f="ongoing">Đang thuê</div>
+        <div class="pill" data-f="completed">Hoàn tất</div>
+        <div class="pill" data-f="cancelled">Đã huỷ</div>
+      </div>
+      <div style="margin-top:14px;" id="orderList"></div>
+    </div>
+
+    <!-- ===== VIEW: REPORTS ===== -->
+    <div class="view" id="view-reports">
+      <div class="section-title"><h2>Báo cáo kinh doanh</h2></div>
+      <div class="kpi-grid">
+        <div class="card kpi"><div class="k-ico">💵</div><div class="k-val" id="repTotalRevenue">0đ</div><div class="k-lb">Tổng doanh thu</div></div>
+        <div class="card kpi"><div class="k-ico">🧾</div><div class="k-val" id="repTotalOrders">0</div><div class="k-lb">Tổng số đơn</div></div>
+        <div class="card kpi"><div class="k-ico">📆</div><div class="k-val" id="repAvgDay">0đ</div><div class="k-lb">TB doanh thu/ngày</div></div>
+        <div class="card kpi"><div class="k-ico">👥</div><div class="k-val" id="repCustomers">0</div><div class="k-lb">Khách hàng</div></div>
+      </div>
+
+      <div class="section-title"><h2>Doanh thu theo 30 ngày</h2></div>
+      <div class="card chart-card">
+        <canvas id="monthChart" height="150"></canvas>
+      </div>
+
+      <div class="section-title"><h2>Xe được thuê nhiều nhất</h2></div>
+      <div class="card" style="padding:14px 16px;" id="topVehicles"></div>
+
+      <div class="road-divider"></div>
+      <button class="btn btn-outline btn-block" id="resetDataBtn">↺ Đặt lại dữ liệu mẫu</button>
+    </div>
+
+  </div>
+
+  <button class="fab" id="fabAdd">+</button>
+
+  <div class="tabbar">
+    <button class="tab-btn active" data-view="dashboard"><span class="ico">📊</span><span class="lb">Tổng quan</span></button>
+    <button class="tab-btn" data-view="vehicles"><span class="ico">🛵</span><span class="lb">Đội xe</span></button>
+    <button class="tab-btn" data-view="orders"><span class="ico">🧾</span><span class="lb">Đơn hàng</span></button>
+    <button class="tab-btn" data-view="reports"><span class="ico">📈</span><span class="lb">Báo cáo</span></button>
+  </div>
+</div>
+
+<!-- ===== Modal: PIN gate ===== -->
+<div class="overlay" id="overlayPin">
+  <div class="modal">
+    <div class="modal-head"><h3>Đăng nhập quản lý</h3><button class="modal-close" data-close>✕</button></div>
+    <div class="field"><label>Mã PIN quản lý</label><input id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••"></div>
+    <button class="btn btn-primary btn-block" id="pinSubmit">Vào trang quản lý</button>
+    <div class="field-hint">Mã PIN demo: <b>1234</b> — có thể đổi trong mã nguồn.</div>
+  </div>
+</div>
+
+<!-- ===== Modal: Add/Edit Vehicle ===== -->
+<div class="overlay" id="overlayVehicle">
+  <div class="modal">
+    <div class="modal-head"><h3 id="vehicleModalTitle">Thêm xe mới</h3><button class="modal-close" data-close>✕</button></div>
+    <input type="hidden" id="vehId">
+    <div class="field"><label>Tên xe</label><input id="vehName" placeholder="VD: Honda Vision 2023"></div>
+    <div class="field-row">
+      <div class="field"><label>Biển số</label><input id="vehPlate" placeholder="59-P1 123.45"></div>
+      <div class="field"><label>Loại xe</label>
+        <select id="vehType">
+          <option value="🛵">🛵 Tay ga</option>
+          <option value="🏍️">🏍️ Số / Côn tay</option>
+          <option value="⚡">⚡ Xe điện</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Giá / ngày (đ)</label><input id="vehPrice" type="number" placeholder="120000"></div>
+      <div class="field"><label>Trạng thái</label>
+        <select id="vehStatus">
+          <option value="available">Sẵn sàng</option>
+          <option value="rented">Đang thuê</option>
+          <option value="maintenance">Bảo dưỡng</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" id="saveVehicleBtn">Lưu thông tin xe</button>
+  </div>
+</div>
+
+<!-- ===== Modal: Order / Booking (shared: admin quick-order & customer booking) ===== -->
+<div class="overlay" id="overlayOrder">
+  <div class="modal">
+    <div class="modal-head"><h3 id="orderModalTitle">Tạo đơn thuê xe</h3><button class="modal-close" data-close>✕</button></div>
+    <div class="field"><label>Họ và tên</label><input id="ordCustomer" placeholder="Họ và tên khách"></div>
+    <div class="field"><label>Số điện thoại</label><input id="ordPhone" placeholder="09xx xxx xxx"></div>
+    <div class="field"><label>Chọn xe</label>
+      <select id="ordVehicle"></select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Ngày nhận xe</label><input id="ordStart" type="date"></div>
+      <div class="field"><label>Ngày trả xe</label><input id="ordEnd" type="date"></div>
+    </div>
+    <div class="field"><label>Ghi chú (tuỳ chọn)</label><textarea id="ordNote" rows="2" placeholder="Giao tận nơi, giữ CCCD..."></textarea></div>
+    <div class="price-preview">
+      <span class="pv-lb">Tổng tiền dự kiến</span>
+      <span class="pv-val" id="ordPricePreview">0đ</span>
+    </div>
+    <button class="btn btn-primary btn-block" id="saveOrderBtn">Xác nhận tạo đơn</button>
+  </div>
+</div>
+
+<!-- ===== Modal: Shop / Owner Info ===== -->
+<div class="overlay" id="overlayShopInfo">
+  <div class="modal">
+    <div class="modal-head"><h3>Thông tin cửa hàng</h3><button class="modal-close" data-close>✕</button></div>
+    <div class="field"><label>Tên cửa hàng / thương hiệu</label><input id="shopName" placeholder="VD: MotoHub Đà Lạt"></div>
+    <div class="field"><label>Câu giới thiệu ngắn</label><input id="shopTagline" placeholder="VD: Thuê xe máy tự lái giá tốt"></div>
+    <div class="field"><label>Tên chủ xe</label><input id="shopOwner" placeholder="VD: Nguyễn Văn A"></div>
+    <div class="field-row">
+      <div class="field"><label>Số điện thoại</label><input id="shopPhone" placeholder="09xx xxx xxx"></div>
+      <div class="field"><label>Giờ hoạt động</label><input id="shopHours" placeholder="7:00 - 21:00"></div>
+    </div>
+    <div class="field"><label>Địa chỉ</label><input id="shopAddress" placeholder="Số nhà, đường, phường/xã, tỉnh/thành"></div>
+    <button class="btn btn-primary btn-block" id="saveShopInfoBtn">Lưu thông tin</button>
+    <div class="field-hint">Thông tin này sẽ hiển thị ở đầu trang cho khách xem.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+
+/* ============== FIREBASE SYNC ============== */
+/*
+  Cấu trúc dữ liệu trên Firestore (mỗi xe / mỗi đơn là MỘT document riêng):
+    motohub/shopState                 -> { schema:2, shopInfo:{...} }
+    motohub/shopState/vehicles/{id}   -> { id, name, plate, type, price, status, seq }
+    motohub/shopState/orders/{id}     -> { id, customerName, phone, vehicleId, ... }
+  Nhờ vậy nhiều thiết bị ghi cùng lúc sẽ KHÔNG ghi đè dữ liệu của nhau.
+*/
+const firebaseConfig = {
+  apiKey: "AIzaSyCz78qmWz5PhlAIdAkTDc_UAEkRywd8zFk",
+  authDomain: "thue-xe-may-ca2b5.firebaseapp.com",
+  projectId: "thue-xe-may-ca2b5",
+  storageBucket: "thue-xe-may-ca2b5.firebasestorage.app",
+  messagingSenderId: "62535695605",
+  appId: "1:62535695605:web:546e06a54a56e614fbd9bc",
+  measurementId: "G-0EQ4HEPHRD"
+};
+let db = null, shopRef = null, vehiclesRef = null, ordersRef = null;
+try{
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  shopRef = db.collection('motohub').doc('shopState');
+  vehiclesRef = shopRef.collection('vehicles');
+  ordersRef = shopRef.collection('orders');
+}catch(e){
+  console.warn('Firebase init failed, running local-only', e);
+  db = null;
+}
+
+/* ---- Trạng thái đồng bộ hiển thị cho người dùng ---- */
+const syncBadge = document.createElement('div');
+syncBadge.id = 'syncBadge';
+syncBadge.innerHTML = '<span class="sd"></span><span class="st"></span>';
+document.body.appendChild(syncBadge);
+let authed = false;       // đã đăng nhập Firebase chưa
+let syncPending = 0;      // số lệnh ghi đang chờ máy chủ xác nhận
+let syncErr = '';         // lỗi gần nhất (rỗng = ổn)
+let syncDetail = '';
+let lastErrToast = 0;
+
+function setBadge(kind, text, detail){
+  syncBadge.className = kind;
+  syncBadge.querySelector('.st').textContent = text;
+  syncDetail = detail || text;
+}
+function updateBadge(){
+  if(!db) return setBadge('local','Chỉ lưu trên máy','Không khởi tạo được Firebase (mất mạng hoặc bị chặn gstatic.com?). Dữ liệu chỉ được lưu trên thiết bị này.');
+  if(syncErr) return setBadge('error','Lỗi đồng bộ', syncErr);
+  if(!authed) return setBadge('saving','Đang kết nối…','Đang đăng nhập Firebase…');
+  if(syncPending > 0) return setBadge('saving','Đang lưu…','Đang gửi dữ liệu lên Firebase…');
+  return setBadge('ok','Đã đồng bộ','Dữ liệu đã khớp với Firebase.');
+}
+syncBadge.addEventListener('click', ()=>{
+  alert(syncDetail + (syncErr ? '\n\n(Chạm OK để thử kết nối lại)' : ''));
+  if(syncErr) retrySync();
+});
+
+function explainFirebaseError(err){
+  const code = String((err && err.code) || '').replace(/^firestore\//,'');
+  const map = {
+    'permission-denied': 'Firestore từ chối truy cập (permission-denied). Vào Firebase Console → Firestore Database → Rules và cho phép người dùng đã đăng nhập đọc/ghi "motohub/**" (xem hướng dẫn kèm theo).',
+    'unauthenticated': 'Chưa đăng nhập Firebase nên bị Firestore từ chối. Kiểm tra Authentication → Anonymous đã bật chưa.',
+    'unavailable': 'Không kết nối được máy chủ Firebase (mất mạng?). Dữ liệu sẽ tự gửi lại khi có mạng.',
+    'not-found': 'Chưa tạo Firestore Database cho dự án này. Vào Firebase Console → Firestore Database → Create database.',
+    'resource-exhausted': 'Đã vượt hạn mức miễn phí của Firebase (quota).',
+    'invalid-argument': 'Dữ liệu gửi lên không hợp lệ (có giá trị undefined?).',
+    'auth/operation-not-allowed': 'Chưa bật đăng nhập Ẩn danh: Firebase Console → Authentication → Sign-in method → Anonymous → Enable.',
+    'auth/admin-restricted-operation': 'Chưa bật đăng nhập Ẩn danh: Firebase Console → Authentication → Sign-in method → Anonymous → Enable.',
+    'auth/unauthorized-domain': 'Tên miền đang chạy app chưa được cấp phép: Authentication → Settings → Authorized domains → thêm tên miền này.',
+    'auth/operation-not-supported-in-this-environment': 'Firebase Auth không chạy khi mở file trực tiếp (file://). Hãy chạy qua http(s):// hoặc Firebase Hosting.',
+    'auth/network-request-failed': 'Mất mạng khi đăng nhập Firebase.',
+    'auth/invalid-api-key': 'API key Firebase không hợp lệ.',
+    'auth/api-key-not-valid': 'API key Firebase không hợp lệ.'
+  };
+  return map[code] || ((err && (err.message || err.code)) || String(err));
+}
+function reportSyncError(err, what){
+  console.error('[Firebase]', what, err);
+  syncErr = what + ': ' + explainFirebaseError(err);
+  updateBadge();
+  if(Date.now() - lastErrToast > 12000){
+    lastErrToast = Date.now();
+    toast('Lỗi đồng bộ Firebase — chạm chấm trạng thái ở trên cùng để xem chi tiết');
+  }
+}
+
+/* ---- Ghi dữ liệu ---- */
+const writeQueue = [];   // các lệnh ghi phát sinh trước khi đăng nhập xong
+function clean(o){ return JSON.parse(JSON.stringify(o)); }   // loại bỏ undefined (Firestore không nhận)
+function defaultShopInfo(){ return { name:'MotoHub', tagline:'Thuê xe máy tự lái', owner:'', phone:'', hours:'', address:'' }; }
+
+function track(promise, what){
+  syncPending++; updateBadge();
+  return promise.then(()=>{ syncPending--; syncErr=''; updateBadge(); })
+                .catch(err=>{ syncPending--; reportSyncError(err, what); });
+}
+/* Chỉ ghi ĐÚNG những document vừa thay đổi (không bao giờ ghi cả state) */
+function syncSave(spec){
+  persistLocal();
+  if(!db) return;
+  const s = {
+    vehicles: (spec.vehicles||[]).map(clean),
+    orders:   (spec.orders||[]).map(clean),
+    shop:     spec.shop ? clean(state.shopInfo) : null
+  };
+  if(!authed){ writeQueue.push(s); updateBadge(); return; }
+  commitSpec(s);
+}
+function commitSpec(s){
+  const b = db.batch();
+  s.vehicles.forEach(v=> b.set(vehiclesRef.doc(v.id), v, {merge:true}));
+  s.orders.forEach(o=> b.set(ordersRef.doc(o.id), o, {merge:true}));
+  if(s.shop) b.set(shopRef, { schema:2, shopInfo:s.shop }, {merge:true});
+  track(b.commit(), 'Lưu dữ liệu');
+}
+async function commitOps(ops){   // batch tối đa 500 thao tác → chia nhỏ 400
+  for(let i=0;i<ops.length;i+=400){
+    const b = db.batch();
+    ops.slice(i,i+400).forEach(fn=>fn(b));
+    await b.commit();
+  }
+}
+function opsForState(s){
+  const ops = [];
+  s.vehicles.forEach((v,i)=> ops.push(b=> b.set(vehiclesRef.doc(v.id), clean(Object.assign({seq:i}, v)))));
+  s.orders.forEach(o=> ops.push(b=> b.set(ordersRef.doc(o.id), clean(o))));
+  return ops;
+}
+function resetRemote(newState){
+  if(!db || !authed) return;
+  track((async()=>{
+    const [vs, os] = await Promise.all([vehiclesRef.get(), ordersRef.get()]);
+    const ops = [];
+    vs.forEach(d=> ops.push(b=> b.delete(d.ref)));
+    os.forEach(d=> ops.push(b=> b.delete(d.ref)));
+    opsForState(newState).forEach(f=> ops.push(f));
+    ops.push(b=> b.set(shopRef, { schema:2, shopInfo:clean(newState.shopInfo) }, {merge:true}));
+    await commitOps(ops);
+  })(), 'Đặt lại dữ liệu');
+}
+
+/* ---- Khởi tạo lần đầu / chuyển dữ liệu cũ ---- */
+async function bootstrapRemote(){
+  const snap = await shopRef.get();
+  const d = snap.exists ? snap.data() : {};
+  if(d.schema === 2) return;
+
+  // (1) Dữ liệu cũ dạng 1 document lớn → chuyển sang từng document riêng
+  if(Array.isArray(d.vehicles) && d.vehicles.length){
+    const probe = await vehiclesRef.limit(1).get();
+    if(probe.empty){
+      await commitOps(opsForState({ vehicles:d.vehicles, orders:d.orders||[] }));
+      await shopRef.set({ schema:2, shopInfo:Object.assign(defaultShopInfo(), d.shopInfo||{}) }, {merge:true});
+      // chỉ xoá bản cũ SAU KHI đã chép xong
+      await shopRef.update({ vehicles:firebase.firestore.FieldValue.delete(), orders:firebase.firestore.FieldValue.delete() });
+    } else {
+      await shopRef.set({ schema:2 }, {merge:true});
+    }
+    return;
+  }
+
+  // (2) Cài mới: chỉ MỘT thiết bị (thắng transaction) được tạo dữ liệu mẫu
+  const won = await db.runTransaction(async tx=>{
+    const s = await tx.get(shopRef);
+    const cur = s.exists ? s.data() : {};
+    if(cur.schema === 2) return false;
+    tx.set(shopRef, { schema:2, shopInfo:Object.assign(defaultShopInfo(), cur.shopInfo||{}) }, {merge:true});
+    return true;
+  });
+  if(won) await commitOps(opsForState(seedData()));
+}
+
+/* ---- Nhận dữ liệu realtime ---- */
+let renderTimer = null;
+let unsubs = [];
+function scheduleRender(){ clearTimeout(renderTimer); renderTimer = setTimeout(renderAll, 60); }
+function safe(fn){ try{ fn(); }catch(e){ console.error('Render error in', fn.name, e); } }
+function renderAll(){
+  safe(renderShopInfo);
+  safe(renderCustomerApp);
+  const activeAdminView = views.find(v=> document.getElementById('view-'+v)?.classList.contains('active'));
+  if(adminApp && !adminApp.classList.contains('hidden') && activeAdminView){ safe(()=>goto(activeAdminView)); }
+  else { safe(renderDashboard); safe(renderVehicles); safe(renderOrders); safe(renderReports); }
+}
+window.addEventListener('chartjs-ready', ()=> scheduleRender());
+function afterRemote(snap, remoteChange){
+  persistLocal();
+  if(!snap.metadata.fromCache) syncErr = '';
+  updateBadge();
+  scheduleRender();
+  if(remoteChange) toast('Dữ liệu vừa được đồng bộ');
+}
+function collectionHandler(assign){
+  let first = true;
+  return (snap)=>{
+    if(snap.metadata.fromCache && snap.empty) return;   // chưa có dữ liệu thật từ máy chủ
+    assign(snap);
+    // chỉ báo "vừa đồng bộ" khi thay đổi đến từ thiết bị khác (không phải chính mình vừa ghi)
+    const remoteChange = !first && snap.docChanges().some(c=> !c.doc.metadata.hasPendingWrites);
+    first = false;
+    afterRemote(snap, remoteChange);
+  };
+}
+function startListeners(){
+  unsubs.forEach(u=>{ try{u();}catch(e){} });
+  unsubs = [];
+  unsubs.push(vehiclesRef.onSnapshot(collectionHandler(snap=>{
+    state.vehicles = snap.docs.map(d=> Object.assign({}, d.data(), {id:d.id})).sort((a,b)=> (a.seq||0)-(b.seq||0));
+  }), err=> reportSyncError(err,'Đọc danh sách xe')));
+  unsubs.push(ordersRef.onSnapshot(collectionHandler(snap=>{
+    state.orders = snap.docs.map(d=> Object.assign({}, d.data(), {id:d.id}));
+  }), err=> reportSyncError(err,'Đọc danh sách đơn')));
+  unsubs.push(shopRef.onSnapshot(doc=>{
+    const d = doc.exists ? doc.data() : null;
+    if(d && d.shopInfo) state.shopInfo = Object.assign(defaultShopInfo(), d.shopInfo);
+    afterRemote(doc, false);
+  }, err=> reportSyncError(err,'Đọc thông tin cửa hàng')));
+}
+async function initFirestoreSync(){
+  try{ await bootstrapRemote(); }
+  catch(err){ reportSyncError(err,'Khởi tạo dữ liệu'); }
+  while(writeQueue.length) commitSpec(writeQueue.shift());   // đẩy các thay đổi làm lúc chưa đăng nhập
+  startListeners();
+}
+
+/* ---- Đăng nhập ẩn danh ---- */
+let syncStarted = false;
+function signIn(){
+  firebase.auth().signInAnonymously().catch(err=> reportSyncError(err,'Đăng nhập Firebase'));
+}
+function startAuthAndSync(){
+  updateBadge();
+  if(!db) return;
+  try{
+    firebase.auth().onAuthStateChanged((user)=>{
+      if(user){
+        authed = true; updateBadge();
+        if(!syncStarted){ syncStarted = true; initFirestoreSync(); }
+      } else {
+        authed = false; updateBadge();
+        signIn();
+      }
+    });
+  }catch(e){ reportSyncError(e,'Khởi tạo đăng nhập'); }
+}
+function retrySync(){
+  syncErr = ''; updateBadge();
+  if(!db) return;
+  if(!firebase.auth().currentUser){ signIn(); }
+  else { authed = true; initFirestoreSync(); }
+}
+
+/* ============== STORAGE ============== */
+const STORE_KEY = 'motohub_data_v1';
+const THEME_KEY = 'motohub_theme';
+const ADMIN_PIN = '1234';
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){ console.warn('storage read failed', e); }
+  return seedData();
+}
+/* Bản lưu trên máy chỉ để hiển thị nhanh / dùng khi offline — KHÔNG bao giờ đẩy ngược lên Firebase */
+function persistLocal(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+  catch(e){ console.warn('storage write failed', e); }
+}
+
+function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+function fmtVND(n){ return Math.round(n).toLocaleString('vi-VN') + 'đ'; }
+function todayISO(offset=0){
+  const d = new Date(); d.setDate(d.getDate()+offset);
+  return d.toISOString().slice(0,10);
+}
+function daysBetween(a,b){
+  const ms = new Date(b) - new Date(a);
+  return Math.max(1, Math.round(ms / 86400000));
+}
+
+function seedData(){
+  const vehicles = [
+    {id:uid('v'), name:'Honda Vision 2023', type:'🛵', plate:'59-P1 123.45', price:130000, status:'available'},
+    {id:uid('v'), name:'Yamaha NVX 155', type:'🛵', plate:'59-H1 556.78', price:160000, status:'rented'},
+    {id:uid('v'), name:'Honda Wave Alpha', type:'🏍️', plate:'59-V2 987.65', price:100000, status:'available'},
+    {id:uid('v'), name:'VinFast Klara S', type:'⚡', plate:'59-E1 246.80', price:150000, status:'available'},
+    {id:uid('v'), name:'Honda SH Mode', type:'🛵', plate:'59-P3 112.23', price:220000, status:'maintenance'},
+    {id:uid('v'), name:'Yamaha Exciter 155', type:'🏍️', plate:'59-X4 334.45', price:180000, status:'rented'},
+    {id:uid('v'), name:'VinFast Feliz S', type:'⚡', plate:'59-E2 771.19', price:140000, status:'available'},
+  ];
+  vehicles.forEach((v,i)=>{ v.seq = i; });
+  const orders = [];
+  const names = ['Trần Minh Anh','Lê Thị Hoa','Nguyễn Văn Bảo','Phạm Quốc Huy','Đỗ Thu Trang','Vũ Đình Nam','Bùi Ngọc Lan'];
+  const statuses = ['pending','confirmed','ongoing','completed','completed','completed','cancelled'];
+  for(let i=0;i<18;i++){
+    const v = vehicles[Math.floor(Math.random()*vehicles.length)];
+    const start = todayISO(-Math.floor(Math.random()*20));
+    const dur = 1+Math.floor(Math.random()*4);
+    const endDate = new Date(start); endDate.setDate(endDate.getDate()+dur);
+    const st = statuses[Math.floor(Math.random()*statuses.length)];
+    orders.push({
+      id: uid('o'),
+      customerName: names[Math.floor(Math.random()*names.length)],
+      phone: '09' + Math.floor(10000000+Math.random()*89999999),
+      vehicleId: v.id,
+      startDate: start,
+      endDate: endDate.toISOString().slice(0,10),
+      days: dur,
+      totalPrice: dur * v.price,
+      status: st,
+      note:'',
+      createdAt: Date.now() - Math.floor(Math.random()*20)*86400000
+    });
+  }
+  const shopInfo = {
+    name: 'MotoHub',
+    tagline: 'Thuê xe máy tự lái',
+    owner: '',
+    phone: '',
+    hours: '',
+    address: ''
+  };
+  return { vehicles, orders, shopInfo };
+}
+
+let state = loadData();
+if(!state.shopInfo){
+  state.shopInfo = { name:'MotoHub', tagline:'Thuê xe máy tự lái', owner:'', phone:'', hours:'', address:'' };
+}
+
+/* ============== TOAST ============== */
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2400);
+}
+
+/* ============== THEME ============== */
+function applyTheme(){
+  const saved = localStorage.getItem(THEME_KEY);
+  if(saved){
+    document.documentElement.setAttribute('data-theme', saved);
+    const ico = saved === 'dark' ? '☀️' : '🌙';
+    const a = document.getElementById('themeToggle'); if(a) a.textContent = ico;
+    const b = document.getElementById('themeToggleCustomer'); if(b) b.textContent = ico;
+  }
+}
+applyTheme();
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+  applyTheme();
+}
+document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+document.getElementById('themeToggleCustomer').addEventListener('click', toggleTheme);
+
+/* ============== MODE SWITCH: customer <-> admin ============== */
+const customerApp = document.getElementById('customerApp');
+const adminApp = document.getElementById('adminApp');
+const overlayPin = document.getElementById('overlayPin');
+
+document.getElementById('openAdminGate').addEventListener('click', ()=>{
+  document.getElementById('pinInput').value = '';
+  overlayPin.classList.add('open');
+  setTimeout(()=> document.getElementById('pinInput').focus(), 150);
+});
+function tryAdminLogin(){
+  const val = document.getElementById('pinInput').value.trim();
+  if(val === ADMIN_PIN){
+    overlayPin.classList.remove('open');
+    customerApp.classList.add('hidden');
+    adminApp.classList.remove('hidden');
+    goto('dashboard');
+    toast('Đã vào trang quản lý');
+  } else {
+    toast('Mã PIN không đúng, vui lòng thử lại');
+  }
+}
+document.getElementById('pinSubmit').addEventListener('click', tryAdminLogin);
+document.getElementById('pinInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') tryAdminLogin(); });
+
+document.getElementById('backToCustomer').addEventListener('click', ()=>{
+  adminApp.classList.add('hidden');
+  customerApp.classList.remove('hidden');
+  renderCustomerApp();
+});
+
+/* ============== SHOP / OWNER INFO ============== */
+const overlayShopInfo = document.getElementById('overlayShopInfo');
+function renderShopInfo(){
+  const s = state.shopInfo;
+  document.getElementById('custShopName').textContent = s.name || 'MotoHub';
+  document.getElementById('custShopTagline').textContent = s.tagline || 'Thuê xe máy tự lái';
+  const rows = [];
+  if(s.phone) rows.push(`<a href="tel:${s.phone}"><span class="sc-ico">📞</span>${s.phone}</a>`);
+  if(s.address) rows.push(`<div class="sc-row"><span class="sc-ico">📍</span>${s.address}</div>`);
+  if(s.hours) rows.push(`<div class="sc-row"><span class="sc-ico">🕒</span>${s.hours}</div>`);
+  document.getElementById('custShopContact').innerHTML = rows.join('');
+}
+function openShopInfoModal(){
+  const s = state.shopInfo;
+  document.getElementById('shopName').value = s.name || '';
+  document.getElementById('shopTagline').value = s.tagline || '';
+  document.getElementById('shopOwner').value = s.owner || '';
+  document.getElementById('shopPhone').value = s.phone || '';
+  document.getElementById('shopHours').value = s.hours || '';
+  document.getElementById('shopAddress').value = s.address || '';
+  overlayShopInfo.classList.add('open');
+}
+document.getElementById('openShopInfo').addEventListener('click', openShopInfoModal);
+document.getElementById('saveShopInfoBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('shopName').value.trim();
+  if(!name){ toast('Vui lòng nhập tên cửa hàng'); return; }
+  state.shopInfo = {
+    name,
+    tagline: document.getElementById('shopTagline').value.trim(),
+    owner: document.getElementById('shopOwner').value.trim(),
+    phone: document.getElementById('shopPhone').value.trim(),
+    hours: document.getElementById('shopHours').value.trim(),
+    address: document.getElementById('shopAddress').value.trim()
+  };
+  syncSave({ shop:true });
+  renderShopInfo();
+  overlayShopInfo.classList.remove('open');
+  toast('Đã lưu thông tin cửa hàng');
+});
+
+/* ============== ADMIN NAV ============== */
+const views = ['dashboard','vehicles','orders','reports'];
+function goto(view){
+  views.forEach(v=>{
+    document.getElementById('view-'+v).classList.toggle('active', v===view);
+  });
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.view===view);
+  });
+  if(view==='dashboard') renderDashboard();
+  if(view==='vehicles') renderVehicles();
+  if(view==='orders') renderOrders();
+  if(view==='reports') renderReports();
+}
+document.querySelectorAll('.tab-btn').forEach(b=> b.addEventListener('click', ()=>goto(b.dataset.view)));
+document.querySelectorAll('[data-goto]').forEach(el=> el.addEventListener('click', ()=>goto(el.dataset.goto)));
+
+document.getElementById('fabAdd').addEventListener('click', ()=>{
+  const activeView = views.find(v=> document.getElementById('view-'+v).classList.contains('active'));
+  if(activeView === 'vehicles') openVehicleModal();
+  else openOrderModal(null, 'admin');
+});
+
+/* ============== SHARED META ============== */
+const vehStatusMeta = {
+  available: {label:'Sẵn sàng', cls:'b-available'},
+  rented: {label:'Đang thuê', cls:'b-rented'},
+  maintenance: {label:'Bảo dưỡng', cls:'b-maint'},
+};
+const orderStatusMeta = {
+  pending: {label:'Chờ duyệt', cls:'b-pending'},
+  confirmed: {label:'Đã xác nhận', cls:'b-confirmed'},
+  ongoing: {label:'Đang thuê', cls:'b-ongoing'},
+  completed: {label:'Hoàn tất', cls:'b-completed'},
+  cancelled: {label:'Đã huỷ', cls:'b-cancelled'},
+};
+function vehicleById(id){ return state.vehicles.find(v=>v.id===id); }
+function emptyHTML(icon,title,sub){
+  return `<div class="card empty"><div class="e-ico">${icon}</div><div class="e-t">${title}</div><div class="e-s">${sub}</div></div>`;
+}
+
+/* ================= CUSTOMER STOREFRONT ================= */
+let custTypeFilter = 'all';
+let custSearchTerm = '';
+
+function renderCustomerApp(){
+  const avail = state.vehicles.filter(v=>v.status==='available');
+  document.getElementById('custAvailCount').textContent = avail.length;
+  document.getElementById('custFleetCount').textContent = state.vehicles.length;
+
+  let list = [...state.vehicles];
+  if(custTypeFilter !== 'all') list = list.filter(v=>v.type===custTypeFilter);
+  if(custSearchTerm) list = list.filter(v=>v.name.toLowerCase().includes(custSearchTerm.toLowerCase()));
+  // available first
+  list.sort((a,b)=> (a.status==='available'?0:1) - (b.status==='available'?0:1));
+
+  const grid = document.getElementById('custVehicleGrid');
+  grid.innerHTML = list.length ? list.map(custVehicleCardHTML).join('') : `<div style="grid-column:1/-1;">${emptyHTML('🔍','Không tìm thấy xe phù hợp','Thử từ khoá hoặc bộ lọc khác')}</div>`;
+  grid.querySelectorAll('[data-book]').forEach(b=> b.addEventListener('click', ()=> openOrderModal(b.dataset.book, 'customer')));
+}
+function custVehicleCardHTML(v){
+  const isAvail = v.status === 'available';
+  const meta = vehStatusMeta[v.status];
+  return `<div class="card cveh-card">
+    <div class="cveh-media">
+      <span class="badge ${meta.cls} cveh-badge">${meta.label}</span>
+      ${v.type}
+    </div>
+    <div class="cveh-body">
+      <div class="cveh-name">${v.name}</div>
+      <div class="cveh-price">${fmtVND(v.price)} <span>/ngày</span></div>
+      <button class="btn ${isAvail?'btn-primary':'btn-ghost'} btn-sm" ${isAvail?'':'disabled'} data-book="${v.id}">
+        ${isAvail ? 'Đặt xe ngay' : 'Hiện chưa sẵn sàng'}
+      </button>
+    </div>
+  </div>`;
+}
+document.getElementById('custTypeFilter').addEventListener('click', (e)=>{
+  const p = e.target.closest('.pill'); if(!p) return;
+  document.querySelectorAll('#custTypeFilter .pill').forEach(x=>x.classList.remove('active'));
+  p.classList.add('active');
+  custTypeFilter = p.dataset.t;
+  renderCustomerApp();
+});
+document.getElementById('custSearch').addEventListener('input', (e)=>{
+  custSearchTerm = e.target.value;
+  renderCustomerApp();
+});
+
+/* ================= ADMIN: DASHBOARD ================= */
+let revenueChartInst, statusChartInst, monthChartInst;
+/* Nếu Chart.js không tải được (mạng chặn CDN) thì bỏ qua biểu đồ, KHÔNG làm sập cả app */
+function makeChart(ctx, cfg){
+  if(typeof Chart === 'undefined' || !ctx) return null;
+  try{ return new Chart(ctx, cfg); }catch(e){ console.warn('Chart error', e); return null; }
+}
+
+function revenueForDate(dateISO){
+  return state.orders
+    .filter(o=> o.status!=='cancelled' && o.startDate<=dateISO && o.endDate>=dateISO)
+    .reduce((sum,o)=> sum + (o.totalPrice / o.days), 0);
+}
+
+function renderDashboard(){
+  const today = todayISO(0);
+  const yesterday = todayISO(-1);
+  const revToday = revenueForDate(today);
+  const revYesterday = revenueForDate(yesterday);
+  const delta = revYesterday>0 ? Math.round(((revToday-revYesterday)/revYesterday)*100) : (revToday>0?100:0);
+
+  document.getElementById('heroRevenue').textContent = fmtVND(revToday);
+  const deltaEl = document.getElementById('heroDelta');
+  deltaEl.textContent = (delta>=0?'+':'') + delta + '%';
+  deltaEl.style.color = delta>=0 ? 'var(--teal)' : 'var(--coral)';
+  deltaEl.style.background = delta>=0 ? 'rgba(15,184,156,.15)' : 'rgba(255,90,95,.15)';
+
+  const rented = state.vehicles.filter(v=>v.status==='rented').length;
+  const avail = state.vehicles.filter(v=>v.status==='available').length;
+  const pending = state.orders.filter(o=>o.status==='pending').length;
+  document.getElementById('miniRented').textContent = rented;
+  document.getElementById('miniAvail').textContent = avail;
+  document.getElementById('miniPending').textContent = pending;
+
+  let rev7=0;
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d = todayISO(-i);
+    days.push(d);
+    rev7 += revenueForDate(d);
+  }
+  const ord7 = state.orders.filter(o=> o.createdAt >= Date.now()-7*86400000).length;
+  document.getElementById('kpiRevenue7').textContent = fmtVND(rev7);
+  document.getElementById('kpiOrders7').textContent = ord7;
+  document.getElementById('kpiFleet').textContent = state.vehicles.length;
+  const util = state.vehicles.length ? Math.round((rented/state.vehicles.length)*100) : 0;
+  document.getElementById('kpiUtil').textContent = util+'%';
+
+  const ctx = document.getElementById('revenueChart');
+  const labels = days.map(d=> d.slice(5).split('-').reverse().join('/'));
+  const values = days.map(d=> Math.round(revenueForDate(d)));
+  if(revenueChartInst) revenueChartInst.destroy();
+  revenueChartInst = makeChart(ctx, {
+    type:'bar',
+    data:{ labels, datasets:[{ data: values, backgroundColor:'#FFB020', borderRadius:6, maxBarThickness:26 }]},
+    options:{
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:(c)=>fmtVND(c.parsed.y)}} },
+      scales:{
+        y:{ display:false, grid:{display:false} },
+        x:{ grid:{display:false}, ticks:{ color:getComputedStyle(document.body).getPropertyValue('--sub'), font:{size:10.5} } }
+      }
+    }
+  });
+
+  const counts = {};
+  Object.keys(orderStatusMeta).forEach(k=> counts[k]=0);
+  state.orders.forEach(o=> counts[o.status]++);
+  const colorMap = { pending:'#FFB020', confirmed:'#3E64D6', ongoing:'#0FB89C', completed:'#8B8F99', cancelled:'#FF5A5F' };
+  const sctx = document.getElementById('statusChart');
+  if(statusChartInst) statusChartInst.destroy();
+  statusChartInst = makeChart(sctx, {
+    type:'doughnut',
+    data:{
+      labels: Object.keys(counts).map(k=>orderStatusMeta[k].label),
+      datasets:[{ data: Object.values(counts), backgroundColor: Object.keys(counts).map(k=>colorMap[k]), borderWidth:0 }]
+    },
+    options:{ cutout:'68%', plugins:{ legend:{display:false} } }
+  });
+  document.getElementById('statusLegend').innerHTML = Object.keys(counts).map(k=>
+    `<div class="lg"><span class="dot" style="background:${colorMap[k]}"></span>${orderStatusMeta[k].label} (${counts[k]})</div>`
+  ).join('');
+
+  const recent = [...state.orders].sort((a,b)=>b.createdAt-a.createdAt).slice(0,4);
+  document.getElementById('recentOrders').innerHTML = recent.length ? recent.map(orderCardHTML).join('') : emptyHTML('🧾','Chưa có đơn hàng nào','Đơn khách đặt online sẽ hiện tại đây');
+  bindOrderActions();
+}
+
+/* ================= ADMIN: VEHICLES ================= */
+let vehicleFilterState = 'all';
+function renderVehicles(){
+  document.getElementById('fleetCount').textContent = state.vehicles.length;
+  const list = state.vehicles.filter(v=> vehicleFilterState==='all' || v.status===vehicleFilterState);
+  const el = document.getElementById('vehicleList');
+  el.innerHTML = list.length ? list.map(vehicleCardHTML).join('') : emptyHTML('🛵','Không có xe phù hợp','Thử bộ lọc khác hoặc thêm xe mới');
+  el.querySelectorAll('[data-edit-veh]').forEach(b=> b.addEventListener('click', ()=> openVehicleModal(b.dataset.editVeh)));
+}
+function vehicleCardHTML(v){
+  const meta = vehStatusMeta[v.status];
+  return `<div class="card veh-card">
+    <div class="veh-img">${v.type}</div>
+    <div class="veh-info">
+      <div class="vn">${v.name}</div>
+      <div class="vm">${v.plate}</div>
+      <div class="veh-price">${fmtVND(v.price)}/ngày</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+      <span class="badge ${meta.cls}">${meta.label}</span>
+      <button class="btn btn-ghost btn-sm" data-edit-veh="${v.id}">Sửa</button>
+    </div>
+  </div>`;
+}
+document.getElementById('vehicleFilter').addEventListener('click', (e)=>{
+  const p = e.target.closest('.pill'); if(!p) return;
+  document.querySelectorAll('#vehicleFilter .pill').forEach(x=>x.classList.remove('active'));
+  p.classList.add('active');
+  vehicleFilterState = p.dataset.f;
+  renderVehicles();
+});
+
+/* ================= ADMIN: ORDERS ================= */
+let orderFilterState = 'all';
+function orderCardHTML(o){
+  const v = vehicleById(o.vehicleId);
+  const meta = orderStatusMeta[o.status];
+  let actions = '';
+  if(o.status==='pending'){
+    actions = `<button class="btn btn-primary btn-sm" data-approve="${o.id}">Xác nhận</button>
+               <button class="btn btn-outline btn-sm" data-cancel="${o.id}">Từ chối</button>`;
+  } else if(o.status==='confirmed'){
+    actions = `<button class="btn btn-primary btn-sm" data-start="${o.id}">Giao xe</button>
+               <button class="btn btn-outline btn-sm" data-cancel="${o.id}">Huỷ đơn</button>`;
+  } else if(o.status==='ongoing'){
+    actions = `<button class="btn btn-primary btn-sm" data-complete="${o.id}">Nhận xe về</button>`;
+  }
+  return `<div class="card order-card">
+    <div class="oc-top">
+      <div>
+        <div class="oc-cust">${o.customerName}</div>
+        <div class="oc-veh">${v ? v.type+' '+v.name : 'Xe đã xoá'} · ${o.phone}</div>
+      </div>
+      <span class="badge ${meta.cls}">${meta.label}</span>
+    </div>
+    <div class="oc-meta">
+      <div>Nhận xe<b>${o.startDate.slice(5).split('-').reverse().join('/')}</b></div>
+      <div>Trả xe<b>${o.endDate.slice(5).split('-').reverse().join('/')}</b></div>
+      <div>Số ngày<b>${o.days}</b></div>
+      <div>Tổng tiền<b>${fmtVND(o.totalPrice)}</b></div>
+    </div>
+    ${actions ? `<div class="oc-actions">${actions}</div>` : ''}
+  </div>`;
+}
+function bindOrderActions(){
+  document.querySelectorAll('[data-approve]').forEach(b=> b.addEventListener('click', ()=> updateOrderStatus(b.dataset.approve,'confirmed','Đã xác nhận đơn hàng')));
+  document.querySelectorAll('[data-cancel]').forEach(b=> b.addEventListener('click', ()=> updateOrderStatus(b.dataset.cancel,'cancelled','Đã huỷ đơn hàng')));
+  document.querySelectorAll('[data-start]').forEach(b=> b.addEventListener('click', ()=> {
+    updateOrderStatus(b.dataset.start,'ongoing','Đã giao xe cho khách','rented');
+  }));
+  document.querySelectorAll('[data-complete]').forEach(b=> b.addEventListener('click', ()=> {
+    updateOrderStatus(b.dataset.complete,'completed','Đơn hàng đã hoàn tất','available');
+  }));
+}
+function updateOrderStatus(id,status,msg,vehStatus){
+  const o = state.orders.find(x=>x.id===id);
+  if(!o) return;
+  o.status = status;
+  const changedVehicles = [];
+  if(vehStatus){
+    const v = vehicleById(o.vehicleId);
+    if(v){ v.status = vehStatus; changedVehicles.push(v); }
+  }
+  syncSave({ orders:[o], vehicles:changedVehicles });
+  toast(msg);
+  renderOrders(); renderDashboard();
+}
+function renderOrders(){
+  const avail = state.vehicles.filter(v=>v.status==='available');
+  const gEl = document.getElementById('quickGallery');
+  gEl.innerHTML = avail.length ? avail.map(v=>`
+    <div class="g-item" data-quick="${v.id}">
+      <div class="gi-img">${v.type}</div>
+      <div class="gi-name">${v.name}</div>
+      <div class="gi-price">${fmtVND(v.price)}/ngày</div>
+    </div>`).join('') : `<div style="font-size:12.5px;color:var(--sub);padding:10px 2px;">Hiện không có xe sẵn sàng để đặt.</div>`;
+  gEl.querySelectorAll('[data-quick]').forEach(el=> el.addEventListener('click', ()=> openOrderModal(el.dataset.quick, 'admin')));
+
+  const list = state.orders
+    .filter(o=> orderFilterState==='all' || o.status===orderFilterState)
+    .sort((a,b)=>b.createdAt-a.createdAt);
+  document.getElementById('orderList').innerHTML = list.length ? list.map(orderCardHTML).join('') : emptyHTML('🧾','Không có đơn nào','Chọn bộ lọc khác hoặc tạo đơn mới');
+  bindOrderActions();
+}
+document.getElementById('orderFilter').addEventListener('click', (e)=>{
+  const p = e.target.closest('.pill'); if(!p) return;
+  document.querySelectorAll('#orderFilter .pill').forEach(x=>x.classList.remove('active'));
+  p.classList.add('active');
+  orderFilterState = p.dataset.f;
+  renderOrders();
+});
+
+/* ================= ADMIN: REPORTS ================= */
+function renderReports(){
+  const completed = state.orders.filter(o=>o.status!=='cancelled');
+  const totalRevenue = completed.reduce((s,o)=>s+o.totalPrice,0);
+  document.getElementById('repTotalRevenue').textContent = fmtVND(totalRevenue);
+  document.getElementById('repTotalOrders').textContent = state.orders.length;
+
+  const days=[]; for(let i=29;i>=0;i--) days.push(todayISO(-i));
+  const dayRevs = days.map(d=>revenueForDate(d));
+  const avg = dayRevs.reduce((a,b)=>a+b,0)/days.length;
+  document.getElementById('repAvgDay').textContent = fmtVND(avg);
+
+  const custSet = new Set(state.orders.map(o=>o.phone));
+  document.getElementById('repCustomers').textContent = custSet.size;
+
+  const ctx = document.getElementById('monthChart');
+  if(monthChartInst) monthChartInst.destroy();
+  monthChartInst = makeChart(ctx, {
+    type:'line',
+    data:{
+      labels: days.map(d=>d.slice(8)),
+      datasets:[{ data: dayRevs.map(Math.round), borderColor:'#0FB89C', backgroundColor:'rgba(15,184,156,.12)', fill:true, tension:.35, pointRadius:0, borderWidth:2 }]
+    },
+    options:{
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:(c)=>fmtVND(c.parsed.y)}} },
+      scales:{
+        y:{ display:false }, x:{ grid:{display:false}, ticks:{ maxTicksLimit:6, color:getComputedStyle(document.body).getPropertyValue('--sub'), font:{size:10} } }
+      }
+    }
+  });
+
+  const rentalCount = {};
+  state.orders.forEach(o=>{ if(o.status!=='cancelled') rentalCount[o.vehicleId]=(rentalCount[o.vehicleId]||0)+1; });
+  const ranked = Object.entries(rentalCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxCount = ranked.length ? ranked[0][1] : 1;
+  document.getElementById('topVehicles').innerHTML = ranked.length ? ranked.map(([vid,count],idx)=>{
+    const v = vehicleById(vid);
+    return `<div class="rank-row">
+      <div class="rank-n">${idx+1}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12.5px;font-weight:700;">${v? v.type+' '+v.name : 'Xe đã xoá'}</div>
+        <div class="rank-bar-bg" style="margin-top:6px;"><div class="rank-bar" style="width:${(count/maxCount)*100}%"></div></div>
+      </div>
+      <div class="rank-val">${count} lượt</div>
+    </div>`;
+  }).join('') : `<div style="font-size:12.5px;color:var(--sub);">Chưa có dữ liệu thuê xe.</div>`;
+}
+document.getElementById('resetDataBtn').addEventListener('click', ()=>{
+  if(confirm('Đặt lại toàn bộ dữ liệu về mẫu demo ban đầu?')){
+    state = seedData();
+    persistLocal();
+    resetRemote(state);
+    toast('Đã đặt lại dữ liệu mẫu');
+    goto('dashboard');
+  }
+});
+
+/* ============== MODAL: VEHICLE (admin only) ============== */
+const overlayVehicle = document.getElementById('overlayVehicle');
+function openVehicleModal(id){
+  document.getElementById('vehicleModalTitle').textContent = id ? 'Sửa thông tin xe' : 'Thêm xe mới';
+  document.getElementById('vehId').value = id || '';
+  if(id){
+    const v = vehicleById(id);
+    document.getElementById('vehName').value = v.name;
+    document.getElementById('vehPlate').value = v.plate;
+    document.getElementById('vehType').value = v.type;
+    document.getElementById('vehPrice').value = v.price;
+    document.getElementById('vehStatus').value = v.status;
+  } else {
+    document.getElementById('vehName').value = '';
+    document.getElementById('vehPlate').value = '';
+    document.getElementById('vehType').value = '🛵';
+    document.getElementById('vehPrice').value = '';
+    document.getElementById('vehStatus').value = 'available';
+  }
+  overlayVehicle.classList.add('open');
+}
+document.getElementById('saveVehicleBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('vehName').value.trim();
+  const plate = document.getElementById('vehPlate').value.trim();
+  const price = parseInt(document.getElementById('vehPrice').value) || 0;
+  if(!name || !plate || !price){ toast('Vui lòng nhập đầy đủ thông tin xe'); return; }
+  const id = document.getElementById('vehId').value;
+  let savedVeh;
+  if(id){
+    const v = vehicleById(id);
+    v.name=name; v.plate=plate; v.type=document.getElementById('vehType').value;
+    v.price=price; v.status=document.getElementById('vehStatus').value;
+    savedVeh = v;
+    toast('Đã cập nhật thông tin xe');
+  } else {
+    savedVeh = { id:uid('v'), name, plate, type:document.getElementById('vehType').value, price, status:document.getElementById('vehStatus').value, seq:Date.now() };
+    state.vehicles.push(savedVeh);
+    toast('Đã thêm xe mới vào đội xe');
+  }
+  syncSave({ vehicles:[savedVeh] });
+  overlayVehicle.classList.remove('open');
+  renderVehicles(); renderDashboard();
+});
+
+/* ============== MODAL: ORDER / BOOKING (shared) ============== */
+const overlayOrder = document.getElementById('overlayOrder');
+let orderModalContext = 'customer'; // 'customer' | 'admin'
+
+function openOrderModal(preselectVehId, context){
+  orderModalContext = context || 'customer';
+  const sel = document.getElementById('ordVehicle');
+  const avail = state.vehicles.filter(v=>v.status==='available');
+  sel.innerHTML = avail.map(v=>`<option value="${v.id}">${v.type} ${v.name} — ${fmtVND(v.price)}/ngày</option>`).join('');
+  if(preselectVehId) sel.value = preselectVehId;
+
+  document.getElementById('ordCustomer').value = '';
+  document.getElementById('ordPhone').value = '';
+  document.getElementById('ordNote').value = '';
+  document.getElementById('ordStart').value = todayISO(0);
+  document.getElementById('ordEnd').value = todayISO(1);
+
+  if(orderModalContext === 'customer'){
+    document.getElementById('orderModalTitle').textContent = 'Gửi yêu cầu đặt xe';
+    document.getElementById('saveOrderBtn').textContent = 'Gửi yêu cầu đặt xe';
+  } else {
+    document.getElementById('orderModalTitle').textContent = 'Tạo đơn thuê xe';
+    document.getElementById('saveOrderBtn').textContent = 'Xác nhận tạo đơn';
+  }
+
+  updateOrderPricePreview();
+  overlayOrder.classList.add('open');
+}
+function updateOrderPricePreview(){
+  const vid = document.getElementById('ordVehicle').value;
+  const v = vehicleById(vid);
+  const start = document.getElementById('ordStart').value;
+  const end = document.getElementById('ordEnd').value;
+  if(!v || !start || !end){ document.getElementById('ordPricePreview').textContent='0đ'; return; }
+  const d = daysBetween(start,end);
+  document.getElementById('ordPricePreview').textContent = fmtVND(d*v.price);
+}
+['ordVehicle','ordStart','ordEnd'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', updateOrderPricePreview);
+  document.getElementById(id).addEventListener('change', updateOrderPricePreview);
+});
+
+document.getElementById('saveOrderBtn').addEventListener('click', ()=>{
+  const customerName = document.getElementById('ordCustomer').value.trim();
+  const phone = document.getElementById('ordPhone').value.trim();
+  const vehicleId = document.getElementById('ordVehicle').value;
+  const start = document.getElementById('ordStart').value;
+  const end = document.getElementById('ordEnd').value;
+  const note = document.getElementById('ordNote').value.trim();
+  if(!customerName || !phone || !vehicleId || !start || !end){ toast('Vui lòng điền đầy đủ thông tin'); return; }
+  const v = vehicleById(vehicleId);
+  const days = daysBetween(start,end);
+  const newOrder = {
+    id: uid('o'), customerName, phone, vehicleId, startDate:start, endDate:end,
+    days, totalPrice: days*v.price, status:'pending', note, createdAt: Date.now()
+  };
+  state.orders.push(newOrder);
+  syncSave({ orders:[newOrder] });
+  overlayOrder.classList.remove('open');
+  if(orderModalContext === 'customer'){
+    toast('Đã gửi yêu cầu — chủ xe sẽ xác nhận sớm nhất!');
+    renderCustomerApp();
+  } else {
+    toast('Đã tạo đơn — chờ xác nhận');
+    renderOrders(); renderDashboard();
+  }
+});
+
+/* ============== CLOSE OVERLAYS ============== */
+document.querySelectorAll('[data-close]').forEach(b=> b.addEventListener('click', ()=>{
+  overlayVehicle.classList.remove('open');
+  overlayOrder.classList.remove('open');
+  overlayPin.classList.remove('open');
+  overlayShopInfo.classList.remove('open');
+}));
+[overlayVehicle, overlayOrder, overlayPin, overlayShopInfo].forEach(ov=> ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.classList.remove('open'); }));
+
+/* ============== INIT ============== */
+startAuthAndSync();   // khởi động đồng bộ trước, để lỗi giao diện không thể chặn nó
+renderAll();
+})();
+</script>
+</body>
+</html>
