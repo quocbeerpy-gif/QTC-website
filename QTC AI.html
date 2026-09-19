@@ -365,6 +365,8 @@
     50%{ transform: translate(-50%,-50%) translateY(-6px); }
   }
 
+  /* Below ~680px: swap the animated orbit for a static grid — steadier
+     on phones and avoids crowding/overlap at narrow widths. */
   .agent-grid-mobile{ display:none; }
   @media (max-width: 680px){
     .orbit-stage{ display:none; }
@@ -544,6 +546,8 @@
     .chat-panel{ width: calc(100vw - 28px); height: 65vh; bottom: 70px; }
   }
 
+  /* ---------- CHAT WIDGET END ---------- */
+
   :focus-visible{ outline: 2px solid var(--cyan); outline-offset: 2px; }
 </style>
 </head>
@@ -695,6 +699,7 @@
         </div>
       </div>
 
+      <!-- Simplified static layout shown on small screens instead of the orbit -->
       <div class="agent-grid-mobile">
         <div class="mobile-hub">
           <svg width="18" height="18" viewBox="0 0 40 40" fill="none"><path d="M20 3 L34 11 V29 L20 37 L6 29 V11 Z" stroke="url(#g1)" stroke-width="2"/></svg>
@@ -1023,218 +1028,24 @@ Thời gian phản hồi chatbot TB:  0.8s
   </defs>
 </svg>
 
-<!-- CHAT WIDGET -->
-<div class="chat-widget" id="chatWidget">
-  <div class="chat-panel" id="chatPanel">
-    <div class="chat-header">
-      <div class="chat-header-info">
-        <span class="status-dot"></span>
-        <div>
-          <b>Trợ lý AI QTC</b>
-          <span>Hỗ trợ tư vấn 24/7</span>
-        </div>
-      </div>
-      <button class="chat-close-btn" id="chatCloseBtn" aria-label="Đóng chat">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-    </div>
-    <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-quick" id="chatQuick">
-      <button class="quick-chip" type="button" data-q="Chatbot Zalo hoạt động như thế nào?">Chatbot Zalo hoạt động sao?</button>
-      <button class="quick-chip" type="button" data-q="Chi phí triển khai khoảng bao nhiêu?">Chi phí thế nào?</button>
-      <button class="quick-chip" type="button" data-q="Tôi muốn đặt lịch tư vấn">Đặt lịch tư vấn</button>
-    </div>
-    <form class="chat-input-row" id="chatForm">
-      <input type="text" id="chatInput" placeholder="Nhập câu hỏi của bạn..." autocomplete="off" maxlength="300">
-      <button type="submit" class="chat-send" id="chatSendBtn" aria-label="Gửi">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-      </button>
-    </form>
-  </div>
-
-  <button class="chat-toggle" id="chatToggleBtn" aria-label="Mở chat với QTC AI">
-    <svg class="icon-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v10H8l-4 4V4z"/></svg>
-    <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    <span class="badge">AI</span>
-  </button>
-</div>
+<!-- CHAT WIDGET: Tidio -->
+<script src="//code.tidio.co/dfctyvlg6x3aa7ez2rl9gsang5oixoic.js" async></script>
 
 <script>
-  // Stack strip content
+
+  // Stack strip content (duplicated for seamless scroll)
   const items = ["ZALO OA", "ZALO ZNS", "GPU CLUSTER", "PYTORCH", "LLM FINE-TUNING", "CRM SYNC", "PRIVATE CLOUD", "REALTIME INFERENCE", "DATA ENCRYPTION", "ON-PREMISE DEPLOY"];
   const track = document.getElementById('stackTrack');
   const full = [...items, ...items].map(i => `<span>${i}</span><span style="color:var(--line-bright)">/</span>`).join('');
   track.innerHTML = full;
 
+  // Respect reduced-motion preference for the orbit's SVG animations
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.querySelectorAll('.orbit-lines').forEach(svg => { try { svg.pauseAnimations(); } catch(e){} });
   }
 
-  // ==========================================
-  // CONFIG & INTEGRATION FOR GOOGLE GEMINI API
-  // ==========================================
-  
-  // API Key đã được cập nhật
-  const GEMINI_API_KEY = "AQ.Ab8RN6KLqe_Vx11mfNXD42Eiy7hAB5PqQAGWWspK1nO42Zq_cg";
-
-  // Định nghĩa ngữ cảnh cho AI
-  const SYSTEM_INSTRUCTION = `
-Bạn là Trợ lý AI thông minh của QTC (QTC AI) - Doanh nghiệp chuyên cung cấp giải pháp AI cho doanh nghiệp tại Việt Nam.
-Thông tin liên hệ & Dịch vụ của QTC:
-- Người phụ trách: Nguyễn Hữu Bảo Quốc (SĐT/Zalo: 0912 223 103)
-- Địa chỉ: 220 Trần Hưng Đạo, P. Tuy Hòa, Đắk Lắk
-- Dịch vụ cốt lõi:
-  1. Giải pháp AI doanh nghiệp: Tư vấn, xây dựng mô hình AI theo bài toán vận hành thực tế.
-  2. Chatbot Zalo OA: Tự động hóa tư vấn, chốt đơn, chăm sóc khách hàng, kết nối CRM/ZNS.
-  3. Hạ tầng AI Server: Thiết kế, vận hành máy chủ AI riêng (GPU Cluster), On-premise hoặc Private Cloud.
-Nhiệm vụ: Trả lời ngắn gọn, lịch sự, chuyên nghiệp bằng tiếng Việt. Nếu khách hỏi giá cụ thể hoặc cần tư vấn chuyên sâu, hãy khéo léo mời họ điền form "Đặt lịch tư vấn" trên website hoặc nhắn trực tiếp Zalo 0912 223 103.
-`;
-
-  // Mảng lưu trữ lịch sử cuộc trò chuyện
-  let conversationHistory = [];
-
-  const chatWidget = document.getElementById('chatWidget');
-  const chatToggleBtn = document.getElementById('chatToggleBtn');
-  const chatCloseBtn = document.getElementById('chatCloseBtn');
-  const chatMessages = document.getElementById('chatMessages');
-  const chatForm = document.getElementById('chatForm');
-  const chatInput = document.getElementById('chatInput');
-  const chatSendBtn = document.getElementById('chatSendBtn');
-  const chatQuick = document.getElementById('chatQuick');
-
-  let chatStarted = false;
-
-  function openChat(){
-    chatWidget.classList.add('open');
-    if(!chatStarted){
-      chatStarted = true;
-      addBotMessage('Xin chào! Mình là trợ lý AI của QTC 👋 Bạn có thể hỏi mình về giải pháp AI doanh nghiệp, chatbot Zalo, hạ tầng AI Server, hoặc bấm chọn các gợi ý nhanh bên dưới nhé!');
-    }
-    setTimeout(() => chatInput.focus(), 250);
-  }
-  function closeChat(){ chatWidget.classList.remove('open'); }
-
-  chatToggleBtn.addEventListener('click', () => {
-    chatWidget.classList.contains('open') ? closeChat() : openChat();
-  });
-  chatCloseBtn.addEventListener('click', closeChat);
-
-  function scrollToBottom(){ chatMessages.scrollTop = chatMessages.scrollHeight; }
-
-  function addUserMessage(text){
-    const el = document.createElement('div');
-    el.className = 'msg user';
-    el.textContent = text;
-    chatMessages.appendChild(el);
-    scrollToBottom();
-  }
-
-  function addBotMessage(text){
-    const el = document.createElement('div');
-    el.className = 'msg bot';
-    el.textContent = text;
-    chatMessages.appendChild(el);
-    scrollToBottom();
-  }
-
-  function showTyping(){
-    const el = document.createElement('div');
-    el.className = 'msg bot typing';
-    el.id = 'typingIndicator';
-    el.innerHTML = '<span></span><span></span><span></span>';
-    chatMessages.appendChild(el);
-    scrollToBottom();
-  }
-  
-  function hideTyping(){
-    const el = document.getElementById('typingIndicator');
-    if(el) el.remove();
-  }
-
-  // Hàm tương tác trực tiếp với Google Gemini API
-  async function fetchGeminiResponse(userMessage) {
-    conversationHistory.push({
-      role: "user",
-      parts: [{ text: userMessage }]
-    });
-
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
-    const payload = {
-      system_instruction: {
-        parts: [{ text: SYSTEM_INSTRUCTION }]
-      },
-      contents: conversationHistory,
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 300
-      }
-    };
-
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        throw new Error(`API response status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const botReply = data.candidates[0].content.parts[0].text;
-
-      conversationHistory.push({
-        role: "model",
-        parts: [{ text: botReply }]
-      });
-
-      return botReply;
-
-    } catch (error) {
-      console.error("Gemini API Error:", error);
-      conversationHistory.pop();
-
-      if(/đặt lịch|tư vấn|liên hệ|hẹn/.test(userMessage.toLowerCase())){
-        closeChat();
-        const target = document.getElementById('booking');
-        if(target) target.scrollIntoView({ behavior: 'smooth' });
-        return 'Mình đã đưa bạn đến mục đặt lịch tư vấn. Bạn vui lòng điền thông tin để anh Nguyễn Hữu Bảo Quốc liên hệ nhé!';
-      }
-
-      return 'Rất tiếc, kết nối AI đang gián đoạn. Bạn có thể nhắn trực tiếp qua Zalo 0912 223 103 để được hỗ trợ nhanh nhất!';
-    }
-  }
-
-  async function sendMessage(text){
-    const clean = text.trim();
-    if(!clean) return;
-
-    addUserMessage(clean);
-    chatInput.value = '';
-    chatSendBtn.disabled = true;
-    showTyping();
-
-    const reply = await fetchGeminiResponse(clean);
-
-    hideTyping();
-    addBotMessage(reply);
-    chatSendBtn.disabled = false;
-  }
-
-  chatForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    sendMessage(chatInput.value);
-  });
-
-  chatQuick.addEventListener('click', (e) => {
-    const btn = e.target.closest('.quick-chip');
-    if(!btn) return;
-    sendMessage(btn.dataset.q);
-  });
-
-  // Booking form JS
+  // ---------- BOOKING FORM ----------
+  // Booking form: builds a summary message, copies it, and opens Zalo chat
   const bookingForm = document.getElementById('bookingForm');
   const formNote = document.getElementById('formNote');
 
