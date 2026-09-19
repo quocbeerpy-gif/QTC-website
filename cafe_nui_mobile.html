@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17352c">
+<title>Cafe NỤI — Quản lý quán</title>
+<style>
+:root{--bg:#f5f3ee;--card:#fff;--ink:#17352c;--muted:#78827d;--line:#e6e4de;--accent:#c18b55;--good:#3f8b67;--danger:#bd5b54;--shadow:0 8px 30px #17352c12}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink)}
+button,input,select{font:inherit}button{border:0;cursor:pointer}.app{max-width:760px;margin:auto;min-height:100vh;padding-bottom:82px}
+header{position:sticky;top:0;z-index:5;background:#17352cf2;color:white;padding:16px 18px 14px;backdrop-filter:blur(12px)}
+.head{display:flex;justify-content:space-between;align-items:center}.brand{font-weight:900;font-size:22px;letter-spacing:.5px}.brand small{display:block;font-size:10px;letter-spacing:2px;opacity:.65;font-weight:600}
+.iconbtn{background:#ffffff18;color:white;width:40px;height:40px;border-radius:13px}
+.page{display:none;padding:18px}.page.active{display:block}.title{font-size:24px;font-weight:850;margin:4px 0 3px}.sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:var(--shadow)}.stat span{color:var(--muted);font-size:12px}.stat b{display:block;font-size:21px;margin-top:5px}.stat em{font-style:normal;font-size:11px;color:var(--good)}
+.section{display:flex;justify-content:space-between;align-items:center;margin:22px 0 10px}.section h3{margin:0;font-size:15px}
+.btn{padding:11px 14px;border-radius:13px;background:var(--ink);color:white;font-weight:750}.btn.light{background:#eeeae2;color:var(--ink)}.btn.accent{background:var(--accent)}.btn.danger{background:#f7e5e2;color:var(--danger)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}.tablecard,.product{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:13px}.tablecard{min-height:104px;display:flex;flex-direction:column;justify-content:space-between}.tabletop{display:flex;justify-content:space-between}.badge{font-size:10px;padding:4px 7px;border-radius:20px;background:#e7f2ec;color:var(--good)}.badge.busy{background:#faece4;color:#a65c38}.price{font-weight:850}.product{display:flex;gap:11px;align-items:center}.pic{width:52px;height:52px;border-radius:14px;background:#e9e1d4;display:grid;place-items:center;font-size:25px}.product h4{margin:0 0 3px;font-size:14px}.product p{margin:0;color:var(--muted);font-size:11px}.product .right{margin-left:auto;text-align:right}.chips{display:flex;gap:8px;overflow:auto;padding-bottom:4px}.chip{white-space:nowrap;padding:9px 12px;border-radius:30px;background:#ebe8e0;color:#53605a}.chip.active{background:var(--ink);color:white}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:center;z-index:10}.nav{max-width:760px;width:100%;display:grid;grid-template-columns:repeat(5,1fr);padding:7px 4px env(safe-area-inset-bottom)}.nav button{background:none;color:#8a918c;padding:7px 2px;font-size:9.5px;min-width:0}.nav button b{display:block;font-size:19px;line-height:21px}.nav button.active{color:var(--ink)}
+.overlay{position:fixed;inset:0;background:#10251e66;z-index:20;display:none;align-items:flex-end}.overlay.show{display:flex}.sheet{background:white;width:100%;max-width:760px;margin:auto;border-radius:24px 24px 0 0;padding:18px;max-height:90vh;overflow:auto}.sheet h2{margin:0 0 15px}.row{display:flex;gap:9px}.field{margin-bottom:12px;flex:1}.field label{display:block;font-size:11px;color:var(--muted);margin:0 0 5px}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px;background:#faf9f6;outline:none}.orderline{display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--line);padding:11px 0}.qty{display:flex;align-items:center;gap:8px;margin-left:auto}.qty button{width:30px;height:30px;border-radius:9px;background:#eeeae2}.total{display:flex;justify-content:space-between;font-size:18px;font-weight:850;padding:15px 0}.actions{display:flex;gap:8px}.actions>*{flex:1}
+.bar{height:10px;background:#ece9e2;border-radius:20px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent);border-radius:20px}.chart{background:var(--card);border:1px solid var(--line);padding:15px;border-radius:18px}.chartrow{display:grid;grid-template-columns:42px 1fr 70px;gap:8px;align-items:center;margin:10px 0;font-size:11px}.search{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:white;margin-bottom:12px}
+.listrow{background:white;border:1px solid var(--line);border-radius:15px;padding:12px;margin-bottom:9px;display:flex;align-items:center;gap:10px}.listrow .grow{flex:1}.muted{color:var(--muted);font-size:12px}
+.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(15px);background:var(--ink);color:white;padding:11px 16px;border-radius:30px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:50}.toast.show{opacity:1;transform:translateX(-50%)}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,1fr)}.cards{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="head"><div class="brand"><span id="brandName">Cafe NỤI</span><small id="brandSlogan">CAFE MANAGEMENT</small></div><button class="iconbtn" onclick="openSettings()" style="position:relative">⚙<span id="cloudDot" style="position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#e0a33d;box-shadow:0 0 0 2px #17352c"></span></button></div></header>
+
+<main>
+<section id="dashboard" class="page active">
+<div class="title">Tổng quan</div><div class="sub" id="dashDate">Hôm nay · ca hôm nay</div>
+<div class="cards">
+<div class="stat"><span>Doanh thu hôm nay</span><b id="todayRevenue">0đ</b><em>● đang cập nhật</em></div>
+<div class="stat"><span>Đơn hàng</span><b id="todayOrders">0</b><em>● trong ngày</em></div>
+<div class="stat"><span>Bàn đang dùng</span><b id="busyCount">0</b><em>● phục vụ</em></div>
+<div class="stat"><span>Doanh thu tháng</span><b id="monthRevenue">0đ</b><em>● tháng này</em></div>
+</div>
+<div class="section"><h3>Trạng thái bàn</h3><button class="btn light" onclick="go('tables')">Xem tất cả</button></div>
+<div id="dashTables" class="grid"></div>
+<div class="section"><h3>Món bán chạy</h3></div><div id="topProducts"></div>
+</section>
+
+<section id="tables" class="page">
+<div class="title">Sơ đồ bàn</div><div class="sub">Chạm vào bàn để mở order · số bàn có thể chỉnh sửa</div>
+<div class="section"><h3>Bán mang đi</h3></div>
+<div id="takeawayCard"></div>
+<div class="section"><h3 id="tableCountText">0 bàn</h3><button class="btn" onclick="addTable()">＋ Thêm bàn</button></div>
+<div id="tableGrid" class="grid"></div>
+</section>
+
+<section id="menu" class="page">
+<div class="title">Menu</div><div class="sub">Quản lý món, giá và danh mục</div>
+<input class="search" id="menuSearch" placeholder="🔎 Tìm món..." oninput="renderMenu()">
+<div class="section"><div class="chips" id="cats"></div><button class="btn" onclick="addProduct()">＋</button></div>
+<div id="menuList"></div>
+</section>
+
+<section id="kitchen" class="page"><div class="title">Màn hình Bếp</div><div class="sub">Đơn mới từ nhân viên sẽ xuất hiện tại đây theo thời gian thực.</div><div class="section"><h3>Đơn đang chờ</h3><button class="btn light" onclick="renderKitchen()">↻ Làm mới</button></div><div id="kitchenList"></div></section>
+<section id="reports" class="page">
+<div class="title">Báo cáo</div><div class="sub">Theo dõi doanh thu và hiệu suất kinh doanh</div>
+<div class="section" style="margin-top:0"><h3>Chọn tháng</h3><input type="month" id="reportMonth" style="width:150px;border:1px solid var(--line);border-radius:12px;padding:9px 10px;background:#faf9f6" onchange="renderReports()"></div>
+<div class="cards"><div class="stat"><span>Doanh thu tháng</span><b id="rMonth">0đ</b></div><div class="stat"><span>Đơn tháng</span><b id="rOrders">0</b></div></div>
+<div class="section"><h3>Doanh thu 6 tháng gần nhất</h3></div><div class="chart" id="monthChart"></div>
+<div class="section"><h3>Doanh thu 7 ngày gần nhất</h3></div><div class="chart" id="chart"></div>
+<div class="section"><h3>Top món theo doanh thu (tháng đã chọn)</h3></div><div id="reportProducts"></div>
+<div class="section"><h3>Quản lý dữ liệu</h3></div>
+<div class="actions"><button class="btn light" onclick="exportData()">Xuất dữ liệu</button><button class="btn danger" onclick="resetDemo()">Khôi phục demo</button></div>
+</section>
+</main>
+</div>
+
+<div class="bottom"><div class="nav">
+<button data-page="dashboard" class="active" onclick="go('dashboard')"><b>⌂</b>Tổng quan</button>
+<button data-page="tables" onclick="go('tables')"><b>▦</b>Bàn & Order</button>
+<button data-page="kitchen" onclick="go('kitchen')"><b>👨‍🍳</b>Bếp</button>
+<button data-page="menu" onclick="go('menu')"><b>☕</b>Menu</button>
+<button data-page="reports" onclick="go('reports')"><b>▥</b>Báo cáo</button>
+</div></div>
+<div id="overlay" class="overlay"><div class="sheet" id="sheet"></div></div><div id="toast" class="toast"></div>
+
+<script>
+const KEY='nui_cafe_v1';
+const seed={
+ tables:Array.from({length:12},(_,i)=>({id:i+1,name:'Bàn '+(i+1),busy:false,order:[]})),
+ products:[
+  {id:1,name:'Cà phê sữa đá',price:29000,cat:'Cà phê',emoji:'☕'},{id:2,name:'Bạc xỉu',price:32000,cat:'Cà phê',emoji:'🥛'},
+  {id:3,name:'Americano',price:35000,cat:'Cà phê',emoji:'☕'},{id:4,name:'Trà đào cam sả',price:42000,cat:'Trà',emoji:'🍑'},
+  {id:5,name:'Trà vải',price:39000,cat:'Trà',emoji:'🍹'},{id:6,name:'Matcha latte',price:45000,cat:'Đá xay',emoji:'🍵'},
+  {id:7,name:'Chocolate',price:43000,cat:'Đá xay',emoji:'🍫'},{id:8,name:'Croissant',price:35000,cat:'Bánh',emoji:'🥐'}
+ ],
+ orders:[{id:1001,time:'2026-09-18',table:2,total:97000,items:[{product:1,qty:1},{product:4,qty:1},{product:2,qty:1}],synced:true}],
+ takeaway:{id:'takeaway',name:'Mang đi',busy:false,order:[]},
+ shopName:'Cafe NỤI', slogan:'CAFE MANAGEMENT'
+};
+let db=JSON.parse(localStorage.getItem(KEY)||'null')||seed;
+// Bù các trường mới cho dữ liệu cũ đã lưu trước đây (chưa có Mang đi / tên quán / slogan)
+if(!db.takeaway) db.takeaway={id:'takeaway',name:'Mang đi',busy:false,order:[]};
+if(db.shopName===undefined) db.shopName='Cafe NỤI';
+if(db.slogan===undefined) db.slogan='CAFE MANAGEMENT';
+let activeCat='Tất cả', currentTable=null;
+// Firebase-ready: paste your Firebase Web App config below after creating the project.
+const FIREBASE_CONFIG={apiKey:'AIzaSyCcH2nYAoT3i2dacB1opxbCNBBghUa0rQA',authDomain:'cafe-nui.firebaseapp.com',projectId:'cafe-nui',storageBucket:'cafe-nui.firebasestorage.app',messagingSenderId:'239476188951',appId:'1:239476188951:web:aa4e30b31639605b84f952',measurementId:'G-C34B8FDVH1'};
+let firestore=null, kitchenUnsub=null, ordersUnsub=null, settingsUnsub=null;
+let cloudStatus={connected:false,error:null};
+function updateCloudDot(){let d=document.getElementById('cloudDot');if(!d)return;d.style.background=cloudStatus.connected?'#3f8b67':(cloudStatus.error?'#bd5b54':'#e0a33d')}
+async function initFirebase(){
+ if(!FIREBASE_CONFIG.projectId){cloudStatus.error='Chưa cấu hình FIREBASE_CONFIG';updateCloudDot();console.warn('Chưa cấu hình FIREBASE_CONFIG');return}
+ try{
+  const [{initializeApp},{getFirestore,collection,onSnapshot,doc,setDoc,addDoc,updateDoc,serverTimestamp}]=await Promise.all([
+   import('https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js'),
+   import('https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js')
+  ]);
+  const app=initializeApp(FIREBASE_CONFIG);
+  firestore={db:getFirestore(app),collection,onSnapshot,doc,setDoc,addDoc,updateDoc,serverTimestamp};
+  // Đồng bộ trạng thái "đang dùng" + order hiện tại của từng bàn lên mọi thiết bị,
+  // dựa trên collection nui_kitchen_orders (nguồn dữ liệu dùng chung cho mọi máy).
+  kitchenUnsub=onSnapshot(collection(firestore.db,'nui_kitchen_orders'),
+   snap=>{
+    const cloud=snap.docs.map(d=>({id:d.id,...d.data()}));
+    window.kitchenCloud=cloud.filter(x=>x.status!=='done');
+    cloud.forEach(c=>{
+     let t=findEntity(c.table);
+     if(!t) return;
+     if(currentTable&&currentTable.id===t.id) return; // không ghi đè bàn đang thao tác trên chính máy này
+     if(c.status==='done'){t.busy=false;t.order=[]}
+     else{t.busy=true;t.order=c.items||[]}
+    });
+    localStorage.setItem(KEY,JSON.stringify(db));
+    renderKitchen();renderTables();renderStats();
+   },
+   err=>{console.error('Lỗi nghe nui_kitchen_orders:',err);cloudStatus.connected=false;cloudStatus.error=err.code;updateCloudDot();toast('Lỗi Firebase (bếp): '+err.code)}
+  );
+  // Gộp đơn từ cloud vào db.orders thay vì ghi đè toàn bộ, để không mất đơn local
+  // chưa kịp đồng bộ (ví dụ vừa thanh toán lúc mất mạng).
+  // QUAN TRỌNG: id dùng để khớp đơn PHẢI ổn định (localId, hoặc id tài liệu Firestore) —
+  // không được dùng Date.now() làm id dự phòng, vì mỗi lần snapshot bắn lại sẽ tạo id khác nhau
+  // và cộng dồn đơn trùng lặp mỗi lần F5/mỗi lần có thay đổi trên collection (gây doanh thu tự tăng ảo).
+  ordersUnsub=onSnapshot(collection(firestore.db,'nui_orders'),
+   snap=>{
+    const cloud=snap.docs.map(d=>({docId:d.id,...d.data()})).filter(x=>x.time);
+    cloud.forEach(c=>{
+     let id=c.localId||('cloud_'+c.docId), idx=db.orders.findIndex(o=>o.id===id);
+     let synced={...c,id,synced:true};
+     if(idx>-1) db.orders[idx]=synced; else db.orders.push(synced);
+    });
+    localStorage.setItem(KEY,JSON.stringify(db));renderAll();
+   },
+   err=>{console.error('Lỗi nghe nui_orders:',err);cloudStatus.connected=false;cloudStatus.error=err.code;updateCloudDot();toast('Lỗi Firebase (đơn hàng): '+err.code)}
+  );
+  // Đồng bộ tên quán & slogan qua mọi thiết bị: nghe realtime tài liệu nui_settings/shop.
+  settingsUnsub=onSnapshot(doc(firestore.db,'nui_settings','shop'),
+   d=>{
+    if(!d.exists()){cloudSaveShopInfo();return}
+    const s=d.data();
+    if(s.shopName!==undefined) db.shopName=s.shopName;
+    if(s.slogan!==undefined) db.slogan=s.slogan;
+    localStorage.setItem(KEY,JSON.stringify(db));renderHeader();
+   },
+   err=>{console.error('Lỗi nghe nui_settings:',err);toast('Lỗi Firebase (cài đặt): '+err.code)}
+  );
+  cloudStatus.connected=true;cloudStatus.error=null;updateCloudDot();
+  toast('Firebase đã kết nối ✓');
+  syncPendingOrders();
+ }catch(e){console.error('initFirebase lỗi:',e);cloudStatus.connected=false;cloudStatus.error=e.code||e.message;updateCloudDot();toast('Firebase chưa kết nối: '+(e.code||e.message))}
+}
+async function cloudSaveShopInfo(){
+ if(!firestore){toast('Chưa kết nối Firebase — sẽ tự đồng bộ khi có mạng');return}
+ try{
+  await firestore.setDoc(firestore.doc(firestore.db,'nui_settings','shop'),{shopName:db.shopName,slogan:db.slogan,updatedAt:firestore.serverTimestamp()},{merge:true});
+ }catch(e){console.error(e);toast('Không lưu tên quán/slogan lên đám mây: '+(e.code||e.message))}
+}
+async function syncKitchen(){if(!firestore||!currentTable)return;try{const ref=firestore.doc(firestore.db,'nui_kitchen_orders','table_'+currentTable.id);await firestore.setDoc(ref,{table:currentTable.id,tableName:currentTable.name,items:currentTable.order||[],status:(currentTable.order&&currentTable.order.length)?'new':'empty',updatedAt:firestore.serverTimestamp()},{merge:true})}catch(e){console.error(e);toast('Không gửi được lên Bếp: '+(e.code||e.message))}}
+async function finishKitchen(tid){if(!firestore)return;try{await firestore.updateDoc(firestore.doc(firestore.db,'nui_kitchen_orders','table_'+tid),{status:'done',updatedAt:firestore.serverTimestamp()})}catch(e){console.error(e)}}
+async function cloudSaveOrder(order){
+ if(!firestore){toast('Chưa kết nối Firebase — đơn sẽ tự đồng bộ khi có mạng');return}
+ try{
+  await firestore.addDoc(firestore.collection(firestore.db,'nui_orders'),{...order,localId:order.id,createdAt:firestore.serverTimestamp()});
+  order.synced=true;localStorage.setItem(KEY,JSON.stringify(db));
+ }catch(e){console.error(e);toast('Không lưu đơn lên đám mây, sẽ thử lại: '+(e.code||e.message))}
+}
+async function syncPendingOrders(){
+ if(!firestore)return;
+ let pending=db.orders.filter(o=>!o.synced);
+ for(const o of pending) await cloudSaveOrder(o);
+ renderAll();
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+function money(n){return new Intl.NumberFormat('vi-VN').format(n)+'đ'}
+function today(){return new Date().toISOString().slice(0,10)}
+function monthPrefix(){return today().slice(0,7)}
+function revenue(filter){return db.orders.filter(filter).reduce((s,o)=>s+o.total,0)}
+function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(p).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===p));renderAll()}
+function renderAll(){renderHeader();renderStats();renderTables();renderTakeaway();renderMenu();renderReports();renderKitchen()}
+function renderHeader(){brandName.textContent=db.shopName||'Cafe NỤI';brandSlogan.textContent=db.slogan||'';brandSlogan.style.display=db.slogan?'block':'none'}
+function renderTakeaway(){
+ if(!takeawayCard)return;
+ let n=(db.takeaway.order||[]).length;
+ takeawayCard.innerHTML=`<div class="tablecard" onclick="openOrder('takeaway')" style="margin-bottom:4px">
+  <div class="tabletop"><b>🛍 Mang đi</b><span class="badge ${n?'busy':''}">${n?n+' món đang chọn':'Sẵn sàng'}</span></div>
+  <div class="muted">Order bán mang về · không cần chọn bàn</div>
+  <button class="btn accent" style="width:100%">${n?'Tiếp tục đơn':'Tạo đơn mang đi'}</button>
+ </div>`;
+}
+function renderKitchen(){if(!kitchenList)return;let cloud=window.kitchenCloud||[];if(cloud.length){kitchenList.innerHTML=cloud.map(o=>`<div class="listrow"><div class="pic">${o.table==='takeaway'?'🛍':'🔥'}</div><div class="grow"><b>${o.tableName||(o.table==='takeaway'?'Mang đi':'Bàn '+o.table)}</b><div class="muted">${(o.items||[]).map(i=>{let p=db.products.find(x=>x.id===i.product);return (p?.name||"Món")+" × "+i.qty}).join(", ")}</div></div><span class="badge busy">MỚI</span></div>`).join("")}else{kitchenList.innerHTML='<div class="muted">Chưa có order mới từ nhân viên.</div>'}}
+function renderStats(){
+ let dnames=['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'],now=new Date();
+ dashDate.textContent=`${dnames[now.getDay()]}, ${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} · ca hôm nay`;
+ let tr=revenue(o=>o.time===today()), mo=revenue(o=>o.time.startsWith(monthPrefix()));
+ todayRevenue.textContent=money(tr);todayOrders.textContent=db.orders.filter(o=>o.time===today()).length;busyCount.textContent=db.tables.filter(t=>t.busy).length;monthRevenue.textContent=money(mo);
+ dashTables.innerHTML=db.tables.slice(0,6).map(t=>tableHTML(t)).join('');
+ let counts={};db.orders.forEach(o=>o.items.forEach(i=>{counts[i.product]=(counts[i.product]||0)+i.qty}));
+ topProducts.innerHTML=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([id,q])=>{let p=db.products.find(x=>x.id==id);return `<div class="listrow"><div class="pic">${p?.emoji||'☕'}</div><div class="grow"><b>${p?.name||'Món đã xóa'}</b><div class="muted">${q} phần đã bán</div></div></div>`}).join('')||'<div class="muted">Chưa có dữ liệu bán hàng.</div>';
+}
+function tableHTML(t){return `<div class="tablecard" onclick="openOrder(${t.id})"><div class="tabletop"><b>▣ ${t.name}</b><span class="badge ${t.busy?'busy':''}">${t.busy?'Đang dùng':'Trống'}</span></div><div class="muted">${t.busy?'Có khách · chạm để order':'Sẵn sàng phục vụ'}</div><div style="display:flex;gap:6px"><button class="btn ${t.busy?'accent':'light'}" style="flex:1">${t.busy?'Mở order':'Tạo order'}</button><button class="btn light" style="flex:0 0 auto;padding:0 13px" onclick="editTable(${t.id});event.stopPropagation()">✎</button></div></div>`}
+function renderTables(){tableCountText.textContent=db.tables.length+' bàn';tableGrid.innerHTML=db.tables.map(t=>tableHTML(t)).join('')}
+function editTable(id){
+ let t=db.tables.find(x=>x.id===id), busy=t.busy||(t.order&&t.order.length);
+ sheet.innerHTML=`<h2>Sửa bàn</h2><div class="field"><label>Tên bàn</label><input id="tn" value="${t.name}"></div>
+ ${busy?'<div class="muted" style="margin-bottom:12px">Bàn đang có khách/order nên chưa thể xóa.</div>':''}
+ <div class="actions"><button class="btn danger" ${busy?'disabled style="opacity:.5"':''} onclick="deleteTable(${id})">Xóa bàn</button><button class="btn" onclick="saveTableName(${id})">Lưu</button></div>`;
+ overlay.classList.add('show');
+}
+function saveTableName(id){let t=db.tables.find(x=>x.id===id),name=tn.value.trim();if(!name){toast('Vui lòng nhập tên bàn');return}t.name=name;save();closeSheet();toast('Đã cập nhật tên bàn')}
+function deleteTable(id){let t=db.tables.find(x=>x.id===id);if(t.busy||(t.order&&t.order.length)){toast('Không thể xóa bàn đang có order');return}if(confirm('Xóa bàn này?')){db.tables=db.tables.filter(x=>x.id!==id);save();closeSheet();toast('Đã xóa bàn')}}
+function renderMenu(){
+ let q=(menuSearch?.value||'').toLowerCase(), cats=['Tất cả',...new Set(db.products.map(p=>p.cat))];
+ catsEl();
+ let list=db.products.filter(p=>(activeCat==='Tất cả'||p.cat===activeCat)&&p.name.toLowerCase().includes(q));
+ menuList.innerHTML=list.map(p=>`<div class="listrow"><div class="pic">${p.emoji}</div><div class="grow"><b>${p.name}</b><div class="muted">${p.cat} · ${money(p.price)}</div></div><button class="btn light" onclick="editProduct(${p.id});event.stopPropagation()">Sửa</button></div>`).join('');
+}
+function catsEl(){cats.innerHTML=['Tất cả',...new Set(db.products.map(p=>p.cat))].map(c=>`<button class="chip ${activeCat===c?'active':''}" onclick="activeCat='${c.replaceAll("'","\\'")}';renderMenu()">${c}</button>`).join('')}
+function findEntity(tid){return tid==='takeaway'?db.takeaway:db.tables.find(t=>t.id===tid)}
+function openOrder(tid){
+ currentTable=findEntity(tid); currentTable.busy=true;
+ let items=currentTable.order||[];
+ let isTakeaway=tid==='takeaway';
+ sheet.innerHTML=`<div class="section"><h2>${isTakeaway?'🛍 ':''}${currentTable.name}</h2><button class="btn light" style="flex:0 0 auto" onclick="closeSheet()">Order xong</button></div>
+ <div class="section"><h3>Đơn hiện tại</h3></div><div id="orderItems"></div><div class="total"><span>Tạm tính</span><span id="orderTotal">0đ</span></div>
+ <div class="actions"><button class="btn danger" onclick="cancelOrder(${isTakeaway?"'takeaway'":tid})">✕ Hủy${isTakeaway?'':' / bỏ trống'}</button><button class="btn light" onclick="syncKitchen()">👨‍🍳 Gửi bếp</button><button class="btn accent" onclick="payOrder()">Thanh toán & lưu</button></div>
+ <input class="search" id="oq" placeholder="🔎 Tìm món..." oninput="renderOrderProducts()" style="margin-top:16px"><div id="orderProducts"></div>`;
+ overlay.classList.add('show');renderOrderProducts();renderOrderItems();save();syncKitchen();
+}
+function cancelOrder(tid){
+ let t=findEntity(tid);
+ if(!confirm('Hủy order này?'))return;
+ t.order=[];t.busy=false;save();finishKitchen(tid);closeSheet();toast('Đã hủy order');
+}
+function renderOrderProducts(){let q=(oq?.value||'').toLowerCase();orderProducts.innerHTML=db.products.filter(p=>p.name.toLowerCase().includes(q)).map(p=>`<div class="product" style="margin-bottom:8px"><div class="pic">${p.emoji}</div><div><h4>${p.name}</h4><p>${money(p.price)}</p></div><div class="right"><button class="btn" onclick="addToOrder(${p.id})">＋</button></div></div>`).join('')}
+function addToOrder(pid){let x=currentTable.order.find(i=>i.product===pid);x?x.qty++:currentTable.order.push({product:pid,qty:1});renderOrderItems();syncKitchen()}
+function renderOrderItems(){let total=0;orderItems.innerHTML=(currentTable.order||[]).map(i=>{let p=db.products.find(x=>x.id===i.product),v=(p?.price||0)*i.qty;total+=v;return `<div class="orderline"><div><b>${p?.name||'Món'}</b><div class="muted">${money(p?.price||0)}</div></div><div class="qty"><button onclick="changeQty(${i.product},-1)">−</button><b>${i.qty}</b><button onclick="changeQty(${i.product},1)">＋</button></div></div>`}).join('')||'<div class="muted">Chưa chọn món.</div>';orderTotal.textContent=money(total)}
+function changeQty(pid,d){let i=currentTable.order.find(x=>x.product===pid);i.qty+=d;if(i.qty<=0)currentTable.order=currentTable.order.filter(x=>x.product!==pid);renderOrderItems();syncKitchen()}
+function payOrder(){let total=currentTable.order.reduce((s,i)=>s+(db.products.find(p=>p.id===i.product)?.price||0)*i.qty,0);if(!total){toast('Chưa có món trong order');return}let newOrder={id:Date.now(),time:today(),table:currentTable.id,total,items:structuredClone(currentTable.order),synced:false};db.orders.push(newOrder);currentTable.order=[];currentTable.busy=false;save();finishKitchen(currentTable.id);cloudSaveOrder(newOrder);closeSheet();toast('Đã thanh toán và lưu đơn ✓')}
+function addTable(){let n=db.tables.length+1;db.tables.push({id:Date.now(),name:'Bàn '+n,busy:false,order:[]});save();toast('Đã thêm bàn')}
+function editProduct(id){let p=db.products.find(x=>x.id===id);sheet.innerHTML=`<h2>Sửa món</h2><div class="field"><label>Tên món</label><input id="pn" value="${p.name}"></div><div class="row"><div class="field"><label>Giá</label><input id="pp" type="number" value="${p.price}"></div><div class="field"><label>Danh mục</label><input id="pc" value="${p.cat}"></div></div><div class="actions"><button class="btn danger" onclick="deleteProduct(${id})">Xóa</button><button class="btn" onclick="saveProduct(${id})">Lưu</button></div>`;overlay.classList.add('show')}
+function addProduct(){sheet.innerHTML=`<h2>Thêm món</h2><div class="field"><label>Tên món</label><input id="pn" placeholder="Ví dụ: Cà phê đen"></div><div class="row"><div class="field"><label>Giá</label><input id="pp" type="number" placeholder="30000"></div><div class="field"><label>Danh mục</label><input id="pc" placeholder="Cà phê"></div></div><div class="field"><label>Emoji</label><input id="pe" value="☕"></div><button class="btn" style="width:100%" onclick="saveProduct()">Thêm món</button>`;overlay.classList.add('show')}
+function saveProduct(id){let p=id?db.products.find(x=>x.id===id):{id:Date.now(),emoji:pe.value||'☕'};p.name=pn.value.trim();p.price=Number(pp.value)||0;p.cat=pc.value.trim()||'Khác';if(!id)db.products.push(p);save();closeSheet();toast(id?'Đã cập nhật món':'Đã thêm món')}
+function deleteProduct(id){if(confirm('Xóa món này khỏi menu?')){db.products=db.products.filter(p=>p.id!==id);save();closeSheet();toast('Đã xóa món')}}
+function renderReports(){
+ if(reportMonth&&!reportMonth.value)reportMonth.value=monthPrefix();
+ let sel=reportMonth?.value||monthPrefix();
+ let mr=revenue(o=>o.time.startsWith(sel));rMonth.textContent=money(mr);rOrders.textContent=db.orders.filter(o=>o.time.startsWith(sel)).length;
+ let months=[];for(let i=5;i>=0;i--){let d=new Date(sel+'-01');d.setMonth(d.getMonth()-i);let mp=d.toISOString().slice(0,7);months.push([mp,revenue(o=>o.time.startsWith(mp))])}
+ let mmax=Math.max(1,...months.map(x=>x[1]));monthChart.innerHTML=months.map(([mp,v])=>`<div class="chartrow"><span>${mp.slice(5)}</span><div class="bar"><i style="width:${v/mmax*100}%"></i></div><b>${money(v)}</b></div>`).join('');
+ let days=[];for(let i=6;i>=0;i--){let d=new Date(today());d.setDate(d.getDate()-i);let s=d.toISOString().slice(0,10);days.push([s,revenue(o=>o.time===s)])}
+ let max=Math.max(1,...days.map(x=>x[1]));chart.innerHTML=days.map(([d,v])=>`<div class="chartrow"><span>${d.slice(8)}</span><div class="bar"><i style="width:${v/max*100}%"></i></div><b>${money(v)}</b></div>`).join('');
+ let totals={};db.orders.filter(o=>o.time.startsWith(sel)).forEach(o=>o.items.forEach(i=>{let p=db.products.find(x=>x.id===i.product);if(p)totals[p.name]=(totals[p.name]||0)+p.price*i.qty}));let arr=Object.entries(totals).sort((a,b)=>b[1]-a[1]);reportProducts.innerHTML=arr.map(([n,v],i)=>`<div class="listrow"><b>#${i+1}</b><div class="grow">${n}</div><b>${money(v)}</b></div>`).join('')||'<div class="muted">Chưa có dữ liệu tháng này.</div>'
+}
+function closeSheet(){overlay.classList.remove('show');currentTable=null;renderTables()}
+overlay.addEventListener('click',e=>{if(e.target===overlay)closeSheet()})
+function openSettings(){
+ let pending=db.orders.filter(o=>!o.synced).length;
+ let busyCt=db.tables.filter(t=>t.busy).length;
+ let statusText=cloudStatus.connected?'🟢 Đã kết nối':(cloudStatus.error?'🔴 Lỗi: '+cloudStatus.error:'🟡 Đang kết nối...');
+ sheet.innerHTML=`<h2>Cài đặt quán</h2>
+ <div class="muted" style="margin-bottom:6px">Firebase: ${FIREBASE_CONFIG.projectId?"Đã cấu hình":"Chưa cấu hình"}</div>
+ <div class="muted" style="margin-bottom:12px">Trạng thái đồng bộ: ${statusText}</div>
+ ${pending?`<div class="muted" style="margin-bottom:12px;color:var(--danger)">⚠ ${pending} đơn chưa đồng bộ lên đám mây</div>`:''}
+ <div class="field"><label>Tên quán</label><input id="stShopName" value="${esc(db.shopName)}" placeholder="Cafe NỤI"></div>
+ <div class="field"><label>Slogan (hiện trên thanh trên cùng)</label><input id="stSlogan" value="${esc(db.slogan)}" placeholder="VD: Cà phê ngon mỗi ngày"></div>
+ <button class="btn" style="width:100%;margin-bottom:16px" onclick="saveShopInfo()">Lưu tên quán & slogan</button>
+ <div class="actions"><button class="btn light" onclick="syncPendingOrders();closeSheet();toast('Đang đồng bộ lại...')">↻ Đồng bộ lại</button><button class="btn" onclick="closeSheet()">Đóng</button></div>
+ <div class="section"><h3>Dọn trạng thái bàn</h3></div>
+ <div class="muted" style="margin-bottom:10px">Đang có ${busyCt} bàn hiện "đang dùng". Dùng nút dưới nếu đó là dữ liệu test cũ, không phải khách thật đang ngồi.</div>
+ <button class="btn danger" style="width:100%" onclick="resetAllTables()">✕ Bỏ trống tất cả bàn</button>`;
+ overlay.classList.add('show')
+}
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+function saveShopInfo(){
+ db.shopName=stShopName.value.trim()||'Cafe NỤI';
+ db.slogan=stSlogan.value.trim();
+ save();closeSheet();toast('Đã cập nhật tên quán & slogan');
+ cloudSaveShopInfo();
+}
+function resetAllTables(){
+ if(!confirm('Đặt lại TẤT CẢ bàn về trạng thái trống? (chỉ nên dùng khi bàn đang "đang dùng" là do dữ liệu test cũ, không phải khách thật)'))return;
+ db.tables.forEach(t=>{t.busy=false;t.order=[];if(firestore)finishKitchen(t.id)});
+ db.takeaway.busy=false;db.takeaway.order=[];if(firestore)finishKitchen('takeaway');
+ save();closeSheet();toast('Đã bỏ trống tất cả bàn');
+}
+function exportData(){let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cafe-nui-data.json';a.click()}
+function resetDemo(){if(confirm('Khôi phục dữ liệu demo?')){db=structuredClone(seed);save();toast('Đã khôi phục dữ liệu demo')}}
+function toast(s){let t=document.getElementById('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+renderAll();initFirebase();
+</script>
+</body></html>
