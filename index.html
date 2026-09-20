@@ -1028,8 +1028,148 @@ Thời gian phản hồi chatbot TB:  0.8s
   </defs>
 </svg>
 
-<!-- CHAT WIDGET: Tidio -->
-<script src="//code.tidio.co/dfctyvlg6x3aa7ez2rl9gsang5oixoic.js" async></script>
+<!-- CHAT WIDGET: QTC AI Live Chat -->
+<div class="chat-widget" id="qtcChatWidget">
+  <button class="chat-toggle" id="chatToggle" aria-label="Mở khung chat QTC AI">
+    <svg class="icon-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    <span class="badge">AI</span>
+  </button>
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <div class="status-dot"></div>
+        <div>
+          <b>QTC AI Assistant</b>
+          <span>Trực tuyến 24/7</span>
+        </div>
+      </div>
+      <button class="chat-close-btn" id="chatClose">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg bot">Chào bạn! Tôi là trợ lý ảo QTC AI. Tôi có thể hỗ trợ gì cho bạn về các giải pháp AI doanh nghiệp, chatbot Zalo hoặc hạ tầng server?</div>
+    </div>
+    <div class="chat-quick" id="chatQuick">
+      <button class="quick-chip" data-text="Báo giá Chatbot Zalo">Chatbot Zalo</button>
+      <button class="quick-chip" data-text="Tư vấn AI Doanh Nghiệp">AI Doanh Nghiệp</button>
+      <button class="quick-chip" data-text="Hạ tầng GPU Server">GPU Server</button>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="Nhập tin nhắn..." autocomplete="off">
+      <button class="chat-send" id="chatSend">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // QTC AI Widget Logic
+  const chatWidget = document.getElementById('qtcChatWidget');
+  const chatToggle = document.getElementById('chatToggle');
+  const chatClose = document.getElementById('chatClose');
+  const chatMessages = document.getElementById('chatMessages');
+  const chatInput = document.getElementById('chatInput');
+  const chatSend = document.getElementById('chatSend');
+  const chatQuick = document.getElementById('chatQuick');
+
+  const GATEWAY_URL = 'https://desktop-b8m2j50.tail6a1288.ts.net';
+
+  chatToggle.addEventListener('click', () => {
+    chatWidget.classList.toggle('open');
+    if(chatWidget.classList.contains('open')) chatInput.focus();
+  });
+  chatClose.addEventListener('click', () => {
+    chatWidget.classList.remove('open');
+  });
+
+  function appendMsg(text, sender) {
+    const div = document.createElement('div');
+    div.className = `msg ${sender}`;
+    div.textContent = text;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function showTyping() {
+    const div = document.createElement('div');
+    div.className = 'msg bot typing';
+    div.id = 'typingIndicator';
+    div.innerHTML = '<span></span><span></span><span></span>';
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function hideTyping() {
+    const t = document.getElementById('typingIndicator');
+    if(t) t.remove();
+  }
+
+  async function sendToAI(text) {
+    appendMsg(text, 'user');
+    showTyping();
+    chatInput.value = '';
+    chatInput.disabled = true;
+    chatSend.disabled = true;
+
+    try {
+      // Connect directly to Gateway or simulate smart reply
+      const res = await fetch(`${GATEWAY_URL}/v1/chat/completions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'nguyen_quoc',
+          messages: [{ role: 'user', content: text }]
+        })
+      });
+      hideTyping();
+      if(res.ok) {
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || 'Cảm ơn bạn đã liên hệ. Đội ngũ QTC sẽ phản hồi bạn sớm nhất qua Zalo 0912223103!';
+        appendMsg(reply, 'bot');
+      } else {
+        throw new Error('API error');
+      }
+    } catch(err) {
+      hideTyping();
+      // Fallback smart auto-reply if CORS or direct fetch blocks cross-origin from static page without explicit CORS header
+      setTimeout(() => {
+        let reply = "Cảm ơn bạn đã quan tâm đến giải pháp của QTC AI! Bạn vui lòng liên hệ trực tiếp qua SĐT/Zalo 0912 223 103 (Nguyễn Hữu Bảo Quốc) để được tư vấn chi tiết và nhanh chóng nhất nhé.";
+        if(text.toLowerCase().includes('zalo') || text.toLowerCase().includes('báo giá')) {
+          reply = "Chatbot Zalo OA của QTC giúp tự động hóa chăm sóc khách hàng và chốt đơn 24/7. Chi phí tùy thuộc vào kịch bản và tích hợp CRM. Anh/chị có thể kết nối Zalo 0912 223 103 để nhận báo giá trực tiếp ạ!";
+        } else if(text.toLowerCase().includes('server') || text.toLowerCase().includes('gpu')) {
+          reply = "QTC chuyên thiết kế hạ tầng GPU/Server AI riêng biệt cho doanh nghiệp, đảm bảo bảo mật dữ liệu tuyệt đối (on-premise).";
+        }
+        appendMsg(reply, 'bot');
+      }, 600);
+    } finally {
+      chatInput.disabled = false;
+      chatSend.disabled = false;
+      chatInput.focus();
+    }
+  }
+
+  chatSend.addEventListener('click', () => {
+    const val = chatInput.value.trim();
+    if(val) sendToAI(val);
+  });
+
+  chatInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') {
+      const val = chatInput.value.trim();
+      if(val) sendToAI(val);
+    }
+  });
+
+  chatQuick.addEventListener('click', (e) => {
+    if(e.target.classList.contains('quick-chip')) {
+      const text = e.target.getAttribute('data-text');
+      sendToAI(text);
+    }
+  });
+</script>
 
 <script>
 
