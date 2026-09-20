@@ -20,19 +20,20 @@ export default async function handler(req, res) {
     const { messages } = req.body;
     const userMessage = messages?.[messages.length - 1]?.content || '';
 
-    const apiKey = ***;
+    // Lấy API Key từ biến môi trường trên Vercel
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return res.status(200).json({
         choices: [{
           message: {
             role: 'assistant',
-            content: 'Dạ, chưa cấu hình GEMINI_API_KEY trên Vercel.'
+            content: 'Dạ, hệ thống chưa tìm thấy biến môi trường GEMINI_API_KEY trên Vercel.'
           }
         }]
       });
     }
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=***}`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(geminiUrl, {
       method: 'POST',
@@ -43,7 +44,7 @@ export default async function handler(req, res) {
         contents: [
           {
             parts: [
-              { text: 'Bạn là QTC AI & HRC AI - trợ lý ảo thông minh của anh Nguyễn Hữu Bảo Quốc (SĐT/Zalo: 0912223103, Địa chỉ: 220 Trần Hưng Đạo, Tuy Hòa). Hãy trả lời khách hàng một cách ngắn gọn, lịch sự, chuyên nghiệp.' },
+              { text: 'Bạn là QTC AI & HRC AI - trợ lý ảo thông minh của anh Nguyễn Hữu Bảo Quốc (SĐT/Zalo: 0912223103, Địa chỉ: 220 Trần Hưng Đạo, Tuy Hòa). Hãy trả lời khách hàng một cách ngắn gọn, lịch sự, chuyên nghiệp bằng tiếng Việt.' },
               { text: userMessage }
             ]
           }
@@ -63,8 +64,7 @@ export default async function handler(req, res) {
         }]
       });
     } else {
-      const err = await response.text();
-      console.error('Gemini API Error details:', err);
+      const errText = await response.text();
       return res.status(200).json({
         choices: [{
           message: {
@@ -75,7 +75,6 @@ export default async function handler(req, res) {
       });
     }
   } catch (error) {
-    console.error('Handler catch error:', error);
     return res.status(200).json({
       choices: [{
         message: {
