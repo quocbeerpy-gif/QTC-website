@@ -267,7 +267,7 @@ textarea.inp{resize:vertical}
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut,sendPasswordResetEmail} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getAuth,onAuthStateChanged,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {getFirestore,initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,onSnapshot,writeBatch} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 // Cấu hình Firebase của dự án (khóa web này là định danh công khai, việc bảo vệ dữ liệu do Firestore Rules và đăng nhập đảm nhiệm)
@@ -364,7 +364,7 @@ function scheduleRender(){
 }
 function errHandler(e){
   ui.auth='error';
-  ui.err=e&&e.code==='permission-denied'?'Tài khoản này chưa được phép truy cập dữ liệu. Hãy kiểm tra Firestore Rules trong Firebase Console, sau đó đăng nhập lại.':'Không kết nối được máy chủ: '+((e&&(e.message||e.code))||'lỗi không xác định');
+  ui.err=e&&e.code==='permission-denied'?'Chưa được phép truy cập dữ liệu. Hãy kiểm tra Firestore Rules trong Firebase Console và bảo đảm đã bật đăng nhập ẩn danh (Anonymous), rồi tải lại trang.':'Không kết nối được máy chủ: '+((e&&(e.message||e.code))||'lỗi không xác định');
   stopSync();render();
 }
 function stopSync(){unsubs.forEach(f=>{try{f();}catch(e){}});unsubs=[];cloud={config:null};cloudReady=false;configExists=false;loaded=new Set();inflight=0;ui.pending=false;}
@@ -407,18 +407,15 @@ function syncCloud(){
   for(let i=0;i<ops.length;i+=400){
     const b=writeBatch(db);ops.slice(i,i+400).forEach(o=>{if(o.d)b.set(o.r,o.d);else b.delete(o.r);});
     inflight++;
-    b.commit().then(()=>{inflight=Math.max(0,inflight-1);ui.pending=inflight>0;renderTopSafe();}).catch(e=>{inflight=Math.max(0,inflight-1);ui.pending=inflight>0;toast(e&&e.code==='permission-denied'?'Tài khoản không có quyền ghi dữ liệu.':'Chưa lưu được lên máy chủ, hãy kiểm tra mạng.',true);renderTopSafe();});
+    b.commit().then(()=>{inflight=Math.max(0,inflight-1);ui.pending=inflight>0;renderTopSafe();}).catch(e=>{inflight=Math.max(0,inflight-1);ui.pending=inflight>0;toast(e&&e.code==='permission-denied'?'Không có quyền ghi dữ liệu, hãy kiểm tra Firestore Rules.':'Chưa lưu được lên máy chủ, hãy kiểm tra mạng.',true);renderTopSafe();});
   }
   if(ops.length){ui.pending=true;renderTopSafe();}
 }
 function authMsg(e){
   const c=e&&e.code;
-  if(c==='auth/invalid-credential'||c==='auth/wrong-password'||c==='auth/user-not-found')return 'Email hoặc mật khẩu không đúng.';
-  if(c==='auth/invalid-email')return 'Email không hợp lệ.';
-  if(c==='auth/too-many-requests')return 'Đăng nhập sai nhiều lần. Hãy thử lại sau ít phút.';
-  if(c==='auth/network-request-failed')return 'Không có kết nối mạng.';
-  if(c==='auth/user-disabled')return 'Tài khoản đã bị vô hiệu hóa.';
-  return 'Không đăng nhập được ('+(c||'lỗi')+').';
+  if(c==='auth/operation-not-allowed'||c==='auth/admin-restricted-operation')return 'Chưa bật chế độ truy cập ẩn danh. Vào Firebase Console, mục Authentication, Sign-in method, bật "Anonymous" rồi tải lại trang.';
+  if(c==='auth/network-request-failed')return 'Không có kết nối mạng. Hãy kiểm tra Wi-Fi hoặc 4G rồi tải lại trang.';
+  return 'Không kết nối được máy chủ ('+(c||'lỗi')+').';
 }
 function initAuth(){
   try{
@@ -428,22 +425,19 @@ function initAuth(){
   render();
   onAuthStateChanged(auth,user=>{
     cloudUser=user;
-    if(user){ui.user=user.email||'';ui.auth='loading';render();startSync();}
-    else{stopSync();S=emptyState();ui.user='';ui.page=null;ui.sub=null;ui.tab='home';ui.q='';ui.auth='login';closeSheet();render();}
+    if(user){ui.auth='loading';render();startSync();}
+    else{signInAnonymously(auth).catch(e=>{ui.auth='error';ui.err=authMsg(e);render();});}
   });
 }
 function gateHTML(){
   const s=ui.auth,logo='<div class="gate-i">'+ic('hotel',32)+'</div>';
-  if(s==='login')return '<div class="gate">'+logo+'<h1>Đăng nhập</h1><p>Dùng tài khoản nhân viên do quản lý cấp để xem và cập nhật dữ liệu khách sạn.</p>'
-    +'<div class="fld"><label for="lg_email">Email</label><input class="inp" id="lg_email" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false"></div>'
-    +'<div class="fld"><label for="lg_pw">Mật khẩu</label><input class="inp" id="lg_pw" type="password" autocomplete="current-password"></div>'
-    +'<div class="err" id="lg_err" hidden></div><button class="btn" id="lg_go" data-a="login">Đăng nhập</button><button class="link" data-a="resetPw">Quên mật khẩu?</button></div>';
   if(s==='setup')return '<div class="gate">'+logo+'<h1>Thiết lập lần đầu</h1><p>Máy chủ chưa có dữ liệu khách sạn. Chọn cách bắt đầu, bạn có thể thay đổi mọi thứ trong Cài đặt sau đó.</p>'
-    +'<button class="btn" data-a="setupBlank">Bắt đầu với dữ liệu trống</button><button class="btn ghost" data-a="setupDemo">Nạp dữ liệu mẫu để xem thử</button><button class="link" data-a="logout">Đăng xuất ('+esc(ui.user)+')</button></div>';
-  if(s==='error')return '<div class="gate">'+logo+'<h1>Có sự cố</h1><p>'+esc(ui.err||'Đã xảy ra lỗi.')+'</p><button class="btn" data-a="reload">Thử lại</button><button class="link" data-a="logout">Đăng xuất</button></div>';
+    +'<button class="btn" data-a="setupBlank">Bắt đầu với dữ liệu trống</button><button class="btn ghost" data-a="setupDemo">Nạp dữ liệu mẫu để xem thử</button></div>';
+  if(s==='error')return '<div class="gate">'+logo+'<h1>Có sự cố</h1><p>'+esc(ui.err||'Đã xảy ra lỗi.')+'</p><button class="btn" data-a="reload">Thử lại</button></div>';
   return '<div class="gate">'+logo+'<h1>Đang tải dữ liệu</h1><p>Đang kết nối tới máy chủ khách sạn.</p><div class="spin" role="status" aria-label="Đang tải"></div></div>';
 }
 function netHTML(){const c=!ui.online?' off':(ui.pending?' sync':'');const t=!ui.online?'Ngoại tuyến':(ui.pending?'Đang đồng bộ':'Đã đồng bộ');return '<span class="net'+c+'" role="status"><i></i>'+t+'</span>';}
+const getName=()=>{try{return localStorage.getItem('ks.name')||'';}catch(e){return '';}};
 const getTheme=()=>{try{return localStorage.getItem('ks.theme')||'auto';}catch(e){return 'auto';}};
 
 /* ================= Billing ================= */
@@ -528,7 +522,7 @@ function blank(){
 }
 
 let S=emptyState();
-const ui={auth:'loading',user:'',err:'',online:navigator.onLine,pending:false,tab:'home',page:null,sub:null,roomFilter:'all',bookFilter:'today',q:'',opsSeg:'clean',rep:7};
+const ui={auth:'loading',err:'',online:navigator.onLine,pending:false,tab:'home',page:null,sub:null,roomFilter:'all',bookFilter:'today',q:'',opsSeg:'clean',rep:7};
 
 /* ================= Domain helpers ================= */
 const typeOf=id=>S.roomTypes.find(t=>t.id===id);
@@ -536,7 +530,7 @@ const roomOf=id=>S.rooms.find(r=>r.id===id);
 const roomNo=id=>{const r=roomOf(id);return r?r.no:'—'};
 const staffOf=id=>S.staff.find(s=>s.id===id);
 const sortedRooms=f=>S.rooms.filter(r=>f==null||r.floor===f).sort((a,b)=>a.no.localeCompare(b.no,'vi',{numeric:true}));
-const logAct=text=>{S.log.unshift({id:uid(),t:nowISO(),u:(cloudUser&&cloudUser.email)||'',text});S.log=S.log.slice(0,60);};
+const logAct=text=>{S.log.unshift({id:uid(),t:nowISO(),u:getName(),text});S.log=S.log.slice(0,60);};
 const openTasks=type=>S.tasks.filter(t=>t.type===type&&t.status!=='done');
 function roomState(r){
   const t=today();
@@ -940,13 +934,13 @@ function viewSettings(){
     +item('team','Nhân viên',S.staff.length+' người','sub','data-sub="staff"')
     +'</div></div>';
   h+='<div class="sec"><div class="sec-h"><h2>Giao diện</h2></div><div class="seg" style="margin:0">'+[['auto','Tự động'],['light','Sáng'],['dark','Tối']].map(x=>'<button class="'+(th===x[0]?'on':'')+'" data-a="theme" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div></div>';
-  h+='<div class="sec"><div class="sec-h"><h2>Tài khoản</h2></div><div class="list">'+item('user','Đăng xuất',esc(ui.user||''),'logout')+'</div></div>';
+  h+='<div class="sec"><div class="sec-h"><h2>Thiết bị này</h2></div><div class="list">'+item('user','Tên hiển thị trong nhật ký',esc(getName()||'Chưa đặt, nhấn để nhập tên của bạn'),'setName')+'</div></div>';
   h+='<div class="sec"><div class="sec-h"><h2>Dữ liệu</h2></div><div class="list">'
     +item('down','Sao lưu dữ liệu','Tải về file để lưu trữ','backup')
     +item('up','Khôi phục từ file sao lưu','Thay thế dữ liệu hiện tại','restore')
     +(S.demo?item('trash','Xóa dữ liệu mẫu','Giữ lại phòng, giá và cài đặt','clearDemo'):'')
     +item('alert','Đặt lại toàn bộ','Xóa mọi dữ liệu, bắt đầu từ đầu','resetAll')
-    +'</div>'+(storageOK?'<div class="hint" style="margin-top:8px">Dữ liệu được đồng bộ tự động giữa mọi thiết bị đã đăng nhập. Vẫn nên sao lưu định kỳ.</div>':'<div class="err" style="margin-top:10px">Trình duyệt không cho phép lưu dữ liệu. Thay đổi sẽ mất khi đóng trang, hãy sao lưu thường xuyên.</div>')+'</div>';
+    +'</div>'+(storageOK?'<div class="hint" style="margin-top:8px">Dữ liệu được đồng bộ tự động giữa mọi thiết bị mở ứng dụng này. Vẫn nên sao lưu định kỳ.</div>':'<div class="err" style="margin-top:10px">Trình duyệt không cho phép lưu dữ liệu. Thay đổi sẽ mất khi đóng trang, hãy sao lưu thường xuyên.</div>')+'</div>';
   return h+'<div style="height:16px"></div>';
 }
 const ENT={
@@ -1266,24 +1260,10 @@ const A={
     onSubmit:g=>{if(g.taxPct<0||g.taxPct>100||g.servicePct<0||g.servicePct>100)return 'Tỷ lệ phải từ 0 đến 100.';Object.assign(S.settings,{taxPct:g.taxPct,servicePct:g.servicePct,checkin:g.checkin||'14:00',checkout:g.checkout||'12:00'});commit();toast('Đã lưu cài đặt');}});},
   theme(d){try{localStorage.setItem('ks.theme',d.v);}catch(e){}render();},
   clearDemo(){confirmBox('Xóa toàn bộ đặt phòng, việc và ghi chú mẫu? Loại phòng, danh sách phòng, giá và nhân viên được giữ lại để bạn chỉnh sửa.',()=>{S.bookings=[];S.tasks=[];S.notes=[];S.log=[];S.rooms.forEach(r=>r.status='clean');S.demo=false;commit();toast('Đã xóa dữ liệu mẫu');},{danger:true,label:'Xóa dữ liệu mẫu'});},
-  resetAll(){confirmBox('Xóa toàn bộ dữ liệu trên máy chủ, gồm phòng, giá, đặt phòng và cài đặt? Mọi nhân viên sẽ mất dữ liệu và không thể hoàn tác. Hãy sao lưu trước.',()=>{S=blank();ui.page=null;ui.sub=null;ui.tab='home';commit();toast('Đã đặt lại. Hãy bắt đầu từ Cài đặt.');},{danger:true,label:'Xóa tất cả'});},
+  resetAll(){confirmBox('Xóa toàn bộ dữ liệu trên máy chủ, gồm phòng, giá, đặt phòng và cài đặt? Mọi thiết bị sẽ mất dữ liệu và không thể hoàn tác. Hãy sao lưu trước.',()=>{S=blank();ui.page=null;ui.sub=null;ui.tab='home';commit();toast('Đã đặt lại. Hãy bắt đầu từ Cài đặt.');},{danger:true,label:'Xóa tất cả'});},
   backup(){exportFile('sao-luu-khach-san-'+today()+'.json',JSON.stringify(S,null,1));},
   restore(){restoreSheet();},
-  async login(){
-    const em=$('#lg_email').value.trim(),pw=$('#lg_pw').value,er=$('#lg_err'),btn=$('#lg_go');
-    er.hidden=true;
-    if(!em||!pw){er.textContent='Nhập email và mật khẩu.';er.hidden=false;return;}
-    btn.disabled=true;btn.textContent='Đang đăng nhập...';
-    try{await signInWithEmailAndPassword(auth,em,pw);}
-    catch(e){er.textContent=authMsg(e);er.hidden=false;btn.disabled=false;btn.textContent='Đăng nhập';}
-  },
-  async resetPw(){
-    const em=$('#lg_email').value.trim(),er=$('#lg_err');
-    if(!em){er.textContent='Nhập email của bạn ở ô phía trên rồi bấm lại.';er.hidden=false;return;}
-    try{await sendPasswordResetEmail(auth,em);er.hidden=true;toast('Đã gửi email đặt lại mật khẩu, hãy kiểm tra hộp thư.');}
-    catch(e){er.textContent=authMsg(e);er.hidden=false;}
-  },
-  logout(){confirmBox('Đăng xuất khỏi tài khoản '+ui.user+'?',()=>{closeSheet();signOut(auth);},{label:'Đăng xuất'});},
+  setName(){formSheet({title:'Tên hiển thị trong nhật ký',fields:[{k:'name',label:'Tên của bạn',value:getName(),ph:'Ví dụ: Thu Hà (lễ tân)'}],extraBody:'<div class="sum">Tên này chỉ lưu trên điện thoại này và hiện trong nhật ký hoạt động để biết ai đã thao tác.</div>',onSubmit:g=>{try{localStorage.setItem('ks.name',g.name.trim());}catch(e){}render();toast('Đã lưu tên');}});},
   reload(){location.reload();},
   setupBlank(){Object.assign(S,blank());ui.auth='app';ui.tab='home';commit();toast('Đã khởi tạo. Hãy thêm phòng trong Cài đặt.');},
   setupDemo(){Object.assign(S,seed());ui.auth='app';ui.tab='home';commit();toast('Đã nạp dữ liệu mẫu');},
@@ -1295,7 +1275,7 @@ document.addEventListener('click',e=>{
 });
 $('#dlg').addEventListener('click',e=>{if(e.target.id==='dlg')A.dlgNo();});
 document.addEventListener('input',e=>{if(e.target.id==='q'){ui.q=e.target.value;const c=$('#blist');if(c)c.innerHTML=bookListHTML();}});
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.target.id==='lg_email'||e.target.id==='lg_pw')){A.login();return;}if(e.key==='Escape'){if($('#dlg').classList.contains('on'))A.dlgNo();else if(sheetOpen)closeSheet();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('#dlg').classList.contains('on'))A.dlgNo();else if(sheetOpen)closeSheet();}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!sheetOpen&&ui.auth==='app')render();});
 window.addEventListener('online',()=>{ui.online=true;renderTopSafe();});
 window.addEventListener('offline',()=>{ui.online=false;renderTopSafe();});
