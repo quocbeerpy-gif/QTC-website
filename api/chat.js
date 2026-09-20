@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  // Cho phép CORS từ mọi nguồn (hoặc cụ thể domain của anh)
+  // CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -20,29 +20,57 @@ export default async function handler(req, res) {
   try {
     const { messages } = req.body;
     const userMessage = messages?.[messages.length - 1]?.content || '';
+    const prompt = userMessage.toLowerCase();
 
-    // Phản hồi chuyên nghiệp từ QTC AI
-    let reply = "Cảm ơn anh/chị đã quan tâm đến dịch vụ của QTC. Đội ngũ chuyên gia của chúng tôi chuyên tư vấn giải pháp AI doanh nghiệp, xây dựng hệ thống Chatbot Zalo OA tự động hóa chăm sóc khách hàng và cung cấp hạ tầng GPU/Server AI riêng biệt. Anh/chị vui lòng liên hệ trực tiếp qua SĐT/Zalo 0912 223 103 (Nguyễn Hữu Bảo Quốc) để được khảo sát và tư vấn chi tiết.";
+    // --- KNOWLEDGE BASE & PROFESSIONAL RESPONSES ---
+    let reply = "";
 
-    const lower = userMessage.toLowerCase();
-    if (lower.includes('zalo') || lower.includes('chăm sóc') || lower.includes('tin nhắn')) {
-      reply = "Giải pháp Chatbot Zalo OA và ZNS của QTC giúp doanh nghiệp tự động hóa 100% quy trình chăm sóc khách hàng, tư vấn sản phẩm và chốt đơn 24/7, tích hợp trực tiếp vào hệ thống CRM sẵn có. Để nhận báo giá chi tiết theo mô hình doanh nghiệp, anh/chị vui lòng liên hệ trực tiếp Zalo: 0912 223 103.";
-    } else if (lower.includes('server') || lower.includes('gpu') || lower.includes('hạ tầng') || lower.includes('phần cứng')) {
-      reply = "QTC chuyên thiết kế, lắp đặt và vận hành hạ tầng máy chủ AI (GPU Cluster/Private Cloud) riêng biệt cho doanh nghiệp (on-premise), đảm bảo tuyệt đối về bảo mật dữ liệu và hiệu năng tối ưu. Xin mời anh/chị liên hệ SĐT/Zalo 0912 223 103 để trao đổi yêu cầu kỹ thuật.";
-    } else if (lower.includes('giá') || lower.includes('chi phí') || lower.includes('báo giá')) {
-      reply = "Chi phí triển khai giải pháp AI tại QTC phụ thuộc vào quy mô, tính năng và mức độ tích hợp thực tế của doanh nghiệp. Chúng tôi luôn có chính sách khảo sát và tư vấn giải pháp tối ưu chi phí nhất. Anh/chị vui lòng liên hệ trực tiếp qua Zalo 0912 223 103 để nhận báo giá cụ thể.";
+    if (prompt.includes('zalo') || prompt.includes('chatbot') || prompt.includes('tư vấn')) {
+      reply = "Dạ chào anh/chị! Về giải pháp **Chatbot Zalo OA**, QTC chuyên triển khai các hệ thống trợ lý ảo thông minh có khả năng: \n" +
+              "1. Tự động tư vấn sản phẩm & chốt đơn 24/7.\n" +
+              "2. Tích hợp sâu với CRM/ERP để quản lý khách hàng.\n" +
+              "3. Gửi thông báo tự động (ZNS) chăm sóc sau bán.\n\n" +
+              "Anh/chị có thể liên hệ trực tiếp qua Zalo của chuyên gia **Nguyễn Hữu Bảo Quốc: 0912 223 103** để nhận demo và báo giá chi tiết ạ.";
+    } 
+    else if (prompt.includes('server') || prompt.includes('gpu') || prompt.includes('hạ tầng') || prompt.includes('phần cứng')) {
+      reply = "Chào anh/chị! QTC cung cấp giải pháp **Hạ tầng AI Server (GPU Cluster)** chuyên biệt cho doanh nghiệp:\n" +
+              "• Thiết kế hệ thống Private Cloud/On-premise bảo mật tuyệt đối.\n" +
+              "• Tối ưu hiệu năng cho việc huấn luyện (Fine-tuning) và vận hành LLM.\n" +
+              "• Hỗ trợ kỹ thuật & giám sát 24/7.\n\n" +
+              "Để trao đổi sâu hơn về thông số kỹ thuật, anh/chị vui lòng kết nối với anh Quốc qua số **0912 223 103** nhé.";
+    }
+    else if (prompt.includes('giá') || prompt.includes('bao nhiêu') || prompt.includes('chi phí')) {
+      reply = "Dạ, chi phí triển khai giải pháp AI tại QTC được thiết kế linh hoạt tùy theo quy mô và yêu cầu cụ thể của từng doanh nghiệp. \n\n" +
+              "Thông thường, chúng tôi sẽ tiến hành **khảo sát miễn phí** quy trình hiện tại của anh/chị để đưa ra phương án tối ưu chi phí nhất. Anh/chị có thể để lại SĐT tại đây hoặc nhắn trực tiếp Zalo **0912 223 103** để QTC hỗ trợ báo giá ngay trong ngày ạ.";
+    }
+    else if (prompt.includes('quy trình') || prompt.includes('làm việc')) {
+      reply = "Quy trình làm việc tại QTC rất rành mạch gồm 4 bước:\n" +
+              "1. Khảo sát & Phân tích điểm nghẽn vận hành.\n" +
+              "2. Thiết kế & Đề xuất giải pháp AI phù hợp.\n" +
+              "3. Triển khai, Tích hợp & Kiểm thử hệ thống.\n" +
+              "4. Bàn giao & Vận hành, tối ưu liên tục.\n\n" +
+              "Anh/chị cần tư vấn bước nào cụ thể không ạ?";
+    }
+    else {
+      // General professional greeting
+      reply = "Chào mừng anh/chị đến với **QTC AI** - Chuyên gia cung cấp giải pháp trí tuệ nhân tạo doanh nghiệp tại Việt Nam.\n\n" +
+              "Tôi có thể hỗ trợ anh/chị thông tin về:\n" +
+              "• Triển khai Chatbot Zalo OA & CRM.\n" +
+              "• Xây dựng hệ thống AI tùy chỉnh cho quy trình vận hành.\n" +
+              "• Thiết lập hạ tầng máy chủ AI/GPU riêng biệt.\n\n" +
+              "Anh/chị đang quan tâm đến giải pháp nào, hoặc cần gặp trực tiếp anh Quốc (0912 223 103) để tư vấn ạ?";
     }
 
     return res.status(200).json({
-      choices: [
-        {
-          message: {
-            content: reply
-          }
+      choices: [{
+        message: {
+          role: "assistant",
+          content: reply
         }
-      ]
+      }]
     });
+
   } catch (error) {
-    return res.status(500).json({ error: 'Internal Server Error', details: error.message });
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 }
