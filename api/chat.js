@@ -20,78 +20,42 @@ export default async function handler(req, res) {
     const { messages } = req.body;
     const userMessage = messages?.[messages.length - 1]?.content || '';
 
-    // Lấy API Key từ biến môi trường Vercel (An toàn & chuẩn chỉnh)
-    const apiKey = process.env.GEMINI_API_KEY;
+    // Kết nối trực tiếp về OpenClaw tại máy chủ của anh thông qua Tailscale Funnel và Gateway Token
+    const gatewayRes = await fetch('https://desktop-b8m2j50.tail6a1288.ts.net/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer de4ea709afc7983fdc9aa9808fb3a05b19f1f7eb1a1fb297'
+      },
+      body: JSON.stringify({
+        model: 'nguyen_quoc',
+        messages: [
+          { role: 'system', content: 'Bạn là QTC AI & HRC AI - trợ lý ảo thông minh của anh Nguyễn Hữu Bảo Quốc (SĐT/Zalo: 0912223103, Địa chỉ: 220 Trần Hưng Đạo, Tuy Hòa). Hãy trả lời khách hàng trên website một cách chuyên nghiệp, ngắn gọn và lịch sự.' },
+          { role: 'user', content: userMessage }
+        ]
+      })
+    });
 
-    if (!apiKey) {
+    if (gatewayRes.ok) {
+      const data = await gatewayRes.json();
+      return res.status(200).json(data);
+    } else {
+      const errText = await gatewayRes.text();
       return res.status(200).json({
         choices: [{
           message: {
             role: 'assistant',
-            content: 'Dạ chào anh/chị! Hiện tại hệ thống đang được kích hoạt bộ não AI. Vui lòng liên hệ trực tiếp Zalo chuyên gia Nguyễn Hữu Bảo Quốc: 0912 223 103 để được hỗ trợ nhanh nhất nhé ạ!'
+            content: 'Dạ chào anh/chị! QTC & HRC AI đang sẵn sàng tư vấn. Vui lòng liên hệ chuyên gia Nguyễn Hữu Bảo Quốc qua Zalo: 0912 223 103 để được hỗ trợ chi tiết nhất ạ.'
           }
         }]
       });
     }
-
-    const systemInstruction = `Bạn là QTC AI - trợ lý ảo thông minh của anh Nguyễn Hữu Bảo Quốc (QTC AI & HRC Group).
-Thông tin liên hệ: SĐT/Zalo: 0912 223 103, Địa chỉ: 220 Trần Hưng Đạo, P. Tuy Hòa, Đắk Lắk.
-Về HRC Group: Tập đoàn giáo dục & y tế với 5 trụ cột (HRC Edu: Tuyển sinh Thạc sĩ, Tiến sĩ, Đại học, Cao đẳng; HRC Skills: STEM, Tiếng Anh; HRC Health: Y học cổ truyền, Du lịch sức khỏe). Hotline HRC: 0817 601 979.
-Quy tắc:
-1. Luôn giao tiếp bằng Tiếng Việt thân thiện, thông minh, chuyên nghiệp.
-2. Trả lời trực tiếp và đầy đủ câu hỏi của người dùng, không lặp lại câu chào cố định.
-3. Luôn sẵn sàng hỗ trợ và hướng dẫn người dùng kết nối Zalo khi cần tư vấn chuyên sâu hoặc nộp hồ sơ.`;
-
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: {
-          parts: [{ text: systemInstruction }]
-        },
-        contents: [
-          {
-            role: 'user',
-            parts: [{ text: userMessage }]
-          }
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 800
-        }
-      })
-    });
-
-    const data = await response.json();
-    
-    // Debug nếu gặp lỗi từ phía Google API
-    if (data.error) {
-       return res.status(200).json({
-        choices: [{
-          message: {
-            role: 'assistant',
-            content: `Dạ QTC AI đang gặp chút gián đoạn kết nối (${data.error.message}). Anh/chị nhắn Zalo 0912 223 103 giúp em nhé!`
-          }
-        }]
-      });
-    }
-
-    const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Dạ em chưa nghe rõ, anh/chị có thể nhắn lại giúp em được không ạ?';
-
-    return res.status(200).json({
-      choices: [{
-        message: {
-          role: 'assistant',
-          content: replyText
-        }
-      }]
-    });
   } catch (error) {
     return res.status(200).json({
       choices: [{
         message: {
           role: 'assistant',
-          content: 'Cảm ơn anh/chị đã liên hệ. Hệ thống đang bảo trì, vui lòng kết nối Zalo 0912 223 103 (Nguyễn Hữu Bảo Quốc) để được hỗ trợ nhanh nhất.'
+          content: 'Cảm ơn anh/chị đã liên hệ. Vui lòng kết nối trực tiếp Zalo 0912 223 103 (Nguyễn Hữu Bảo Quốc) để nhận tư vấn nhanh chóng.'
         }
       }]
     });
