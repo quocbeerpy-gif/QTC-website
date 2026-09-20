@@ -243,6 +243,9 @@ textarea.inp{resize:vertical}
 .gate p{margin:0 0 20px;color:var(--ink2)}
 .gate .btn{width:100%;margin-bottom:10px}
 .gate .err{display:block}
+.code{background:var(--surface2);border-radius:12px;padding:12px;font-size:12px;line-height:1.5;overflow:auto;white-space:pre;margin:0 0 12px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.sk{border-radius:16px;background:linear-gradient(90deg,var(--surface2),var(--surface),var(--surface2));background-size:200% 100%;animation:sh 1.3s ease-in-out infinite}
+@keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}
 .link{background:none;border:0;color:var(--brand);font-weight:600;padding:10px 0;font-size:14px}
 .spin{width:24px;height:24px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--brand);animation:sp .8s linear infinite;margin-top:4px}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -362,9 +365,11 @@ function scheduleRender(){
     render();
   },60);
 }
+const RULES_TEXT="rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /{document=**} {\n      allow read, write: if request.auth != null;\n    }\n  }\n}";
 function errHandler(e){
-  ui.auth='error';
-  ui.err=e&&e.code==='permission-denied'?'Chưa được phép truy cập dữ liệu. Hãy kiểm tra Firestore Rules trong Firebase Console và bảo đảm đã bật đăng nhập ẩn danh (Anonymous), rồi tải lại trang.':'Không kết nối được máy chủ: '+((e&&(e.message||e.code))||'lỗi không xác định');
+  const perm=!!e&&e.code==='permission-denied';
+  ui.auth='error';ui.loading=false;ui.rulesHelp=perm;
+  ui.err=perm?'Máy chủ từ chối truy cập dữ liệu (permission-denied). Thường do Firestore Rules chưa cho phép. Vào Firebase Console, Firestore Database, tab Rules, dán đoạn dưới đây rồi bấm Publish, sau đó quay lại bấm Thử lại.':'Không kết nối được máy chủ: '+((e&&(e.message||e.code))||'lỗi không xác định');
   stopSync();render();
 }
 function stopSync(){unsubs.forEach(f=>{try{f();}catch(e){}});unsubs=[];cloud={config:null};cloudReady=false;configExists=false;loaded=new Set();inflight=0;ui.pending=false;}
@@ -372,8 +377,8 @@ function startSync(){
   stopSync();
   const need=COLLS.length+1;
   const step=(k,changed)=>{
-    if(!loaded.has(k)){loaded.add(k);if(loaded.size===need){cloudReady=true;ui.auth=(configExists||S.rooms.length||S.bookings.length)?'app':'setup';render();}}
-    else if(cloudReady){if(configExists&&ui.auth==='setup')ui.auth='app';if(changed)scheduleRender();else renderTopSafe();}
+    if(!loaded.has(k)){loaded.add(k);if(loaded.size===need){cloudReady=true;ui.loading=false;ui.auth=(configExists||S.rooms.length||S.bookings.length)?'app':'setup';saveCache();render();}}
+    else if(cloudReady){if(configExists&&ui.auth==='setup')ui.auth='app';if(changed){saveCache();scheduleRender();}else renderTopSafe();}
   };
   unsubs.push(onSnapshot(doc(db,'config','main'),snap=>{
     const prev=cloud.config;configExists=snap.exists();
@@ -422,22 +427,26 @@ function initAuth(){
     app=initializeApp(firebaseConfig);auth=getAuth(app);
     try{db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});}catch(e){db=getFirestore(app);}
   }catch(e){ui.auth='error';ui.err='Không khởi tạo được Firebase: '+e.message;render();return;}
+  const c0=readCache();if(c0)S=c0;
   render();
   onAuthStateChanged(auth,user=>{
     cloudUser=user;
-    if(user){ui.auth='loading';render();startSync();}
-    else{signInAnonymously(auth).catch(e=>{ui.auth='error';ui.err=authMsg(e);render();});}
+    if(user){startSync();}
+    else{signInAnonymously(auth).catch(e=>{ui.auth='error';ui.loading=false;ui.err=authMsg(e);render();});}
   });
 }
 function gateHTML(){
   const s=ui.auth,logo='<div class="gate-i">'+ic('hotel',32)+'</div>';
   if(s==='setup')return '<div class="gate">'+logo+'<h1>Thiết lập lần đầu</h1><p>Máy chủ chưa có dữ liệu khách sạn. Chọn cách bắt đầu, bạn có thể thay đổi mọi thứ trong Cài đặt sau đó.</p>'
     +'<button class="btn" data-a="setupBlank">Bắt đầu với dữ liệu trống</button><button class="btn ghost" data-a="setupDemo">Nạp dữ liệu mẫu để xem thử</button></div>';
-  if(s==='error')return '<div class="gate">'+logo+'<h1>Có sự cố</h1><p>'+esc(ui.err||'Đã xảy ra lỗi.')+'</p><button class="btn" data-a="reload">Thử lại</button></div>';
+  if(s==='error')return '<div class="gate">'+logo+'<h1>Có sự cố</h1><p>'+esc(ui.err||'Đã xảy ra lỗi.')+'</p>'+(ui.rulesHelp?'<pre class="code">'+esc(RULES_TEXT)+'</pre><button class="btn ghost" data-a="copyRules">Sao chép quy tắc</button>':'')+'<button class="btn" data-a="reload">Thử lại</button></div>';
   return '<div class="gate">'+logo+'<h1>Đang tải dữ liệu</h1><p>Đang kết nối tới máy chủ khách sạn.</p><div class="spin" role="status" aria-label="Đang tải"></div></div>';
 }
-function netHTML(){const c=!ui.online?' off':(ui.pending?' sync':'');const t=!ui.online?'Ngoại tuyến':(ui.pending?'Đang đồng bộ':'Đã đồng bộ');return '<span class="net'+c+'" role="status"><i></i>'+t+'</span>';}
+function netHTML(){const sy=ui.pending||ui.loading;const c=!ui.online?' off':(sy?' sync':'');const t=!ui.online?'Ngoại tuyến':(sy?'Đang đồng bộ':'Đã đồng bộ');return '<span class="net'+c+'" role="status"><i></i>'+t+'</span>';}
 const getName=()=>{try{return localStorage.getItem('ks.name')||'';}catch(e){return '';}};
+let cacheT=0;
+function saveCache(){clearTimeout(cacheT);cacheT=setTimeout(()=>{try{localStorage.setItem('ks.cache.v1',JSON.stringify(S));}catch(e){}},400);}
+function readCache(){try{const r=localStorage.getItem('ks.cache.v1');if(r){const o=JSON.parse(r);if(o&&o.settings&&Array.isArray(o.rooms))return normalize(o);}}catch(e){}return null;}
 const getTheme=()=>{try{return localStorage.getItem('ks.theme')||'auto';}catch(e){return 'auto';}};
 
 /* ================= Billing ================= */
@@ -522,7 +531,7 @@ function blank(){
 }
 
 let S=emptyState();
-const ui={auth:'loading',err:'',online:navigator.onLine,pending:false,tab:'home',page:null,sub:null,roomFilter:'all',bookFilter:'today',q:'',opsSeg:'clean',rep:7};
+const ui={auth:'app',loading:true,err:'',online:navigator.onLine,pending:false,tab:'home',page:null,sub:null,roomFilter:'all',bookFilter:'today',q:'',opsSeg:'clean',rep:7};
 
 /* ================= Domain helpers ================= */
 const typeOf=id=>S.roomTypes.find(t=>t.id===id);
@@ -577,7 +586,7 @@ async function copyText(txt){
   try{await navigator.clipboard.writeText(txt);return true;}catch(e){}
   try{const ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return ok;}catch(e){return false;}
 }
-function commit(){syncCloud();render();}
+function commit(){syncCloud();saveCache();render();}
 
 function fieldHTML(f){
   const id='f_'+f.k;let inner;
@@ -649,7 +658,7 @@ function renderTop(){
     t.innerHTML='<button class="ib" data-a="back" aria-label="Quay lại">'+ic('chevL',20)+'</button><div class="ttl"><div class="h">'+esc(ui.sub?titles[ui.sub]:'Cài đặt')+'</div></div>';
   }else{
     const d=new Date();
-    t.innerHTML='<div class="ttl"><div class="h">'+esc(S.settings.hotel.name||'Khách sạn')+'</div><div class="d">'+WDL[d.getDay()]+', '+pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+'</div></div>'+netHTML()+'<button class="ib" data-a="openSettings" aria-label="Cài đặt">'+ic('sliders',20)+'</button>';
+    t.innerHTML='<div class="ttl"><div class="h">'+esc((ui.loading&&!S.rooms.length&&!S.bookings.length)?'Khách sạn':(S.settings.hotel.name||'Khách sạn'))+'</div><div class="d">'+WDL[d.getDay()]+', '+pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+'</div></div>'+netHTML()+'<button class="ib" data-a="openSettings" aria-label="Cài đặt">'+ic('sliders',20)+'</button>';
   }
 }
 function renderNav(){
@@ -664,9 +673,10 @@ function render(){
   renderTop();renderNav();
   let h;
   if(ui.page==='settings')h=ui.sub?viewSub():viewSettings();
+  else if(ui.loading&&!S.rooms.length&&!S.bookings.length)h='<div class="sec" style="margin-top:8px"><div class="sk" style="height:150px;border-radius:22px"></div><div class="sk" style="height:92px;margin-top:16px"></div><div class="sk" style="height:150px;margin-top:16px"></div></div>';
   else h={home:viewHome,rooms:viewRooms,bookings:viewBookings,ops:viewOps,reports:viewReports}[ui.tab]();
   $('#view').innerHTML=h;
-  const fab=ui.page?'':(ui.tab==='bookings'?'newBook':'');
+  const fab=(ui.page||ui.loading)?'':(ui.tab==='bookings'?'newBook':'');
   const old=$('#fab');if(old)old.remove();
   if(fab){const b=document.createElement('button');b.id='fab';b.className='fab';b.dataset.a='newBook';b.innerHTML=ic('plus',20)+'Đặt phòng';document.body.appendChild(b);}
 }
@@ -1264,14 +1274,17 @@ const A={
   backup(){exportFile('sao-luu-khach-san-'+today()+'.json',JSON.stringify(S,null,1));},
   restore(){restoreSheet();},
   setName(){formSheet({title:'Tên hiển thị trong nhật ký',fields:[{k:'name',label:'Tên của bạn',value:getName(),ph:'Ví dụ: Thu Hà (lễ tân)'}],extraBody:'<div class="sum">Tên này chỉ lưu trên điện thoại này và hiện trong nhật ký hoạt động để biết ai đã thao tác.</div>',onSubmit:g=>{try{localStorage.setItem('ks.name',g.name.trim());}catch(e){}render();toast('Đã lưu tên');}});},
+  async copyRules(){toast(await copyText(RULES_TEXT)?'Đã sao chép quy tắc':'Hãy giữ và chọn đoạn văn bản để sao chép',false);},
   reload(){location.reload();},
   setupBlank(){Object.assign(S,blank());ui.auth='app';ui.tab='home';commit();toast('Đã khởi tạo. Hãy thêm phòng trong Cài đặt.');},
   setupDemo(){Object.assign(S,seed());ui.auth='app';ui.tab='home';commit();toast('Đã nạp dữ liệu mẫu');},
   exportCSV(){exportFile('bao-cao-'+dm(periodDays()[0]).replace('/','-')+'.csv',csvReport());}
 };
+const NAV_OK=new Set(['tab','go','openSettings','back','sub','rFilter','bFilter','seg','range','room','book','task','close','dlgNo','copyBill','reload','theme','setName','copyRules']);
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-a]');if(!el)return;
-  const fn=A[el.dataset.a];if(fn){e.preventDefault();fn(el.dataset,el,e);}
+  const fn=A[el.dataset.a];
+  if(fn){e.preventDefault();if(ui.loading&&ui.auth==='app'&&!NAV_OK.has(el.dataset.a)){toast('Đang đồng bộ dữ liệu, hãy thử lại sau giây lát.',true);return;}fn(el.dataset,el,e);}
 });
 $('#dlg').addEventListener('click',e=>{if(e.target.id==='dlg')A.dlgNo();});
 document.addEventListener('input',e=>{if(e.target.id==='q'){ui.q=e.target.value;const c=$('#blist');if(c)c.innerHTML=bookListHTML();}});
