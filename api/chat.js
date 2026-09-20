@@ -20,13 +20,14 @@ module.exports = async function handler(req, res) {
     const { messages } = req.body;
     const userMessage = messages?.[messages.length - 1]?.content || '';
 
+    // Lấy key qua process.env chuẩn Vercel
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return res.status(200).json({
         choices: [{
           message: {
             role: 'assistant',
-            content: 'Dạ, chưa cấu hình GEMINI_API_KEY trên Vercel.'
+            content: 'Dạ, hệ thống đang chờ biến GEMINI_API_KEY trên Vercel.'
           }
         }]
       });
