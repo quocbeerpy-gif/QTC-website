@@ -20,17 +20,17 @@ export default async function handler(req, res) {
     const { messages } = req.body;
     const userMessage = messages?.[messages.length - 1]?.content || '';
 
-    // Kết nối trực tiếp về OpenClaw tại máy chủ của anh thông qua Tailscale Funnel và Gateway Token
+    // Gọi thẳng về Gateway OpenClaw tại máy của anh
     const gatewayRes = await fetch('https://desktop-b8m2j50.tail6a1288.ts.net/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer de4ea709afc7983fdc9aa9808fb3a05b19f1f7eb1a1fb297'
+        'Authorization': 'Bearer ***'
       },
       body: JSON.stringify({
         model: 'nguyen_quoc',
         messages: [
-          { role: 'system', content: 'Bạn là QTC AI & HRC AI - trợ lý ảo thông minh của anh Nguyễn Hữu Bảo Quốc (SĐT/Zalo: 0912223103, Địa chỉ: 220 Trần Hưng Đạo, Tuy Hòa). Hãy trả lời khách hàng trên website một cách chuyên nghiệp, ngắn gọn và lịch sự.' },
+          { role: 'system', content: 'Bạn là QTC AI & HRC AI - trợ lý ảo thông minh của anh Nguyễn Hữu Bảo Quốc (SĐT/Zalo: 0912223103, Địa chỉ: 220 Trần Hưng Đạo, Tuy Hòa).' },
           { role: 'user', content: userMessage }
         ]
       })
@@ -40,12 +40,12 @@ export default async function handler(req, res) {
       const data = await gatewayRes.json();
       return res.status(200).json(data);
     } else {
-      const errText = await gatewayRes.text();
+      const errDetail = await gatewayRes.text();
       return res.status(200).json({
         choices: [{
           message: {
             role: 'assistant',
-            content: 'Dạ chào anh/chị! QTC & HRC AI đang sẵn sàng tư vấn. Vui lòng liên hệ chuyên gia Nguyễn Hữu Bảo Quốc qua Zalo: 0912 223 103 để được hỗ trợ chi tiết nhất ạ.'
+            content: 'Dạ chào anh/chị! QTC AI đang hoạt động. Vui lòng liên hệ trực tiếp Zalo 0912 223 103 (Nguyễn Hữu Bảo Quốc) để được hỗ trợ nhanh nhất.'
           }
         }]
       });
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
       choices: [{
         message: {
           role: 'assistant',
-          content: 'Cảm ơn anh/chị đã liên hệ. Vui lòng kết nối trực tiếp Zalo 0912 223 103 (Nguyễn Hữu Bảo Quốc) để nhận tư vấn nhanh chóng.'
+          content: 'Cảm ơn anh/chị đã liên hệ QTC. Vui lòng kết nối Zalo 0912 223 103 để nhận tư vấn chi tiết.'
         }
       }]
     });
