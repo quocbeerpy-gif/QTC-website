@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     const { messages } = req.body;
     const userMessage = messages?.[messages.length - 1]?.content || '';
 
-    // Lấy API Key từ biến môi trường của Vercel (bảo mật tuyệt đối)
+    // Lấy API Key từ biến môi trường Vercel (An toàn & chuẩn chỉnh)
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
         choices: [{
           message: {
             role: 'assistant',
-            content: 'Hệ thống đang được cấu hình API Key. Anh/chị vui lòng liên hệ Zalo 0912 223 103 (Nguyễn Hữu Bảo Quốc) để được hỗ trợ trực tiếp nhé ạ!'
+            content: 'Dạ chào anh/chị! Hiện tại hệ thống đang được kích hoạt bộ não AI. Vui lòng liên hệ trực tiếp Zalo chuyên gia Nguyễn Hữu Bảo Quốc: 0912 223 103 để được hỗ trợ nhanh nhất nhé ạ!'
           }
         }]
       });
@@ -63,6 +63,19 @@ Quy tắc:
     });
 
     const data = await response.json();
+    
+    // Debug nếu gặp lỗi từ phía Google API
+    if (data.error) {
+       return res.status(200).json({
+        choices: [{
+          message: {
+            role: 'assistant',
+            content: `Dạ QTC AI đang gặp chút gián đoạn kết nối (${data.error.message}). Anh/chị nhắn Zalo 0912 223 103 giúp em nhé!`
+          }
+        }]
+      });
+    }
+
     const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Dạ em chưa nghe rõ, anh/chị có thể nhắn lại giúp em được không ạ?';
 
     return res.status(200).json({
@@ -78,7 +91,7 @@ Quy tắc:
       choices: [{
         message: {
           role: 'assistant',
-          content: 'Cảm ơn anh/chị đã liên hệ. Hiện tại máy chủ đang bận, anh/chị vui lòng kết nối Zalo 0912 223 103 (Nguyễn Hữu Bảo Quốc) để được hỗ trợ nhanh nhất nhé ạ.'
+          content: 'Cảm ơn anh/chị đã liên hệ. Hệ thống đang bảo trì, vui lòng kết nối Zalo 0912 223 103 (Nguyễn Hữu Bảo Quốc) để được hỗ trợ nhanh nhất.'
         }
       }]
     });
