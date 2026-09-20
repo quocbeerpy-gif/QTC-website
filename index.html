@@ -1115,12 +1115,11 @@ Thời gian phản hồi chatbot TB:  0.8s
     chatSend.disabled = true;
 
     try {
-      // Connect directly to Gateway or simulate smart reply
-      const res = await fetch(`${GATEWAY_URL}/v1/chat/completions`, {
+      // Connect to the local Serverless API on Vercel
+      const res = await fetch(`${GATEWAY_URL}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'nguyen_quoc',
           messages: [{ role: 'user', content: text }]
         })
       });
