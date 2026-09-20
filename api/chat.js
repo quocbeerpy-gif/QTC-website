@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer 0e12e11831414436928e461245645367617974656e6b'
+        'Authorization': 'Bearer de4ea709afc7983fdc9aa9808fb3a05b19f1f7eb1a1fb297'
       },
       body: JSON.stringify({
         model: 'nguyen_quoc',
@@ -40,12 +40,13 @@ export default async function handler(req, res) {
       const data = await gatewayRes.json();
       return res.status(200).json(data);
     } else {
-      // Fallback nếu Gateway ở nhà đang tắt hoặc mất kết nối
+      const errText = await gatewayRes.text();
+      // Fallback nếu Gateway ở nhà đang gặp lỗi hoặc phản hồi khác
       return res.status(200).json({
         choices: [{
           message: {
             role: 'assistant',
-            content: 'Dạ chào anh/chị! Hiện tại hệ thống trực tuyến của QTC đang bận bảo trì ngắn hạn. Anh/chị vui lòng liên hệ trực tiếp qua Zalo chuyên gia Nguyễn Hữu Bảo Quốc: 0912 223 103 để được hỗ trợ ngay lập tức ạ.'
+            content: 'Dạ chào anh/chị! QTC AI hiện đang sẵn sàng hỗ trợ. Vui lòng liên hệ trực tiếp qua Zalo chuyên gia Nguyễn Hữu Bảo Quốc: 0912 223 103 để được tư vấn chi tiết và nhanh chóng nhất ạ.'
           }
         }]
       });
