@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -20,14 +20,13 @@ export default async function handler(req, res) {
     const { messages } = req.body;
     const userMessage = messages?.[messages.length - 1]?.content || '';
 
-    // Lấy API Key từ biến môi trường trên Vercel
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return res.status(200).json({
         choices: [{
           message: {
             role: 'assistant',
-            content: 'Dạ, hệ thống chưa tìm thấy biến môi trường GEMINI_API_KEY trên Vercel.'
+            content: 'Dạ, chưa cấu hình GEMINI_API_KEY trên Vercel.'
           }
         }]
       });
@@ -65,6 +64,7 @@ export default async function handler(req, res) {
       });
     } else {
       const errText = await response.text();
+      console.error('Gemini API Error:', errText);
       return res.status(200).json({
         choices: [{
           message: {
@@ -75,6 +75,7 @@ export default async function handler(req, res) {
       });
     }
   } catch (error) {
+    console.error('Handler catch error:', error);
     return res.status(200).json({
       choices: [{
         message: {
@@ -84,4 +85,4 @@ export default async function handler(req, res) {
       }]
     });
   }
-}
+};
