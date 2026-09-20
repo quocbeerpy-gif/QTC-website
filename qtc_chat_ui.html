@@ -166,7 +166,7 @@
         const messages = document.getElementById('messages');
         const typing = document.getElementById('typing');
 
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const text = input.value.trim();
             if (!text) return;
@@ -179,11 +179,24 @@
             typing.style.display = 'block';
             messages.scrollTop = messages.scrollHeight;
 
-            // Simulate AI response (Sau này sẽ gọi API xịn kết nối vào em)
-            setTimeout(() => {
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: text }]
+                    })
+                });
+
+                const data = await response.json();
                 typing.style.display = 'none';
-                addMessage('Đây là giao diện Chat AI "hàng nhà làm" siêu mượt mà anh muốn. Sau khi kết nối API, em sẽ trả lời anh tại đây tẹt ga không giới hạn!', 'bot-msg');
-            }, 1500);
+
+                const botReply = data.choices?.[0]?.message?.content || 'Hệ thống đang bận, vui lòng thử lại sau.';
+                addMessage(botReply, 'bot-msg');
+            } catch (error) {
+                typing.style.display = 'none';
+                addMessage('Không thể kết nối tới máy chủ AI. Vui lòng thử lại!', 'bot-msg');
+            }
         });
 
         function addMessage(text, className) {
