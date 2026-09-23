@@ -1,4 +1,6 @@
-module.exports = async function handler(req, res) {
+const https = require('https');
+
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -20,55 +22,62 @@ module.exports = async function handler(req, res) {
     const { messages } = req.body;
     const userMessage = messages?.[messages.length - 1]?.content || '';
 
-    // Lấy API Key từ Vercel env
     const apiKey = ***;
-
     if (!apiKey) {
       return res.status(200).json({
         choices: [{
           message: {
             role: 'assistant',
-            content: '[DEBUG LOG] BIẾN GEMINI_API_KEY TRÊN VERCEL ĐANG BỊ TRỐNG (UNDEFINED). Vui lòng vào Vercel Settings -> Environment Variables để Add Key.'
+            content: '[LỖI CẤU HÌNH] Chưa tìm thấy GEMINI_API_KEY trên Vercel Environment Variables. Anh Quốc vui lòng kiểm tra lại phần Settings trên Vercel nhé!'
           }
         }]
       });
     }
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=***}`;
-
-    const response = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: userMessage }] }]
-      })
+    const payload = JSON.stringify({
+      contents: [{ parts: [{ text: userMessage }] }]
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Dạ em nghe đây ạ.';
-      return res.status(200).json({
-        choices: [{ message: { role: 'assistant', content: replyText } }]
-      });
-    } else {
-      const errText = await response.text();
-      return res.status(200).json({
-        choices: [{
-          message: {
-            role: 'assistant',
-            content: `[DEBUG LOG] GOOGLE GEMINI TRẢ VỀ LỖI: ${errText}`
-          }
-        }]
-      });
-    }
-  } catch (error) {
-    return res.status(200).json({
-      choices: [{
-        message: {
-          role: 'assistant',
-          content: `[DEBUG LOG] EXCEPTION ERROR: ${error.message}`
+    const options = {
+      hostname: 'generativelanguage.googleapis.com',
+      path: `/v1/models/gemini-1.5-flash:generateContent?key=***}`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': payload.length
+      }
+    };
+
+    const apiReq = https.request(options, (apiRes) => {
+      let data = '';
+      apiRes.on('data', (chunk) => { data += chunk; });
+      apiRes.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          const replyText = json.candidates?.[0]?.content?.parts?.[0]?.text || 'Dạ em nghe đây ạ.';
+          res.status(200).json({
+            choices: [{ message: { role: 'assistant', content: replyText } }]
+          });
+        } catch (e) {
+          res.status(200).json({
+            choices: [{ message: { role: 'assistant', content: `[LỖI PHÂN TÍCH] Dữ liệu từ Google lỗi: ${data.substring(0, 100)}` } }]
+          });
         }
-      }]
+      });
+    });
+
+    apiReq.on('error', (e) => {
+      res.status(200).json({
+        choices: [{ message: { role: 'assistant', content: `[LỖI KẾT NỐI] Không thể gọi tới Google: ${e.message}` } }]
+      });
+    });
+
+    apiReq.write(payload);
+    apiReq.end();
+
+  } catch (error) {
+    res.status(200).json({
+      choices: [{ message: { role: 'assistant', content: `[LỖI HỆ THỐNG] Crash: ${error.message}` } }]
     });
   }
-};
+}
