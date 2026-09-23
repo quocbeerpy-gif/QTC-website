@@ -20,68 +20,53 @@ module.exports = async function handler(req, res) {
     const { messages } = req.body;
     const userMessage = messages?.[messages.length - 1]?.content || '';
 
-    // Lấy biến môi trường chuẩn Node.js
-    const apiKey = process.env.GEMINI_API_KEY;
+    // Lấy API Key từ Vercel env
+    const apiKey = ***;
+
     if (!apiKey) {
       return res.status(200).json({
         choices: [{
           message: {
             role: 'assistant',
-            content: 'Dạ, hệ thống đang chờ cấu hình GEMINI_API_KEY trên Vercel.'
+            content: '[DEBUG LOG] BIẾN GEMINI_API_KEY TRÊN VERCEL ĐANG BỊ TRỐNG (UNDEFINED). Vui lòng vào Vercel Settings -> Environment Variables để Add Key.'
           }
         }]
       });
     }
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=***}`;
 
     const response = await fetch(geminiUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              { text: 'Bạn là QTC AI & HRC AI - trợ lý ảo thông minh của anh Nguyễn Hữu Bảo Quốc (SĐT/Zalo: 0912223103, Địa chỉ: 220 Trần Hưng Đạo, Tuy Hòa). Hãy trả lời khách hàng một cách ngắn gọn, lịch sự, chuyên nghiệp bằng tiếng Việt.' },
-              { text: userMessage }
-            ]
-          }
-        ]
+        contents: [{ parts: [{ text: userMessage }] }]
       })
     });
 
     if (response.ok) {
       const data = await response.json();
-      const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Dạ chào anh/chị, em có thể giúp gì thêm cho anh/chị ạ?';
+      const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Dạ em nghe đây ạ.';
       return res.status(200).json({
-        choices: [{
-          message: {
-            role: 'assistant',
-            content: replyText
-          }
-        }]
+        choices: [{ message: { role: 'assistant', content: replyText } }]
       });
     } else {
       const errText = await response.text();
-      console.error('Gemini API Error:', errText);
       return res.status(200).json({
         choices: [{
           message: {
             role: 'assistant',
-            content: 'Dạ chào anh/chị! Vui lòng liên hệ trực tiếp Zalo 0912 223 103 (Nguyễn Hữu Bảo Quốc) để được hỗ trợ ngay ạ.'
+            content: `[DEBUG LOG] GOOGLE GEMINI TRẢ VỀ LỖI: ${errText}`
           }
         }]
       });
     }
   } catch (error) {
-    console.error('Handler catch error:', error);
     return res.status(200).json({
       choices: [{
         message: {
           role: 'assistant',
-          content: 'Dạ chào anh/chị, vui lòng liên hệ trực tiếp Zalo 0912 223 103 để được tư vấn nhanh nhất ạ.'
+          content: `[DEBUG LOG] EXCEPTION ERROR: ${error.message}`
         }
       }]
     });
