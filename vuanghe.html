@@ -33,6 +33,26 @@
   ::-webkit-scrollbar{display:none;}
   .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(78px + var(--safe-b));background:#121212;color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;z-index:60;opacity:0;pointer-events:none;transition:opacity .25s, bottom .25s;}
   .toast.show{opacity:1;}
+
+  /* Hero */
+  .hero{position:relative;overflow:hidden;background:#121212;padding:34px 20px 30px;}
+  .hero-blob{position:absolute;border-radius:999px;filter:blur(46px);background:#FFC107;animation:blobPulse 7s ease-in-out infinite;}
+  .hero-blob.b1{width:220px;height:220px;top:-90px;right:-60px;opacity:.35;}
+  .hero-blob.b2{width:180px;height:180px;bottom:-80px;left:-50px;opacity:.2;animation-delay:1.5s;}
+  .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:linear-gradient(to bottom,black,transparent 75%);mask-image:linear-gradient(to bottom,black,transparent 75%);}
+  .trade-row{position:relative;display:flex;justify-content:space-between;padding:0 4px;margin-bottom:22px;}
+  .trade-badge{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(4px);animation:floatY 3.6s ease-in-out infinite, fadeUp .6s ease-out backwards;}
+  .trade-badge svg{width:19px;height:19px;stroke:#FFC107;}
+  .hero-eyebrow{opacity:0;animation:fadeUp .6s ease-out .05s forwards;}
+  .hero-title{opacity:0;animation:fadeUp .65s ease-out .15s forwards;}
+  .hero-sub{opacity:0;animation:fadeUp .65s ease-out .3s forwards;}
+  .hero-stats{opacity:0;animation:fadeUp .65s ease-out .42s forwards;}
+  @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes blobPulse{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.18)}}
+  @media (prefers-reduced-motion: reduce){
+    .trade-badge,.hero-blob,.hero-eyebrow,.hero-title,.hero-sub,.hero-stats{animation:none !important;opacity:1 !important;}
+  }
 </style>
 </head>
 <body>
@@ -47,26 +67,52 @@
         </div>
         <span class="text-white font-extrabold tracking-tight text-[15px]">VUA NGHỀ</span>
       </div>
-      <button onclick="showTab('register')" class="text-[11.5px] font-bold text-[#121212] bg-[#FFC107] px-3.5 py-2 rounded-full">Đăng ký</button>
+      <div class="flex items-center gap-2">
+        <button onclick="showTab('settings')" aria-label="Cài đặt" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button onclick="showTab('register')" class="text-[11.5px] font-bold text-[#121212] bg-[#FFC107] px-3.5 py-2 rounded-full">Đăng ký</button>
+      </div>
     </div>
   </header>
 
   <!-- HOME -->
   <section id="tab-home" class="tab-panel active">
-    <div class="px-5 pt-6 pb-4">
-      <h1 class="text-[24px] font-extrabold leading-[1.15] text-[#121212]">Tìm thợ giỏi.<br>Tuyển đúng tay nghề.</h1>
-      <p class="text-[13.5px] text-gray-500 mt-2 leading-relaxed">Nền tảng quy tụ thợ nghề đạt thành tích từ các cuộc thi kỹ năng nghề trên khắp Việt Nam, xếp bậc minh bạch từ B1 đến B6.</p>
-      <div class="grid grid-cols-2 gap-3 mt-5">
-        <button onclick="showTab('talent')" class="text-left card p-4 bg-[#121212]">
+
+    <div class="hero">
+      <div class="hero-blob b1"></div>
+      <div class="hero-blob b2"></div>
+      <div class="hero-grid"></div>
+
+      <div class="trade-row">
+        <div class="trade-badge" style="animation-delay:.05s,0s"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
+        <div class="trade-badge" style="animation-delay:.12s,.3s"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 12-8.5 8.5a2.1 2.1 0 1 1-3-3L11 9"/><path d="M15.5 7.5 21 2l1 1-5.5 5.5"/><path d="m17.5 4.5 2 2"/><path d="m9 8 2 2"/></svg></div>
+        <div class="trade-badge" style="animation-delay:.19s,.6s"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+        <div class="trade-badge" style="animation-delay:.26s,.9s"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-8a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v8"/><path d="M6 8V5a3 3 0 0 1 6 0 3 3 0 0 1 6 0v3"/><path d="M4 8h16l-1 3H5z"/></svg></div>
+        <div class="trade-badge" style="animation-delay:.33s,1.2s"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 10h18M8 4v0M16 4v0"/></svg></div>
+      </div>
+
+      <div class="hero-eyebrow inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFC107]/10 border border-[#FFC107]/30 text-[#FFC107] text-[10.5px] font-bold tracking-widest mb-4">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+        HỆ SINH THÁI TAY NGHỀ VIỆT NAM
+      </div>
+
+      <h1 id="hero-title-el" class="hero-title text-white font-extrabold uppercase leading-[1.08] tracking-tight text-[28px]"></h1>
+      <p id="hero-sub-el" class="hero-sub text-[13.5px] text-white/55 mt-3 leading-relaxed max-w-[340px]"></p>
+
+      <div class="hero-stats grid grid-cols-2 gap-3 mt-6">
+        <button onclick="showTab('talent')" class="text-left rounded-2xl p-4 bg-white/[0.07] border border-white/10">
           <div class="text-[#FFC107] text-[22px] font-extrabold" id="stat-workers">—</div>
-          <div class="text-white/60 text-[12px] font-medium mt-0.5">Thợ nghề đã xếp bậc</div>
+          <div class="text-white/50 text-[12px] font-medium mt-0.5">Thợ nghề đã xếp bậc</div>
         </button>
-        <button onclick="showTab('contests')" class="text-left card p-4">
-          <div class="text-[#121212] text-[22px] font-extrabold" id="stat-contests">—</div>
-          <div class="text-gray-500 text-[12px] font-medium mt-0.5">Cuộc thi đang theo dõi</div>
+        <button onclick="showTab('contests')" class="text-left rounded-2xl p-4 bg-white/[0.07] border border-white/10">
+          <div class="text-white text-[22px] font-extrabold" id="stat-contests">—</div>
+          <div class="text-white/50 text-[12px] font-medium mt-0.5">Cuộc thi đang theo dõi</div>
         </button>
       </div>
     </div>
+
+    <div class="px-5 pt-5 pb-1"></div>
 
     <div class="px-5 flex gap-3 mt-2">
       <button onclick="openRegister('worker')" class="flex-1 bg-[#121212] text-white text-[13.5px] font-bold py-3.5 rounded-xl">Tôi là Thợ Nghề</button>
@@ -159,6 +205,60 @@
     <div class="px-5 pb-10" id="my-submissions"></div>
   </section>
 
+  <!-- SETTINGS -->
+  <section id="tab-settings" class="tab-panel">
+    <div class="px-5 pt-6 pb-4">
+      <h1 class="text-[19px] font-extrabold text-[#121212]">Cài Đặt Nội Dung</h1>
+      <p class="text-[12.5px] text-gray-500 mt-1">Khu vực quản trị — cần mật khẩu để chỉnh sửa.</p>
+    </div>
+
+    <div id="settings-lock" class="px-5 pb-8">
+      <div class="card p-5 flex flex-col gap-3">
+        <input type="password" id="admin-pass" placeholder="Nhập mật khẩu quản trị" class="border border-gray-200 rounded-xl px-4 py-3 text-[13.5px]">
+        <button onclick="tryUnlock()" class="bg-[#121212] text-white font-bold py-3 rounded-xl text-[13.5px]">Mở khóa</button>
+      </div>
+    </div>
+
+    <div id="settings-panel" class="px-5 pb-10 hidden flex flex-col gap-7">
+
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-[13.5px] font-bold text-[#121212]">Tiêu đề trang chủ</h2>
+          <button onclick="relock()" class="text-[11.5px] font-bold text-gray-400">Khóa lại</button>
+        </div>
+        <div class="card p-4 flex flex-col gap-2.5">
+          <input id="set-title" class="border border-gray-200 rounded-xl px-3 py-2.5 text-[13px]">
+          <textarea id="set-sub" rows="2" class="border border-gray-200 rounded-xl px-3 py-2.5 text-[13px]"></textarea>
+          <button onclick="saveHero()" class="bg-[#121212] text-white font-bold py-2.5 rounded-xl text-[13px]">Lưu tiêu đề</button>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-[13.5px] font-bold text-[#121212] mb-2">Quản lý cuộc thi</h2>
+        <div id="admin-contests" class="flex flex-col gap-2 mb-3"></div>
+        <div class="card p-4 flex flex-col gap-2.5">
+          <input id="nc-name" placeholder="Tên cuộc thi" class="border border-gray-200 rounded-xl px-3 py-2.5 text-[13px]">
+          <input id="nc-scope" placeholder="Phạm vi (VD: Cấp Quốc gia)" class="border border-gray-200 rounded-xl px-3 py-2.5 text-[13px]">
+          <input id="nc-month" placeholder="Thời gian (VD: Tháng 7 hàng năm)" class="border border-gray-200 rounded-xl px-3 py-2.5 text-[13px]">
+          <textarea id="nc-desc" rows="2" placeholder="Mô tả" class="border border-gray-200 rounded-xl px-3 py-2.5 text-[13px]"></textarea>
+          <button onclick="addContest()" class="bg-[#121212] text-white font-bold py-2.5 rounded-xl text-[13px]">+ Thêm cuộc thi</button>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-[13.5px] font-bold text-[#121212] mb-2">Quản lý thợ nghề</h2>
+        <div id="admin-workers" class="flex flex-col gap-2"></div>
+      </div>
+
+      <div>
+        <h2 class="text-[13.5px] font-bold text-[#121212] mb-2">Đơn tuyển dụng doanh nghiệp</h2>
+        <div id="admin-business" class="flex flex-col gap-2"></div>
+      </div>
+
+      <button onclick="resetAll()" class="text-[12px] font-bold text-red-500 py-2">Khôi phục dữ liệu mặc định</button>
+    </div>
+  </section>
+
   <!-- Bottom nav -->
   <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-white border-t border-gray-100 flex" style="padding-bottom:var(--safe-b)">
     <button class="navbtn active flex-1 flex flex-col items-center gap-1 py-2.5" data-tab="home" onclick="showTab('home')">
@@ -192,40 +292,54 @@ const TIERS = [
   {id:6,label:'B6',name:'Vua Nghề',cls:'tier-6'},
 ];
 
-const CONTESTS = [
-  {name:'Kỳ thi Kỹ năng nghề Quốc gia', scope:'Cấp Quốc gia', desc:'Tổ chức định kỳ bởi Bộ LĐ-TB&XH, quy tụ hàng chục nghề thi từ cơ khí, điện, công nghệ thông tin đến ẩm thực; là vòng tuyển chọn cho đội tuyển ASEAN Skills.', month:'Tháng 7 hàng năm'},
-  {name:'Kỳ thi Kỹ năng nghề ASEAN', scope:'Khu vực Đông Nam Á', desc:'Đại diện Việt Nam tranh tài cùng các nước ASEAN, thí sinh được chọn từ đội tuyển quốc gia xuất sắc nhất.', month:'2 năm/lần'},
-  {name:'WorldSkills — Kỹ năng nghề Thế giới', scope:'Toàn cầu', desc:'Đấu trường tay nghề danh giá nhất thế giới; thợ đạt huy chương tại đây mặc định được xếp Bậc 6 — Vua Nghề trên hệ thống.', month:'2 năm/lần'},
-  {name:'Kỳ thi Kỹ năng nghề cấp Thành phố/Tỉnh', scope:'TP.HCM, Hà Nội, Đà Nẵng...', desc:'Vòng loại địa phương, nơi phát hiện sớm các thợ trẻ tiềm năng trước khi bước vào sân chơi quốc gia.', month:'Quý 2 hàng năm'},
-  {name:'Cuộc thi Tay Nghề Giỏi cấp Doanh Nghiệp', scope:'Nội bộ doanh nghiệp/tập đoàn', desc:'Các tập đoàn sản xuất tự tổ chức để tìm "bàn tay vàng" nội bộ; kết quả được Vua Nghề công nhận và cộng điểm xếp bậc.', month:'Quanh năm'},
+const CONTESTS_DEFAULT = [
+  {id:1,name:'Kỳ thi Kỹ năng nghề Quốc gia', scope:'Cấp Quốc gia', desc:'Tổ chức định kỳ bởi Bộ LĐ-TB&XH, quy tụ hàng chục nghề thi từ cơ khí, điện, công nghệ thông tin đến ẩm thực; là vòng tuyển chọn cho đội tuyển ASEAN Skills.', month:'Tháng 7 hàng năm'},
+  {id:2,name:'Kỳ thi Kỹ năng nghề ASEAN', scope:'Khu vực Đông Nam Á', desc:'Đại diện Việt Nam tranh tài cùng các nước ASEAN, thí sinh được chọn từ đội tuyển quốc gia xuất sắc nhất.', month:'2 năm/lần'},
+  {id:3,name:'WorldSkills — Kỹ năng nghề Thế giới', scope:'Toàn cầu', desc:'Đấu trường tay nghề danh giá nhất thế giới; thợ đạt huy chương tại đây mặc định được xếp Bậc 6 — Vua Nghề trên hệ thống.', month:'2 năm/lần'},
+  {id:4,name:'Kỳ thi Kỹ năng nghề cấp Thành phố/Tỉnh', scope:'TP.HCM, Hà Nội, Đà Nẵng...', desc:'Vòng loại địa phương, nơi phát hiện sớm các thợ trẻ tiềm năng trước khi bước vào sân chơi quốc gia.', month:'Quý 2 hàng năm'},
+  {id:5,name:'Cuộc thi Tay Nghề Giỏi cấp Doanh Nghiệp', scope:'Nội bộ doanh nghiệp/tập đoàn', desc:'Các tập đoàn sản xuất tự tổ chức để tìm "bàn tay vàng" nội bộ; kết quả được Vua Nghề công nhận và cộng điểm xếp bậc.', month:'Quanh năm'},
 ];
 
-const seedWorkers = [
-  {name:'Nguyễn Văn Phúc', trade:'Điện lạnh', tier:6, salary:22000000, city:'TP.HCM', note:'Vô địch Kỹ năng nghề Quốc gia 2024'},
-  {name:'Trần Thị Hạnh', trade:'Hàn', tier:5, salary:17000000, city:'Bình Dương', note:'Huy chương Đồng WorldSkills khu vực'},
-  {name:'Lê Minh Tuấn', trade:'Điện nước', tier:4, salary:13000000, city:'Hà Nội', note:'200+ công việc hoàn thành, 4.9★'},
-  {name:'Phạm Đức Anh', trade:'Mộc nội thất', tier:4, salary:14500000, city:'Đà Nẵng', note:'Top 3 Tay Nghề Giỏi cấp Thành phố'},
-  {name:'Hoàng Thị Lan', trade:'Cơ khí chính xác', tier:3, salary:10500000, city:'TP.HCM', note:'Đang huấn luyện cho vòng ASEAN'},
-  {name:'Đỗ Văn Khoa', trade:'Sửa chữa ô tô', tier:2, salary:8000000, city:'TP.HCM', note:'Học việc xuất sắc, 1 năm kinh nghiệm'},
-  {name:'Vũ Thị Mai', trade:'Đầu bếp', tier:5, salary:16000000, city:'Hà Nội', note:'Giải Nhất Kỹ năng nghề Quốc gia'},
-  {name:'Bùi Anh Tú', trade:'Thợ xây/Hoàn thiện', tier:3, salary:11000000, city:'Cần Thơ', note:'150 job, chưa từng bị khiếu nại'},
+const WORKERS_DEFAULT = [
+  {id:1,name:'Nguyễn Văn Phúc', trade:'Điện lạnh', tier:6, salary:22000000, city:'TP.HCM', note:'Vô địch Kỹ năng nghề Quốc gia 2024'},
+  {id:2,name:'Trần Thị Hạnh', trade:'Hàn', tier:5, salary:17000000, city:'Bình Dương', note:'Huy chương Đồng WorldSkills khu vực'},
+  {id:3,name:'Lê Minh Tuấn', trade:'Điện nước', tier:4, salary:13000000, city:'Hà Nội', note:'200+ công việc hoàn thành, 4.9★'},
+  {id:4,name:'Phạm Đức Anh', trade:'Mộc nội thất', tier:4, salary:14500000, city:'Đà Nẵng', note:'Top 3 Tay Nghề Giỏi cấp Thành phố'},
+  {id:5,name:'Hoàng Thị Lan', trade:'Cơ khí chính xác', tier:3, salary:10500000, city:'TP.HCM', note:'Đang huấn luyện cho vòng ASEAN'},
+  {id:6,name:'Đỗ Văn Khoa', trade:'Sửa chữa ô tô', tier:2, salary:8000000, city:'TP.HCM', note:'Học việc xuất sắc, 1 năm kinh nghiệm'},
+  {id:7,name:'Vũ Thị Mai', trade:'Đầu bếp', tier:5, salary:16000000, city:'Hà Nội', note:'Giải Nhất Kỹ năng nghề Quốc gia'},
+  {id:8,name:'Bùi Anh Tú', trade:'Thợ xây/Hoàn thiện', tier:3, salary:11000000, city:'Cần Thơ', note:'150 job, chưa từng bị khiếu nại'},
 ];
 
-let workers = [...seedWorkers];
+const HERO_DEFAULT = {
+  title: 'Tìm Thợ Giỏi.|Tuyển Đúng Tay Nghề.',
+  sub: 'Quy tụ thợ nghề đạt thành tích từ các cuộc thi kỹ năng trên khắp Việt Nam, xếp bậc minh bạch từ B1 đến B6.'
+};
+
+const ADMIN_PASS = '123456';
+let unlocked = false;
+let contests = [];
+let workers = [];
 let businesses = [];
+let hero = {...HERO_DEFAULT};
 let activeTierFilter = 0;
 let activeSalaryFilter = 0;
 
-function load(){
-  try{
-    const w = JSON.parse(localStorage.getItem('vn_workers')||'null');
-    const b = JSON.parse(localStorage.getItem('vn_business')||'null');
-    if(w) workers = [...seedWorkers, ...w];
-    if(b) businesses = b;
-  }catch(e){}
+function loadJSON(key, fallback){
+  try{ const v = JSON.parse(localStorage.getItem(key)); return v || fallback; }catch(e){ return fallback; }
 }
-function saveWorkers(list){ try{ localStorage.setItem('vn_workers', JSON.stringify(list)); }catch(e){} }
-function saveBusiness(list){ try{ localStorage.setItem('vn_business', JSON.stringify(list)); }catch(e){} }
+function saveJSON(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
+
+function load(){
+  contests = loadJSON('vn_contests', CONTESTS_DEFAULT);
+  workers = loadJSON('vn_workers_all', WORKERS_DEFAULT);
+  businesses = loadJSON('vn_business', []);
+  hero = loadJSON('vn_hero', HERO_DEFAULT);
+}
+function saveWorkers(){ saveJSON('vn_workers_all', workers); }
+function saveContests(){ saveJSON('vn_contests', contests); }
+function saveBusiness(){ saveJSON('vn_business', businesses); }
+function saveHeroData(){ saveJSON('vn_hero', hero); }
 
 function tierInfo(id){ return TIERS.find(t=>t.id==id); }
 function money(n){ return (n/1000000).toFixed(1).replace('.0','')+'tr'; }
@@ -255,33 +369,118 @@ function toast(msg){
 function submitWorker(e){
   e.preventDefault();
   const w = {
-    name: w_val('w-name'), trade: w_val('w-trade'), tier: +w_val('w-tier'),
+    id: Date.now(), name: w_val('w-name'), trade: w_val('w-trade'), tier: +w_val('w-tier'),
     salary: +w_val('w-salary'), city: w_val('w-city'),
     note: w_val('w-achieve') || 'Hồ sơ mới đăng ký', phone: w_val('w-phone')
   };
-  const saved = JSON.parse(localStorage.getItem('vn_workers')||'[]');
-  saved.push(w); saveWorkers(saved);
-  workers = [...seedWorkers, ...saved];
+  workers.push(w); saveWorkers();
   e.target.reset();
   toast('Đã gửi hồ sơ thợ nghề!');
-  renderTalent(); renderStats(); renderMySubs();
+  renderTalent(); renderStats(); renderMySubs(); renderAdminWorkers();
 }
 function submitBusiness(e){
   e.preventDefault();
   const b = {
-    name: w_val('b-name'), contact: w_val('b-contact'), phone: w_val('b-phone'),
+    id: Date.now(), name: w_val('b-name'), contact: w_val('b-contact'), phone: w_val('b-phone'),
     role: w_val('b-role'), tier: +w_val('b-tier'), salary: +w_val('b-salary')
   };
-  businesses.push(b); saveBusiness(businesses);
+  businesses.push(b); saveBusiness();
   e.target.reset();
   toast('Đã đăng ký tuyển dụng!');
-  renderMySubs();
+  renderMySubs(); renderAdminBusiness();
 }
 function w_val(id){ return document.getElementById(id).value.trim(); }
 
 function renderStats(){
   document.getElementById('stat-workers').textContent = workers.length;
-  document.getElementById('stat-contests').textContent = CONTESTS.length;
+  document.getElementById('stat-contests').textContent = contests.length;
+}
+function renderHero(){
+  const parts = hero.title.split('|');
+  document.getElementById('hero-title-el').innerHTML = parts[0] + (parts[1] ? `<br><span class="text-[#FFC107]">${parts[1]}</span>` : '');
+  document.getElementById('hero-sub-el').textContent = hero.sub;
+}
+
+/* --- Admin / Settings --- */
+function tryUnlock(){
+  const val = document.getElementById('admin-pass').value;
+  if(val === ADMIN_PASS){
+    unlocked = true;
+    document.getElementById('settings-lock').classList.add('hidden');
+    document.getElementById('settings-panel').classList.remove('hidden');
+    document.getElementById('set-title').value = hero.title;
+    document.getElementById('set-sub').value = hero.sub;
+    renderAdminContests(); renderAdminWorkers(); renderAdminBusiness();
+    toast('Đã mở khóa cài đặt');
+  }else{
+    toast('Sai mật khẩu, thử lại');
+  }
+  document.getElementById('admin-pass').value = '';
+}
+function relock(){
+  unlocked = false;
+  document.getElementById('settings-lock').classList.remove('hidden');
+  document.getElementById('settings-panel').classList.add('hidden');
+}
+function saveHero(){
+  hero = { title: document.getElementById('set-title').value.trim() || HERO_DEFAULT.title,
+           sub: document.getElementById('set-sub').value.trim() || HERO_DEFAULT.sub };
+  saveHeroData(); renderHero();
+  toast('Đã lưu tiêu đề trang chủ');
+}
+function addContest(){
+  const name = document.getElementById('nc-name').value.trim();
+  if(!name){ toast('Nhập tên cuộc thi'); return; }
+  contests.push({
+    id: Date.now(),
+    name, scope: document.getElementById('nc-scope').value.trim() || 'Chưa rõ phạm vi',
+    month: document.getElementById('nc-month').value.trim() || 'Chưa xác định',
+    desc: document.getElementById('nc-desc').value.trim() || ''
+  });
+  saveContests();
+  ['nc-name','nc-scope','nc-month','nc-desc'].forEach(id=>document.getElementById(id).value='');
+  renderAdminContests(); renderContests(contests,'home-contests',3); renderContests(contests,'contest-list'); renderStats();
+  toast('Đã thêm cuộc thi mới');
+}
+function deleteContest(id){
+  contests = contests.filter(c=>c.id!==id); saveContests();
+  renderAdminContests(); renderContests(contests,'home-contests',3); renderContests(contests,'contest-list'); renderStats();
+}
+function deleteWorker(id){
+  workers = workers.filter(w=>w.id!==id); saveWorkers();
+  renderAdminWorkers(); renderTalent(); renderStats(); renderMySubs();
+}
+function deleteBusiness(id){
+  businesses = businesses.filter(b=>b.id!==id); saveBusiness();
+  renderAdminBusiness(); renderMySubs();
+}
+function renderAdminContests(){
+  document.getElementById('admin-contests').innerHTML = contests.map(c=>`
+    <div class="flex items-center justify-between border border-gray-100 rounded-xl px-3.5 py-2.5">
+      <span class="text-[12.5px] font-semibold text-[#121212] pr-2">${c.name}</span>
+      <button onclick="deleteContest(${c.id})" class="text-[11px] font-bold text-red-500 shrink-0">Xóa</button>
+    </div>`).join('') || `<div class="text-[12px] text-gray-400">Chưa có cuộc thi.</div>`;
+}
+function renderAdminWorkers(){
+  document.getElementById('admin-workers').innerHTML = workers.map(w=>`
+    <div class="flex items-center justify-between border border-gray-100 rounded-xl px-3.5 py-2.5">
+      <span class="text-[12.5px] font-semibold text-[#121212] pr-2">${w.name} · ${w.trade} · B${w.tier}</span>
+      <button onclick="deleteWorker(${w.id})" class="text-[11px] font-bold text-red-500 shrink-0">Xóa</button>
+    </div>`).join('') || `<div class="text-[12px] text-gray-400">Chưa có thợ nghề.</div>`;
+}
+function renderAdminBusiness(){
+  document.getElementById('admin-business').innerHTML = businesses.map(b=>`
+    <div class="flex items-center justify-between border border-gray-100 rounded-xl px-3.5 py-2.5">
+      <span class="text-[12.5px] font-semibold text-[#121212] pr-2">${b.name} · tuyển ${b.role}</span>
+      <button onclick="deleteBusiness(${b.id})" class="text-[11px] font-bold text-red-500 shrink-0">Xóa</button>
+    </div>`).join('') || `<div class="text-[12px] text-gray-400">Chưa có đơn tuyển dụng.</div>`;
+}
+function resetAll(){
+  if(!confirm('Khôi phục toàn bộ dữ liệu mặc định? Các thay đổi sẽ mất.')) return;
+  localStorage.removeItem('vn_contests'); localStorage.removeItem('vn_workers_all');
+  localStorage.removeItem('vn_business'); localStorage.removeItem('vn_hero');
+  load(); renderAll();
+  toast('Đã khôi phục dữ liệu mặc định');
 }
 function renderTierLegend(){
   document.getElementById('tier-legend').innerHTML = TIERS.map(t=>
@@ -340,22 +539,26 @@ function renderTalent(){
 }
 
 function renderMySubs(){
-  const saved = JSON.parse(localStorage.getItem('vn_workers')||'[]');
   const rows = [];
-  saved.forEach(w=>rows.push(`<div class="text-[12.5px] text-gray-600 py-2 border-b border-gray-100">👷 <b>${w.name}</b> — ${w.trade}, B${w.tier}</div>`));
+  workers.filter(w=>w.id>1000).forEach(w=>rows.push(`<div class="text-[12.5px] text-gray-600 py-2 border-b border-gray-100">👷 <b>${w.name}</b> — ${w.trade}, B${w.tier}</div>`));
   businesses.forEach(b=>rows.push(`<div class="text-[12.5px] text-gray-600 py-2 border-b border-gray-100">🏢 <b>${b.name}</b> — tuyển ${b.role}</div>`));
   document.getElementById('my-submissions').innerHTML = rows.length ? `<div class="text-[12px] font-bold text-gray-400 mb-1 mt-2">HỒ SƠ ĐÃ GỬI TRÊN THIẾT BỊ NÀY</div>` + rows.join('') : '';
 }
 
+function renderAll(){
+  renderHero();
+  renderStats();
+  renderTierLegend();
+  renderContests(contests, 'home-contests', 3);
+  renderContests(contests, 'contest-list');
+  renderFilters();
+  renderTalent();
+  setRegType('worker');
+  renderMySubs();
+}
+
 load();
-renderStats();
-renderTierLegend();
-renderContests(CONTESTS, 'home-contests', 3);
-renderContests(CONTESTS, 'contest-list');
-renderFilters();
-renderTalent();
-setRegType('worker');
-renderMySubs();
+renderAll();
 </script>
 </body>
 </html>
