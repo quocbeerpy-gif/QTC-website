@@ -17,7 +17,7 @@ for %%A in ("%temp%\git_status.txt") do if %%~zA==0 (
     echo.
     echo [THONG BAO] Khong co file nao thay doi moi! Tat ca da duoc dong bo len GitHub roi anh nhe.
     echo.
-    timeout /t 3 >nul
+    ping -n 4 127.0.0.1 >nul
     exit /b 0
 )
 del "%temp%\git_status.txt"
@@ -38,5 +38,5 @@ if %errorlevel% neq 0 (
     echo   [THANH CONG] DA PUSH CODE MOI LEN GITHUB THANH CONG!
     echo ========================================================
     echo.
-    timeout /t 3 >nul
+    ping -n 4 127.0.0.1 >nul
 )
