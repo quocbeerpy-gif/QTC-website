@@ -493,6 +493,15 @@
     display:flex; justify-content:space-between; color: var(--text-faint); font-size: .8rem;
     flex-wrap: wrap; gap: 10px;
   }
+  .footer-stats{
+    margin-top: 24px; padding: 12px 16px; border: 1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; gap: 9px;
+    color: var(--text-faint); font-size: .78rem; font-family: var(--mono);
+    letter-spacing: .02em;
+  }
+  .footer-stats strong{ color: var(--text); font-weight: 700; }
+  .footer-stat-dot{ width: 7px; height: 7px; border-radius: 50%; background: #35d07f; box-shadow: 0 0 8px rgba(53,208,127,.55); }
+  .footer-stat-sep{ color: var(--line-bright); }
 
   /* ---------- RESPONSIVE ---------- */
   @media (max-width: 880px){
@@ -510,6 +519,7 @@
     .wrap, nav{ padding-left: 20px; padding-right:20px; }
     .process{ grid-template-columns: 1fr; }
     .footer-grid{ grid-template-columns: 1fr; }
+    .footer-stats{ flex-wrap: wrap; gap: 7px; }
   }
 
   /* ---------- CHAT WIDGET ---------- */
@@ -1352,6 +1362,12 @@ Thời gian phản hồi chatbot TB:  0.8s
         <a href="#" style="color:var(--text-dim); pointer-events:none;">220 Trần Hưng Đạo, P. Tuy Hòa, Đắk Lắk</a>
       </div>
     </div>
+    <div class="footer-stats" aria-label="Thống kê người truy cập">
+      <span class="footer-stat-dot"></span>
+      <span>Người đang truy cập: <strong id="qtcOnlineCount">1</strong></span>
+      <span class="footer-stat-sep">•</span>
+      <span>Lượt truy cập: <strong id="qtcVisitCount">1</strong></span>
+    </div>
     <div class="footer-bottom">
       <span>© 2026 QTC. Bảo lưu mọi quyền.</span>
       <span>Thiết kế &amp; vận hành tại Việt Nam</span>
@@ -1580,5 +1596,19 @@ s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 <!--End of Tawk.to Script-->
+<script>
+(function(){
+  const visitKey = 'qtc-total-visits';
+  const onlineKey = 'qtc-online-session';
+  let visits = Number(localStorage.getItem(visitKey) || '0') + 1;
+  localStorage.setItem(visitKey, String(visits));
+  const visitEl = document.getElementById('qtcVisitCount');
+  const onlineEl = document.getElementById('qtcOnlineCount');
+  if(visitEl) visitEl.textContent = visits.toLocaleString('vi-VN');
+  // Chỉ là thống kê cục bộ trên trình duyệt; số người online thực tế cần backend/analytics.
+  if(onlineEl) onlineEl.textContent = '1';
+})();
+</script>
+
 </body>
 </html>
