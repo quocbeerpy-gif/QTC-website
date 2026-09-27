@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi" data-theme="editorial">
 <head>
-<meta name="google-site-verification" content="iRziuNW6zibLMWh4Z4NRtYBGNwXnVa9n_DP7Ppr6U1Q">
-<meta name="description" content="QTC AI - Giải pháp AI chuyên sâu cho doanh nghiệp. Tự động hóa quy trình, trợ lý ảo và giải pháp công nghệ thông minh.">
-<meta name="keywords" content="QTC AI, QTC, AI doanh nghiệp, trợ lý ảo, giải pháp AI">
-<meta name="robots" content="index, follow">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QTC — Giải pháp AI cho doanh nghiệp</title>
@@ -1368,9 +1364,7 @@ Thời gian phản hồi chatbot TB:  0.8s
     </div>
     <div class="footer-stats" aria-label="Thống kê người truy cập">
       <span class="footer-stat-dot"></span>
-      <span>Người đang truy cập: <strong id="qtcOnlineCount">1</strong></span>
-      <span class="footer-stat-sep">•</span>
-      <span>Lượt truy cập: <strong id="qtcVisitCount">1</strong></span>
+      <span>Lượt khách truy cập: <strong id="qtcVisitCount">Đang tải...</strong></span>
     </div>
     <div class="footer-bottom">
       <span>© 2026 QTC. Bảo lưu mọi quyền.</span>
@@ -1602,15 +1596,41 @@ s0.parentNode.insertBefore(s1,s0);
 <!--End of Tawk.to Script-->
 <script>
 (function(){
-  const visitKey = 'qtc-total-visits';
-  const onlineKey = 'qtc-online-session';
-  let visits = Number(localStorage.getItem(visitKey) || '0') + 1;
-  localStorage.setItem(visitKey, String(visits));
+  // BỘ ĐẾM THẬT: lưu tập trung trên server counter, không dùng localStorage.
+  // Mỗi trình duyệt được tính tối đa 1 lượt trong 24 giờ để hạn chế refresh ảo.
+  const counterUrl = 'https://abacus.jasoncameron.dev';
+  const namespace = 'qtc-ai-site-7f3c9b2d';
+  const key = 'visitors';
   const visitEl = document.getElementById('qtcVisitCount');
-  const onlineEl = document.getElementById('qtcOnlineCount');
-  if(visitEl) visitEl.textContent = visits.toLocaleString('vi-VN');
-  // Chỉ là thống kê cục bộ trên trình duyệt; số người online thực tế cần backend/analytics.
-  if(onlineEl) onlineEl.textContent = '1';
+  const cookieName = 'qtc_visitor_counted';
+
+  function getCookie(name){
+    return document.cookie.split('; ').find(row => row.startsWith(name + '='))?.split('=')[1];
+  }
+
+  function setVisitorCookie(){
+    const expires = new Date(Date.now() + 86400000).toUTCString();
+    document.cookie = cookieName + '=1; expires=' + expires + '; path=/; SameSite=Lax';
+  }
+
+  async function loadCounter(){
+    try{
+      const counted = getCookie(cookieName);
+      const endpoint = counted
+        ? counterUrl + '/get/' + namespace + '/' + key
+        : counterUrl + '/hit/' + namespace + '/' + key;
+      const response = await fetch(endpoint, { cache: 'no-store' });
+      if(!response.ok) throw new Error('Counter HTTP ' + response.status);
+      const data = await response.json();
+      if(!counted) setVisitorCookie();
+      if(visitEl) visitEl.textContent = Number(data.value || 0).toLocaleString('vi-VN');
+    }catch(error){
+      console.warn('Không thể tải bộ đếm truy cập:', error);
+      if(visitEl) visitEl.textContent = '—';
+    }
+  }
+
+  loadCounter();
 })();
 </script>
 
