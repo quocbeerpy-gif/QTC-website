@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://qtcai.vercel.app/sitemap.xml
