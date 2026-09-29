@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HRCGroup – CRM Tuyển sinh & CTV</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 --bg:#eef1ed;--cd:#fff;--tx:#16231f;--mu:#61706a;--pr:#0b6b5d;--pt:#fff;--ac:#e2a11f;--bd:#d8dfd9;--er:#b42318;--sf:#f6f8f5}
@@ -119,7 +126,7 @@ const ago=t=>{const d=Math.floor((Date.now()-t)/864e5);return d<1?"Hôm nay":d+"
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=n=>Number(n||0).toLocaleString("vi-VN")+"đ";
-let S={ctv:[],leads:[],fee:{apply:200000,enroll:1000000}},me={role:"admin"},tab="dash",Q="",dl=0;
+let LOAD=true,got={},S={ctv:[],leads:[],fee:{apply:200000,enroll:1000000}},me={role:"admin"},tab="dash",Q="",dl=0;
 
 const fail=e=>toast("Không lưu được: "+(e.code||e.message));
 function toast(m){const t=$("ts");t.textContent=m;t.className="on";clearTimeout(toast.t);toast.t=setTimeout(()=>t.className="",2600)}
@@ -128,7 +135,7 @@ const vis=()=>me.role=="admin"?S.leads:S.leads.filter(l=>l.ctv==me.id);
 function cm(id){const L=S.leads.filter(l=>l.ctv==id),ap=L.filter(l=>l.st>=3&&l.st<=5).length,en=L.filter(l=>l.st==5).length,t=ap*S.fee.apply+en*S.fee.enroll,p=(S.ctv.find(c=>c.id==id)||{}).paid||0;return{n:L.length,ap,en,t,p,r:t-p}}
 
 window.App={
- data(k,v){if(k=="cfg")S.fee=v.fee||S.fee;else S[k]=v;if(me.role=="ctv"&&!S.ctv.some(c=>c.id==me.id))me={role:"admin"};const a=document.activeElement;if(!(a&&a.tagName=="INPUT"&&$("main").contains(a)))R()},
+ data(k,v){got[k]=1;if(got.ctv&&got.leads)LOAD=false;if(k=="cfg")S.fee=v.fee||S.fee;else S[k]=v;if(me.role=="ctv"&&!S.ctv.some(c=>c.id==me.id))me={role:"admin"};const a=document.activeElement;if(!(a&&a.tagName=="INPUT"&&$("main").contains(a)))R()},
  err(m){$("main").innerHTML=`<div class="pn"><h3>Chưa kết nối được Firebase</h3><p class="mu">${esc(m)}</p></div>`}
 };
 function login(v){me=v=="admin"?{role:"admin"}:{role:"ctv",id:+v};tab=me.role=="admin"?"dash":"leads";R()}
@@ -137,7 +144,7 @@ function R(){
   $("who").value=me.role=="admin"?"admin":me.id;
   const T=me.role=="admin"?[["dash","Tổng quan"],["leads","Hồ sơ"],["ctv","Cộng tác viên"],["set","Cài đặt"]]:[["leads","Hồ sơ của tôi"],["my","Hoa hồng"]];
   $("nav").innerHTML=T.map(([k,n])=>`<button class="${k==tab?"on":""}" onclick="tab='${k}';R()">${n}</button>`).join("");
-  $("main").innerHTML=V[tab]();
+  $("main").innerHTML=LOAD?`<div class="pn mu">Đang tải dữ liệu từ Firebase…</div>`:V[tab]();
 }
 const kp=(a,b)=>`<div class="k"><span>${a}</span><b>${b}</b></div>`;
 
@@ -232,15 +239,13 @@ const U="https://www.gstatic.com/firebasejs/10.14.1/";
 const cfg={apiKey:"AIzaSyD20NuXcT5fbU9gd7wolIslUVmHUW5_r5U",authDomain:"tuyesinh.firebaseapp.com",projectId:"tuyesinh",storageBucket:"tuyesinh.firebasestorage.app",messagingSenderId:"272736903727",appId:"1:272736903727:web:5960338ef6141caf81dcda"};
 if(location.protocol=="file:")App.err("Firebase không chạy khi mở file trực tiếp (file://). Hãy chạy bằng localhost hoặc đưa lên Firebase Hosting.");
 else try{
-const {initializeApp}=await import(U+"firebase-app.js");
-const {getAuth,signInAnonymously}=await import(U+"firebase-auth.js");
-const {getFirestore,collection,doc,getDocs,setDoc,deleteDoc,onSnapshot}=await import(U+"firebase-firestore.js");
-const auth=getAuth(initializeApp(cfg)),db=getFirestore();
+const [{initializeApp},{getAuth,signInAnonymously},{initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,getDocs,setDoc,deleteDoc,onSnapshot}]=await Promise.all([import(U+"firebase-app.js"),import(U+"firebase-auth.js"),import(U+"firebase-firestore.js")]);
+const app=initializeApp(cfg),auth=getAuth(app),db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()}),experimentalAutoDetectLongPolling:true});
 window.DB={setLead:l=>setDoc(doc(db,"leads",l.phone),l),delLead:ph=>deleteDoc(doc(db,"leads",ph)),
  setCtv:c=>setDoc(doc(db,"ctv",String(c.id)),c),setCfg:o=>setDoc(doc(db,"settings","main"),o,{merge:true}),
  seed:(C,L,fee)=>Promise.all([...C.map(c=>DB.setCtv(c)),...L.map(l=>DB.setLead(l)),DB.setCfg({fee})]),
  wipe:async()=>{for(const n of["leads","ctv"])await Promise.all((await getDocs(collection(db,n))).docs.map(d=>deleteDoc(d.ref)))}};
-await signInAnonymously(auth);
+await auth.authStateReady();if(!auth.currentUser)await signInAnonymously(auth);
 const er=e=>toast("Lỗi dữ liệu: "+e.code),all=s=>s.docs.map(d=>d.data());
 onSnapshot(collection(db,"ctv"),s=>App.data("ctv",all(s)),er);
 onSnapshot(collection(db,"leads"),s=>App.data("leads",all(s)),er);
