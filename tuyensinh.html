@@ -56,40 +56,36 @@ button.s{padding:4px 9px;font-size:13px}
 #ts{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10;max-width:90%}
 #ts.on{opacity:1}
 footer{color:var(--mu);font-size:12px;text-align:center;padding:8px 16px 24px}
+.hb{background:none;border:1px solid currentColor;color:inherit;border-radius:6px;padding:4px 10px;cursor:pointer;font:inherit;font-size:13px}
 </style>
 </head>
 <body>
 <header>
   <h1>HRCGroup<small>CRM Tuyển sinh & Cộng tác viên</small></h1>
-  <select id="who" onchange="login(this.value)" aria-label="Vai trò đăng nhập"></select>
+  <select id="who" onchange="login(this.value)" aria-label="Vai trò"></select>
 </header>
 <nav id="nav"></nav>
 <main id="main"></main>
-<footer>Bản demo: dữ liệu lưu ngay trong trình duyệt này. Bản dùng thật cần máy chủ để nhiều người cùng dùng và phân quyền chặt.</footer>
+<footer>Bản demo: dữ liệu đồng bộ qua Firebase, chưa có đăng nhập thật. Không nhập dữ liệu thí sinh thật vào bản này.</footer>
 <div id="md"></div><div id="ts"></div>
 <script>
 const ST=["Mới","Đã liên hệ","Quan tâm","Đã nộp hồ sơ","Trúng tuyển","Nhập học","Từ chối"];
 const MJ=["Quản trị kinh doanh","Công nghệ thông tin","Kế toán","Ngôn ngữ Anh","Điều dưỡng","Marketing"];
-const K="hrc_crm_v1",$=id=>document.getElementById(id);
+const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=n=>Number(n||0).toLocaleString("vi-VN")+"đ";
-let S,me={role:"admin"},tab="dash",Q="",dl=0;
+let S={ctv:[],leads:[],fee:{apply:200000,enroll:1000000}},me={role:"admin"},tab="dash",Q="",dl=0;
 
-function seed(){
-  const L=[[1,"Phạm Minh Khôi","0911000001",1,1,5],[2,"Nguyễn Thu Hà","0911000002",0,1,3],[3,"Võ Quốc Bảo","0911000003",2,2,2],
-  [4,"Đặng Ngọc Anh","0911000004",3,2,5],[5,"Lý Gia Huy","0911000005",4,3,1],[6,"Hoàng Mai Linh","0911000006",5,3,0],
-  [7,"Bùi Tấn Phát","0911000007",1,1,4],[8,"Trịnh Yến Nhi","0911000008",0,2,6]];
-  return{nid:20,paid:{},fee:{apply:200000,enroll:1000000},
-    ctv:[{id:1,name:"Nguyễn Văn An",phone:"0901111111",code:"CTV001"},{id:2,name:"Trần Thị Bích",phone:"0902222222",code:"CTV002"},{id:3,name:"Lê Hoàng Cường",phone:"0903333333",code:"CTV003"}],
-    leads:L.map(([id,name,phone,m,ctv,st])=>({id,name,phone,major:MJ[m],ctv,st,note:"",ts:Date.now()-id*864e5}))};
-}
-function load(){try{S=JSON.parse(localStorage.getItem(K))}catch(e){}if(!S)S=seed()}
-function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+const fail=e=>toast("Không lưu được: "+(e.code||e.message));
 function toast(m){const t=$("ts");t.textContent=m;t.className="on";clearTimeout(toast.t);toast.t=setTimeout(()=>t.className="",2600)}
 const code=id=>(S.ctv.find(c=>c.id==id)||{code:"—"}).code;
 const vis=()=>me.role=="admin"?S.leads:S.leads.filter(l=>l.ctv==me.id);
-function cm(id){const L=S.leads.filter(l=>l.ctv==id),ap=L.filter(l=>l.st>=3&&l.st<=5).length,en=L.filter(l=>l.st==5).length,t=ap*S.fee.apply+en*S.fee.enroll,p=S.paid[id]||0;return{n:L.length,ap,en,t,p,r:t-p}}
+function cm(id){const L=S.leads.filter(l=>l.ctv==id),ap=L.filter(l=>l.st>=3&&l.st<=5).length,en=L.filter(l=>l.st==5).length,t=ap*S.fee.apply+en*S.fee.enroll,p=(S.ctv.find(c=>c.id==id)||{}).paid||0;return{n:L.length,ap,en,t,p,r:t-p}}
 
+window.App={
+ data(k,v){if(k=="cfg")S.fee=v.fee||S.fee;else S[k]=v;if(me.role=="ctv"&&!S.ctv.some(c=>c.id==me.id))me={role:"admin"};const a=document.activeElement;if(!(a&&a.tagName=="INPUT"&&$("main").contains(a)))R()},
+ err(m){$("main").innerHTML=`<div class="pn"><h3>Chưa kết nối được Firebase</h3><p class="mu">${esc(m)}</p></div>`}
+};
 function login(v){me=v=="admin"?{role:"admin"}:{role:"ctv",id:+v};tab=me.role=="admin"?"dash":"leads";R()}
 function R(){
   $("who").innerHTML=`<option value="admin">Admin – Ban tuyển sinh</option>`+S.ctv.map(c=>`<option value="${c.id}">${esc(c.name)} (${c.code})</option>`).join("");
@@ -114,14 +110,14 @@ leads(){
   return`<div class="tb"><input placeholder="Tìm tên hoặc SĐT" value="${esc(Q)}" oninput="Q=this.value;$('bd').innerHTML=board()"><button class="b" onclick="addOpen()">+ Thêm hồ sơ</button></div><div id="bd">${board()}</div>`;
 },
 ctv(){
-  return`<div class="pn"><h3>Thêm cộng tác viên</h3><div class="tb"><input id="cn" placeholder="Họ tên"><input id="cp" placeholder="Số điện thoại" inputmode="tel"><button class="b" onclick="addCtv()">Thêm CTV</button></div></div>
+  return`<div class="pn"><h3>Thêm cộng tác viên</h3><div class="tb"><input id="cn" placeholder="Họ tên"><input id="cp" placeholder="Số điện thoại" inputmode="tel"><input id="ce" type="email" placeholder="Email (không bắt buộc)"><button class="b" onclick="addCtv()">Thêm CTV</button></div></div>
   <div class="pn"><div class="tw"><table><tr><th>Mã</th><th>Họ tên</th><th>SĐT</th><th>Hồ sơ</th><th>Nhập học</th><th>Hoa hồng</th><th>Còn phải chi</th><th></th></tr>
   ${S.ctv.map(c=>{const m=cm(c.id);return`<tr><td>${c.code}</td><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td>${m.n}</td><td>${m.en}</td><td>${fmt(m.t)}</td><td>${fmt(m.r)}</td><td>${m.r>0?`<button class="b s" onclick="pay(${c.id})">Đã chi</button>`:""}</td></tr>`}).join("")}</table></div></div>`;
 },
 set(){
   return`<div class="pn"><h3>Mức hoa hồng</h3><p class="mu">Hoa hồng "nộp hồ sơ" tính khi hồ sơ đạt từ bước Đã nộp hồ sơ trở đi. Hoa hồng "nhập học" tính thêm khi thí sinh nhập học.</p>
   <div class="tb"><label>Nộp hồ sơ (đ)<br><input id="fa" type="number" value="${S.fee.apply}"></label><label>Nhập học (đ)<br><input id="fe" type="number" value="${S.fee.enroll}"></label></div><button class="b" onclick="saveFee()">Lưu mức hoa hồng</button></div>
-  <div class="pn"><h3>Dữ liệu demo</h3><button class="b g" onclick="reset()">Đặt lại dữ liệu mẫu</button></div>`;
+  <div class="pn"><h3>Dữ liệu demo</h3><div class="tb"><button class="b" onclick="seedDemo()">Nạp dữ liệu mẫu</button><button class="b g" onclick="wipe()">Xoá toàn bộ dữ liệu</button></div></div>`;
 },
 my(){
   const m=cm(me.id);
@@ -140,8 +136,8 @@ function board(){
   if(me.role!="admin")return L.length?`<div class="gl">${L.map(card).join("")}</div>`:`<p class="mu">Chưa có hồ sơ. Bấm "Thêm hồ sơ" để nhập thí sinh đầu tiên.</p>`;
   return`<div class="bd">${ST.map((s,i)=>{const c=L.filter(l=>l.st==i);return`<div class="col" ondragover="event.preventDefault()" ondrop="mv(+event.dataTransfer.getData('t'),${i})"><h4>${s}<span>${c.length}</span></h4>${c.map(card).join("")}</div>`}).join("")}</div>`;
 }
-function mv(id,i){const l=S.leads.find(x=>x.id==id);if(l){l.st=i;save();R()}}
-function del(id){if(dl!=id){dl=id;toast("Bấm Xoá lần nữa để xác nhận");return}S.leads=S.leads.filter(l=>l.id!=id);dl=0;save();R();toast("Đã xoá hồ sơ")}
+function mv(id,i){const l=S.leads.find(x=>x.id==id);if(l){l.st=i;DB.setLead(l).catch(fail);R()}}
+function del(id){if(dl!=id){dl=id;toast("Bấm Xoá lần nữa để xác nhận");return}DB.delLead(S.leads.find(l=>l.id==id).phone).catch(fail);dl=0;toast("Đã xoá hồ sơ")}
 function cl(){$("md").className=""}
 function addOpen(){
   $("md").innerHTML=`<div class="box"><h3>Thêm hồ sơ</h3><input id="fn" placeholder="Họ tên thí sinh *"><input id="fp" placeholder="Số điện thoại *" inputmode="tel">
@@ -151,21 +147,47 @@ function addOpen(){
   $("md").className="on";$("fn").focus();
 }
 function addSave(){
-  const name=$("fn").value.trim(),p=$("fp").value.replace(/\D/g,""),ctv=me.role=="admin"?+$("fc").value:me.id;
+  const name=$("fn").value.trim(),p=$("fp").value.replace(/\D/g,"").replace(/^84/,"0"),ctv=me.role=="admin"?+$("fc").value:me.id;
   if(!name||p.length<9)return toast("Nhập họ tên và số điện thoại hợp lệ (từ 9 chữ số)");
   const d=S.leads.find(l=>l.phone==p);
   if(d)return toast(`Số này đã do ${code(d.ctv)} nhập ngày ${new Date(d.ts).toLocaleDateString("vi-VN")}`);
-  S.leads.push({id:S.nid++,name,phone:p,major:$("fm").value,ctv,st:0,note:$("fo").value.trim(),ts:Date.now()});
-  save();cl();R();toast("Đã thêm hồ sơ");
+  const c=S.ctv.find(x=>x.id==ctv);if(!c)return toast("Chưa chọn được CTV");
+  DB.setLead({id:+p,name,phone:p,major:$("fm").value,ctv,ctvEmail:c.email||"",st:0,note:$("fo").value.trim(),ts:Date.now()})
+   .then(()=>{cl();toast("Đã thêm hồ sơ")}).catch(e=>toast(e.code=="permission-denied"?"Số này đã có trong hệ thống hoặc bạn không có quyền":"Không lưu được: "+e.code));
 }
 function addCtv(){
-  const n=$("cn").value.trim(),p=$("cp").value.trim();if(!n)return toast("Nhập họ tên CTV");
-  const id=Math.max(0,...S.ctv.map(c=>c.id))+1;S.ctv.push({id,name:n,phone:p,code:"CTV"+String(id).padStart(3,"0")});save();R();toast("Đã thêm CTV")}
-function pay(id){S.paid[id]=cm(id).t;save();R();toast("Đã ghi nhận chi hoa hồng")}
-function saveFee(){S.fee={apply:+$("fa").value||0,enroll:+$("fe").value||0};save();toast("Đã lưu mức hoa hồng")}
-function reset(){if(dl!=-1){dl=-1;toast("Bấm lần nữa để xoá toàn bộ và đặt lại dữ liệu mẫu");return}dl=0;S=seed();save();R();toast("Đã đặt lại dữ liệu mẫu")}
+  const n=$("cn").value.trim(),p=$("cp").value.trim(),e=$("ce").value.trim().toLowerCase();if(!n)return toast("Nhập họ tên CTV");
+  const id=Math.max(0,...S.ctv.map(c=>c.id))+1;DB.setCtv({id,name:n,phone:p,email:e,code:"CTV"+String(id).padStart(3,"0"),paid:0}).then(()=>toast("Đã thêm CTV")).catch(fail)}
+function pay(id){const c=S.ctv.find(x=>x.id==id);c.paid=cm(id).t;DB.setCtv(c).then(()=>toast("Đã ghi nhận chi hoa hồng")).catch(fail)}
+function saveFee(){S.fee={apply:+$("fa").value||0,enroll:+$("fe").value||0};DB.setCfg({fee:S.fee}).then(()=>toast("Đã lưu mức hoa hồng")).catch(fail)}
+function seedDemo(){
+ const C=[[1,"Nguyễn Văn An","0901111111"],[2,"Trần Thị Bích","0902222222"],[3,"Lê Hoàng Cường","0903333333"]].map(([id,name,phone])=>({id,name,phone,email:"",code:"CTV00"+id,paid:0}));
+ const N=["Phạm Minh Khôi","Nguyễn Thu Hà","Võ Quốc Bảo","Đặng Ngọc Anh","Lý Gia Huy","Hoàng Mai Linh","Bùi Tấn Phát","Trịnh Yến Nhi"],T=[1,1,2,2,3,3,1,2],X=[5,3,2,5,1,0,4,6];
+ const L=N.map((name,i)=>{const phone="09110000"+String(i+1).padStart(2,"0");return{id:+phone,name,phone,major:MJ[i%MJ.length],ctv:T[i],ctvEmail:"",st:X[i],note:"",ts:Date.now()-i*864e5}});
+ DB.seed(C,L,{apply:200000,enroll:1000000}).then(()=>toast("Đã nạp dữ liệu mẫu")).catch(fail)}
+function wipe(){if(dl!=-1){dl=-1;toast("Bấm lần nữa để xoá toàn bộ dữ liệu");return}dl=0;DB.wipe().then(()=>toast("Đã xoá toàn bộ dữ liệu")).catch(fail)}
 $("md").addEventListener("click",e=>{if(e.target.id=="md")cl()});
-load();R();
+R();
+</script>
+<script type="module">
+const U="https://www.gstatic.com/firebasejs/10.14.1/";
+const cfg={apiKey:"AIzaSyD20NuXcT5fbU9gd7wolIslUVmHUW5_r5U",authDomain:"tuyesinh.firebaseapp.com",projectId:"tuyesinh",storageBucket:"tuyesinh.firebasestorage.app",messagingSenderId:"272736903727",appId:"1:272736903727:web:5960338ef6141caf81dcda"};
+if(location.protocol=="file:")App.err("Firebase không chạy khi mở file trực tiếp (file://). Hãy chạy bằng localhost hoặc đưa lên Firebase Hosting.");
+else try{
+const {initializeApp}=await import(U+"firebase-app.js");
+const {getAuth,signInAnonymously}=await import(U+"firebase-auth.js");
+const {getFirestore,collection,doc,getDocs,setDoc,deleteDoc,onSnapshot}=await import(U+"firebase-firestore.js");
+const auth=getAuth(initializeApp(cfg)),db=getFirestore();
+window.DB={setLead:l=>setDoc(doc(db,"leads",l.phone),l),delLead:ph=>deleteDoc(doc(db,"leads",ph)),
+ setCtv:c=>setDoc(doc(db,"ctv",String(c.id)),c),setCfg:o=>setDoc(doc(db,"settings","main"),o,{merge:true}),
+ seed:(C,L,fee)=>Promise.all([...C.map(c=>DB.setCtv(c)),...L.map(l=>DB.setLead(l)),DB.setCfg({fee})]),
+ wipe:async()=>{for(const n of["leads","ctv"])await Promise.all((await getDocs(collection(db,n))).docs.map(d=>deleteDoc(d.ref)))}};
+await signInAnonymously(auth);
+const er=e=>toast("Lỗi dữ liệu: "+e.code),all=s=>s.docs.map(d=>d.data());
+onSnapshot(collection(db,"ctv"),s=>App.data("ctv",all(s)),er);
+onSnapshot(collection(db,"leads"),s=>App.data("leads",all(s)),er);
+onSnapshot(doc(db,"settings","main"),s=>App.data("cfg",s.data()||{}),er);
+}catch(e){App.err(e.code=="auth/operation-not-allowed"?"Chưa bật đăng nhập ẩn danh (Anonymous) trong Firebase Authentication.":"Lỗi kết nối: "+(e.code||e.message))}
 </script>
 </body>
 </html>
