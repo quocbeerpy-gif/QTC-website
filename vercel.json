@@ -1,0 +1,13 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/tuyesinh",
+      "destination": "/tuyensinh.html"
+    },
+    {
+      "source": "/tuyensinh",
+      "destination": "/tuyensinh.html"
+    }
+  ]
+}
