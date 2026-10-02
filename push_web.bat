@@ -5,9 +5,9 @@ echo   [QTC AI] DANG TIEN HANH DONG BO VA PUSH WEB LEN GITHUB
 echo ========================================================
 cd /d "C:\Users\Thien Phu\.openclaw\workspace\web_public"
 
-:: Auto-sync QTC AI.html to index.html if QTC AI.html exists
-if exist "QTC AI.html" (
-    copy /y "QTC AI.html" "index.html" >nul
+:: Tu dong copy vuanghe.html sang index.html de trang chu luon la Vua Nghe
+if exist "vuanghe.html" (
+    copy /y "vuanghe.html" "index.html" >nul
 )
 
 :: Check if git status has any changes

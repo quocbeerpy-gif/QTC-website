@@ -3,6 +3,8 @@
   "rewrites": [
     { "source": "/", "destination": "/vuanghe.html" },
     { "source": "/tuyensinh", "destination": "/tuyensinh.html" },
-    { "source": "/tuyesinh", "destination": "/tuyensinh.html" }
+    { "source": "/tuyesinh", "destination": "/tuyensinh.html" },
+    { "source": "/qtcaimathgame", "destination": "/qtcaimathgame.html" },
+    { "source": "/qtcaimatchgame", "destination": "/qtcaimathgame.html" }
   ]
 }
