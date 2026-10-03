@@ -4,6 +4,6 @@
     { "source": "/tuyensinh", "destination": "/tuyensinh.html" },
     { "source": "/", "destination": "/index.html" },
     { "source": "/vuanghe", "destination": "/vuanghe.html" },
-    { "source": "/duan", "destination": "/hrcduan.html" }
+    { "source": "/duan", "destination": "/duan/index.html" }
   ]
 }
