@@ -2,8 +2,8 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/tuyensinh", "destination": "/tuyensinh.html" },
-    { "source": "/tuyesinh", "destination": "/tuyensinh.html" },
     { "source": "/", "destination": "/index.html" },
-    { "source": "/vuanghe", "destination": "/vuanghe.html" }
+    { "source": "/vuanghe", "destination": "/vuanghe.html" },
+    { "source": "/duan", "destination": "/hrcduan.html" }
   ]
 }

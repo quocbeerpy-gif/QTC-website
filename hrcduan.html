@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HRC Group – Quản lý dự án 2027–2030</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#f3f6f9;--card:#fff;--ink:#16263d;--mut:#64748b;--line:#e2e8f0;--side:#14304f;--ac:#0f9d8a;--ac2:#e8a33d;--bad:#d1495b;--blue:#2f6fb0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1824;--card:#16263a;--ink:#e6edf5;--mut:#93a4b8;--line:#243a54;--side:#0a1220}}
+:root[data-theme="dark"]{--bg:#0e1824;--card:#16263a;--ink:#e6edf5;--mut:#93a4b8;--line:#243a54;--side:#0a1220}
+*{box-sizing:inherit}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;display:flex;min-height:100vh}
+aside{width:224px;background:var(--side);color:#cfdbea;padding:20px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;flex-shrink:0}
+.logo{font-weight:700;font-size:20px;color:#fff;padding:0 10px 4px}.logo small{display:block;font-weight:400;font-size:12px;color:#8fa6c0}
+aside button.nav{background:none;border:0;color:inherit;text-align:left;padding:10px 12px;border-radius:8px;font:inherit;cursor:pointer}
+aside button.nav:hover{background:rgba(255,255,255,.07)}aside button.nav.on{background:var(--ac);color:#fff;font-weight:600}
+aside .sp{flex:1}
+main{flex:1;min-width:0;padding:22px 26px}
+header.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:22px;margin:0;flex:1;min-width:200px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer}
+.btn.g{background:var(--card);color:var(--ink);border:1px solid var(--line)}.btn.d{background:var(--bad)}
+.grid{display:grid;gap:14px}.k4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}.k2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h3{margin:0 0 12px;font-size:15px}
+.kpi b{font-size:26px;display:block;font-weight:700}.kpi span{color:var(--mut);font-size:13px}
+.bar{height:8px;background:var(--line);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.row{display:flex;align-items:center;gap:10px;margin:9px 0}.row .l{width:90px;color:var(--mut);font-size:13px;flex-shrink:0}.row .v{width:84px;text-align:right;font-size:13px;flex-shrink:0}.row .bar{flex:1}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.s-lap{background:#e5edf7;color:#2f5f94}.s-chay{background:#d9f2ee;color:#0a7a6b}.s-cham{background:#fdecc8;color:#9a6208}.s-xong{background:#e4e7ec;color:#475467}.s-dung{background:#f9dde1;color:#a3283a}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{color:var(--mut);font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap}
+td .bar{width:90px;display:inline-block;vertical-align:middle;margin-right:6px}
+.ic{background:none;border:0;cursor:pointer;color:var(--mut);padding:4px 6px;font:inherit}.ic:hover{color:var(--ac)}
+.kan{display:grid;grid-template-columns:repeat(5,minmax(210px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px}
+.col{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;min-height:240px}.col.ov{outline:2px dashed var(--ac)}
+.col h4{margin:2px 4px 10px;font-size:14px;display:flex;justify-content:space-between}
+.kc{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:10px;margin-bottom:8px;cursor:grab}.kc b{display:block;margin-bottom:4px}.kc small{color:var(--mut)}
+.gantt{min-width:900px}.gh{display:grid;grid-template-columns:200px 1fr;font-size:12px;color:var(--mut)}
+.yrs{display:grid;grid-template-columns:repeat(4,1fr);border-left:1px solid var(--line)}.yrs div{padding:4px 6px;border-right:1px solid var(--line);font-weight:600;color:var(--ink)}
+.gr{display:grid;grid-template-columns:200px 1fr;border-top:1px solid var(--line);align-items:center;height:40px}
+.gr .n{padding-right:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gt{position:relative;height:100%;background:repeating-linear-gradient(90deg,transparent 0 calc(25% - 1px),var(--line) calc(25% - 1px) 25%)}
+.gb{position:absolute;top:10px;height:20px;border-radius:6px;background:var(--blue);overflow:hidden;cursor:pointer}.gb i{display:block;height:100%;background:rgba(255,255,255,.35)}
+.gb.s-cham{background:var(--ac2)}.gb.s-xong{background:#7b8794}.gb.s-dung{background:var(--bad)}.gb.s-chay{background:var(--ac)}
+.today{position:absolute;top:0;bottom:0;width:2px;background:var(--bad)}
+dialog{border:0;border-radius:14px;padding:0;width:min(560px,94vw);background:var(--card);color:var(--ink)}dialog::backdrop{background:rgba(10,18,32,.55)}
+dialog form{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}dialog label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut)}
+dialog .f{grid-column:1/-1}dialog .acts{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
+.emp{text-align:center;color:var(--mut);padding:30px}
+#toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:9px;opacity:0;transition:.2s;pointer-events:none}#toast.on{opacity:1}
+@media(max-width:760px){body{flex-direction:column}aside{width:100%;height:auto;position:static;flex-direction:row;overflow-x:auto;padding:10px}.logo{display:none}aside .sp{display:none}main{padding:16px}dialog form{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<aside>
+  <div class="logo">HRC Group<small>Danh mục dự án 2027–2030</small></div>
+  <button class="nav on" data-v="dash">Tổng quan</button>
+  <button class="nav" data-v="list">Danh sách dự án</button>
+  <button class="nav" data-v="kan">Bảng Kanban</button>
+  <button class="nav" data-v="gantt">Lộ trình</button>
+  <div class="sp"></div>
+  <div id="fbs" style="padding:6px 12px;font-size:12px;color:#8fa6c0">Chế độ: lưu trên máy</div>
+  <button class="nav" id="login">Đăng nhập Google</button>
+  <button class="nav" id="theme">Giao diện sáng/tối</button>
+</aside>
+<main>
+  <header class="top">
+    <h1 id="title">Tổng quan</h1>
+    <input id="q" type="search" placeholder="Tìm dự án, phụ trách…" aria-label="Tìm kiếm">
+    <select id="fs" aria-label="Lọc trạng thái"></select>
+    <select id="fd" aria-label="Lọc phòng ban"></select>
+    <button class="btn g" id="exp">Xuất CSV</button>
+    <button class="btn" id="add">Thêm dự án</button>
+  </header>
+  <section id="view"></section>
+</main>
+<dialog id="dlg">
+  <form id="frm" method="dialog">
+    <label class="f">Tên dự án<input name="name" required></label>
+    <label>Mã dự án<input name="code" required></label>
+    <label>Phụ trách<input name="owner" required></label>
+    <label>Phòng ban<select name="dept"></select></label>
+    <label>Trạng thái<select name="status"></select></label>
+    <label>Ưu tiên<select name="prio"><option>Cao</option><option>Trung bình</option><option>Thấp</option></select></label>
+    <label>Tiến độ (%)<input name="progress" type="number" min="0" max="100" value="0"></label>
+    <label>Bắt đầu<input name="start" type="date" min="2027-01-01" max="2030-12-31" required></label>
+    <label>Kết thúc<input name="end" type="date" min="2027-01-01" max="2030-12-31" required></label>
+    <label>Ngân sách (triệu VND)<input name="budget" type="number" min="0" value="0"></label>
+    <label>Đã chi (triệu VND)<input name="spent" type="number" min="0" value="0"></label>
+    <label class="f">Ghi chú / rủi ro<textarea name="note" rows="2"></textarea></label>
+    <div class="acts"><button type="button" class="btn g" id="cx">Hủy</button><button type="submit" class="btn">Lưu dự án</button></div>
+  </form>
+</dialog>
+<div id="toast" role="status"></div>
+<script>
+const ST={lap:'Lập kế hoạch',chay:'Đang thực hiện',cham:'Chậm tiến độ',xong:'Hoàn thành',dung:'Tạm dừng'};
+const DEPT=['Vận hành','Nhân sự','Tài chính','Công nghệ','Kinh doanh','Đầu tư'];
+const KEY='hrc-projects-2027-2030';
+const seed=[
+['HRC-01','Chuyển đổi số toàn tập đoàn','Nguyễn Minh Khoa','Công nghệ','chay','Cao',45,'2027-02-01','2029-06-30',48000,19500,'Giai đoạn 2 triển khai ERP'],
+['HRC-02','Học viện đào tạo nhân lực HRC','Trần Thu Hà','Nhân sự','chay','Cao',35,'2027-03-01','2028-12-31',12000,3900,''],
+['HRC-03','Mở rộng chuỗi vận hành miền Trung','Lê Quốc Bảo','Vận hành','lap','Cao',10,'2027-07-01','2030-03-31',85000,6200,'Chờ phê duyệt đất'],
+['HRC-04','Kho dữ liệu & BI tập trung','Phạm Gia Huy','Công nghệ','cham','Trung bình',30,'2027-01-15','2028-06-30',9500,5100,'Thiếu nhân sự kỹ thuật'],
+['HRC-05','Tái cấu trúc tài chính & vốn','Võ Thanh Mai','Tài chính','chay','Cao',55,'2027-01-01','2028-09-30',6000,3000,''],
+['HRC-06','Chương trình ESG & năng lượng xanh','Đặng Hoài Nam','Đầu tư','lap','Trung bình',5,'2028-01-01','2030-12-31',38000,1200,''],
+['HRC-07','Nền tảng khách hàng thân thiết','Bùi Ngọc Lan','Kinh doanh','xong','Thấp',100,'2027-01-10','2027-12-20',4200,3980,'Đã nghiệm thu'],
+['HRC-08','Nhà máy trung tâm giai đoạn 1','Hoàng Văn Tùng','Đầu tư','dung','Cao',20,'2028-03-01','2030-06-30',120000,14000,'Tạm dừng chờ giấy phép']
+].map((a,i)=>({id:i+1,code:a[0],name:a[1],owner:a[2],dept:a[3],status:a[4],prio:a[5],progress:a[6],start:a[7],end:a[8],budget:a[9],spent:a[10],note:a[11]}));
+let P,view='dash',sortK='code',sortD=1;
+try{P=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!Array.isArray(P)||!P.length)P=seed;
+const $=s=>document.querySelector(s),vnd=n=>n>=1000?(n/1000).toLocaleString('vi-VN',{maximumFractionDigits:1})+' tỷ':n.toLocaleString('vi-VN')+' tr';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tag=s=>`<span class="tag s-${s}">${ST[s]}</span>`;
+let U=null,db=null,FS=null;
+function cloud(p){if(U&&db)FS.setDoc(FS.doc(db,'projects',String(p.id)),p).catch(e=>toast('Lỗi đồng bộ: '+e.code))}
+function cdel(p){if(U&&db)FS.deleteDoc(FS.doc(db,'projects',String(p.id))).catch(e=>toast('Lỗi đồng bộ: '+e.code))}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(P))}catch(e){}}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)}
+function opts(el,arr,all){el.innerHTML=(all?`<option value="">${all}</option>`:'')+arr.map(a=>Array.isArray(a)?`<option value="${a[0]}">${a[1]}</option>`:`<option>${a}</option>`).join('')}
+opts($('#fs'),Object.entries(ST),'Mọi trạng thái');opts($('#fd'),DEPT,'Mọi phòng ban');
+opts($('#frm').dept,DEPT);opts($('#frm').status,Object.entries(ST));
+function filtered(){const q=$('#q').value.toLowerCase(),s=$('#fs').value,d=$('#fd').value;
+ return P.filter(p=>(!s||p.status===s)&&(!d||p.dept===d)&&(!q||(p.name+p.code+p.owner).toLowerCase().includes(q)))}
+function render(){
+ const T={dash:'Tổng quan',list:'Danh sách dự án',kan:'Bảng Kanban',gantt:'Lộ trình 2027–2030'};
+ $('#title').textContent=T[view];
+ document.querySelectorAll('.nav[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+ $('#view').innerHTML=({dash,list,kan,gantt})[view]();
+ if(view==='kan')bindKan();
+}
+function dash(){
+ const a=filtered(),n=a.length,B=a.reduce((s,p)=>s+p.budget,0),S=a.reduce((s,p)=>s+p.spent,0),
+ avg=n?Math.round(a.reduce((s,p)=>s+p.progress,0)/n):0,risk=a.filter(p=>p.status==='cham'||p.status==='dung');
+ const yr=[2027,2028,2029,2030].map(y=>[y,a.filter(p=>+p.start.slice(0,4)<=y&&+p.end.slice(0,4)>=y).length,a.filter(p=>+p.start.slice(0,4)===y).reduce((s,p)=>s+p.budget,0)]);
+ const mx=Math.max(1,...yr.map(r=>r[2])),dm=Object.keys(ST).map(k=>[k,a.filter(p=>p.status===k).length]);
+ return `<div class="grid k4">
+ <div class="card kpi"><b>${n}</b><span>Dự án trong danh mục</span></div>
+ <div class="card kpi"><b>${vnd(B)}</b><span>Tổng ngân sách</span></div>
+ <div class="card kpi"><b>${B?Math.round(S/B*100):0}%</b><span>Đã giải ngân (${vnd(S)})</span></div>
+ <div class="card kpi"><b>${avg}%</b><span>Tiến độ trung bình</span></div></div>
+ <div class="grid k2" style="margin-top:14px">
+ <div class="card"><h3>Ngân sách theo năm khởi động</h3>${yr.map(r=>`<div class="row"><span class="l">${r[0]} · ${r[1]} dự án</span><div class="bar"><i style="width:${r[2]/mx*100}%"></i></div><span class="v">${vnd(r[2])}</span></div>`).join('')}</div>
+ <div class="card"><h3>Phân bổ theo trạng thái</h3>${dm.map(r=>`<div class="row"><span class="l">${tag(r[0])}</span><div class="bar"><i style="width:${n?r[1]/n*100:0}%"></i></div><span class="v">${r[1]}</span></div>`).join('')}</div>
+ <div class="card"><h3>Cần chú ý (${risk.length})</h3>${risk.length?risk.map(p=>`<div class="row"><div style="flex:1"><b>${esc(p.name)}</b><br><small style="color:var(--mut)">${esc(p.owner)} · ${esc(p.note)||'Chưa có ghi chú'}</small></div>${tag(p.status)}</div>`).join(''):'<div class="emp">Không có dự án rủi ro.</div>'}</div>
+ <div class="card"><h3>Ngân sách theo phòng ban</h3>${DEPT.map(d=>{const v=a.filter(p=>p.dept===d).reduce((s,p)=>s+p.budget,0);return `<div class="row"><span class="l">${d}</span><div class="bar"><i style="width:${B?v/B*100:0}%;background:var(--blue)"></i></div><span class="v">${vnd(v)}</span></div>`}).join('')}</div></div>`}
+function list(){
+ const a=filtered().sort((x,y)=>(x[sortK]>y[sortK]?1:x[sortK]<y[sortK]?-1:0)*sortD);
+ const th=(k,t)=>`<th data-s="${k}">${t}${sortK===k?(sortD>0?' ▲':' ▼'):''}</th>`;
+ if(!a.length)return '<div class="card emp">Chưa có dự án phù hợp. Chọn “Thêm dự án” để tạo mới.</div>';
+ return `<div class="card tw"><table><thead><tr>${th('code','Mã')}${th('name','Dự án')}${th('owner','Phụ trách')}${th('status','Trạng thái')}${th('progress','Tiến độ')}${th('budget','Ngân sách')}${th('end','Kết thúc')}<th></th></tr></thead><tbody>${a.map(p=>`<tr><td>${esc(p.code)}</td><td><b>${esc(p.name)}</b><br><small style="color:var(--mut)">${esc(p.dept)} · Ưu tiên ${esc(p.prio)}</small></td><td>${esc(p.owner)}</td><td>${tag(p.status)}</td><td><div class="bar"><i style="width:${p.progress}%"></i></div>${p.progress}%</td><td>${vnd(p.budget)}</td><td>${p.end.split('-').reverse().join('/')}</td><td style="white-space:nowrap"><button class="ic" data-e="${p.id}">Sửa</button><button class="ic" data-x="${p.id}">Xóa</button></td></tr>`).join('')}</tbody></table></div>`}
+function kan(){const a=filtered();
+ return `<div class="kan">${Object.entries(ST).map(([k,t])=>{const c=a.filter(p=>p.status===k);return `<div class="col" data-c="${k}"><h4>${t}<span style="color:var(--mut)">${c.length}</span></h4>${c.map(p=>`<div class="kc" draggable="true" data-id="${p.id}"><b>${esc(p.name)}</b><small>${esc(p.owner)} · ${vnd(p.budget)}</small><div class="bar" style="margin-top:8px"><i style="width:${p.progress}%"></i></div></div>`).join('')}</div>`}).join('')}</div><p style="color:var(--mut)">Kéo thẻ sang cột khác để đổi trạng thái.</p>`}
+function bindKan(){let id=null;
+ document.querySelectorAll('.kc').forEach(c=>{c.ondragstart=()=>id=+c.dataset.id;c.ondblclick=()=>edit(+c.dataset.id)});
+ document.querySelectorAll('.col').forEach(c=>{c.ondragover=e=>{e.preventDefault();c.classList.add('ov')};c.ondragleave=()=>c.classList.remove('ov');
+ c.ondrop=e=>{e.preventDefault();const p=P.find(x=>x.id===id);if(p){p.status=c.dataset.c;if(p.status==='xong')p.progress=100;cloud(p);save();toast('Đã chuyển sang “'+ST[p.status]+'”');render()}}})}
+function gantt(){
+ const t0=new Date('2027-01-01'),t1=new Date('2031-01-01'),W=t1-t0,pc=d=>Math.max(0,Math.min(100,(new Date(d)-t0)/W*100)),a=filtered().sort((x,y)=>x.start>y.start?1:-1),now=pc(new Date());
+ return `<div class="card tw"><div class="gantt"><div class="gh"><div></div><div class="yrs">${[2027,2028,2029,2030].map(y=>`<div>${y}</div>`).join('')}</div></div>${a.map(p=>`<div class="gr"><div class="n" title="${esc(p.name)}">${esc(p.name)}</div><div class="gt">${now>0&&now<100?`<span class="today" style="left:${now}%"></span>`:''}<div class="gb s-${p.status}" data-e="${p.id}" title="${esc(p.name)} – ${p.progress}%" style="left:${pc(p.start)}%;width:${Math.max(1,pc(p.end)-pc(p.start))}%"><i style="width:${p.progress}%"></i></div></div></div>`).join('')||'<div class="emp">Không có dự án.</div>'}</div></div><p style="color:var(--mut)">Phần sáng trên thanh là tiến độ hoàn thành. Bấm vào thanh để chỉnh sửa.</p>`}
+const dlg=$('#dlg'),frm=$('#frm');let eid=null;
+function edit(id){eid=id;frm.reset();if(id){const p=P.find(x=>x.id===id);for(const k in p)if(frm[k])frm[k].value=p[k]}else{frm.code.value='HRC-'+String(P.length+1).padStart(2,'0');frm.start.value='2027-01-01';frm.end.value='2028-12-31'}dlg.showModal()}
+frm.onsubmit=e=>{const o=Object.fromEntries(new FormData(frm));
+ if(o.end<o.start){e.preventDefault();toast('Ngày kết thúc phải sau ngày bắt đầu');return}
+ ['progress','budget','spent'].forEach(k=>o[k]=+o[k]||0);o.progress=Math.min(100,o.progress);
+ let r;if(eid){r=Object.assign(P.find(x=>x.id===eid),o)}else{o.id=Date.now();P.push(o);r=o}
+ cloud(r);save();toast('Đã lưu dự án');render()};
+$('#cx').onclick=()=>dlg.close();$('#add').onclick=()=>edit(null);
+document.addEventListener('click',e=>{const t=e.target;
+ if(t.dataset.v){view=t.dataset.v;render()}
+ else if(t.dataset.e)edit(+t.dataset.e);
+ else if(t.dataset.x){const p=P.find(x=>x.id===+t.dataset.x);if(p&&confirm('Xóa dự án “'+p.name+'”?')){P=P.filter(x=>x!==p);cdel(p);save();toast('Đã xóa dự án');render()}}
+ else if(t.dataset.s){sortD=sortK===t.dataset.s?-sortD:1;sortK=t.dataset.s;render()}});
+['#q','#fs','#fd'].forEach(s=>$(s).oninput=render);
+$('#exp').onclick=()=>{const h=['code','name','owner','dept','status','prio','progress','start','end','budget','spent','note'];
+ const csv='\ufeff'+h.join(',')+'\n'+P.map(p=>h.map(k=>'"'+String(k==='status'?ST[p[k]]:p[k]).replace(/"/g,'""')+'"').join(',')).join('\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='hrc-du-an-2027-2030.csv';a.click();toast('Đã xuất CSV')};
+$('#theme').onclick=()=>{const r=document.documentElement,d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#0e1824';r.dataset.theme=d?'light':'dark'};
+render();
+(async()=>{try{
+const V='https://www.gstatic.com/firebasejs/10.12.2/';
+const [A,F,AU]=await Promise.all([import(V+'firebase-app.js'),import(V+'firebase-firestore.js'),import(V+'firebase-auth.js')]);
+const firebaseConfig={apiKey:"AIzaSyBhMtqq-VzD1ka9LjDhXPt0DrcI-HrhvNw",authDomain:"hrcduan.firebaseapp.com",projectId:"hrcduan",storageBucket:"hrcduan.firebasestorage.app",messagingSenderId:"387421508043",appId:"1:387421508043:web:1aa27c6d262f9b2a79a64e",measurementId:"G-NHKJ83JT10"};
+const app=A.initializeApp(firebaseConfig);db=F.getFirestore(app);FS=F;const auth=AU.getAuth(app);let unsub=null,first=true;
+$('#login').onclick=()=>U&&!U.isAnonymous?AU.signOut(auth):AU.signInWithPopup(auth,new AU.GoogleAuthProvider()).catch(e=>toast('Đăng nhập lỗi: '+e.code));
+AU.onAuthStateChanged(auth,u=>{U=u;$('#login').textContent=u&&!u.isAnonymous?'Đăng xuất':'Đăng nhập Google';
+ if(unsub){unsub();unsub=null}
+ if(!u){$('#fbs').textContent='Đang kết nối ẩn danh…';AU.signInAnonymously(auth).catch(e=>{$('#fbs').textContent='Chế độ: lưu trên máy';toast('Hãy bật Anonymous trong Authentication: '+e.code)});return}
+ $('#fbs').textContent='Đồng bộ: '+(u.isAnonymous?'ẩn danh':(u.email||'Firebase'));first=true;
+ unsub=F.onSnapshot(F.collection(db,'projects'),sn=>{
+  if(first&&sn.empty){P.forEach(cloud)}else{P=sn.docs.map(d=>d.data());save();render()}
+  first=false},e=>{$('#fbs').textContent='Lỗi Firestore: '+e.code;toast('Kiểm tra Firestore Rules')})});
+}catch(e){$('#fbs').textContent='Không tải được Firebase (cần mạng)'}})();
+</script>
+</body>
+</html>
