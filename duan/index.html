@@ -88,8 +88,8 @@ dialog .f{grid-column:1/-1}dialog .acts{grid-column:1/-1;display:flex;gap:8px;ju
     <label>Trạng thái<select name="status"></select></label>
     <label>Ưu tiên<select name="prio"><option>Cao</option><option>Trung bình</option><option>Thấp</option></select></label>
     <label>Tiến độ (%)<input name="progress" type="number" min="0" max="100" value="0"></label>
-    <label>Bắt đầu<input name="start" type="date" min="2027-01-01" max="2030-12-31" required></label>
-    <label>Kết thúc<input name="end" type="date" min="2027-01-01" max="2030-12-31" required></label>
+    <label>Bắt đầu<input name="start" type="date" required></label>
+    <label>Kết thúc<input name="end" type="date" required></label>
     <label>Ngân sách (triệu VND)<input name="budget" type="number" min="0" value="0"></label>
     <label>Đã chi (triệu VND)<input name="spent" type="number" min="0" value="0"></label>
     <label class="f">Ghi chú / rủi ro<textarea name="note" rows="2"></textarea></label>
