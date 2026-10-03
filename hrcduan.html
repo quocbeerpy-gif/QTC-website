@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HRC Group – Quản lý dự án 2027–2030</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#f3f6f9;--card:#fff;--ink:#16263d;--mut:#64748b;--line:#e2e8f0;--side:#14304f;--ac:#0f9d8a;--ac2:#e8a33d;--bad:#d1495b;--blue:#2f6fb0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1824;--card:#16263a;--ink:#e6edf5;--mut:#93a4b8;--line:#243a54;--side:#0a1220}}
+:root[data-theme="dark"]{--bg:#0e1824;--card:#16263a;--ink:#e6edf5;--mut:#93a4b8;--line:#243a54;--side:#0a1220}
+*{box-sizing:inherit}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;display:flex;min-height:100vh}
+aside{width:224px;background:var(--side);color:#cfdbea;padding:20px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;flex-shrink:0}
+.logo{font-weight:700;font-size:20px;color:#fff;padding:0 10px 4px}.logo small{display:block;font-weight:400;font-size:12px;color:#8fa6c0}
+aside button.nav{background:none;border:0;color:inherit;text-align:left;padding:10px 12px;border-radius:8px;font:inherit;cursor:pointer}
+aside button.nav:hover{background:rgba(255,255,255,.07)}aside button.nav.on{background:var(--ac);color:#fff;font-weight:600}
+aside .sp{flex:1}
+main{flex:1;min-width:0;padding:22px 26px}
+header.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:22px;margin:0;flex:1;min-width:200px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer}
+.btn.g{background:var(--card);color:var(--ink);border:1px solid var(--line)}.btn.d{background:var(--bad)}
+.grid{display:grid;gap:14px}.k4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}.k2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h3{margin:0 0 12px;font-size:15px}
+.kpi b{font-size:26px;display:block;font-weight:700}.kpi span{color:var(--mut);font-size:13px}
+.bar{height:8px;background:var(--line);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.row{display:flex;align-items:center;gap:10px;margin:9px 0}.row .l{width:90px;color:var(--mut);font-size:13px;flex-shrink:0}.row .v{width:84px;text-align:right;font-size:13px;flex-shrink:0}.row .bar{flex:1}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.s-lap{background:#e5edf7;color:#2f5f94}.s-chay{background:#d9f2ee;color:#0a7a6b}.s-cham{background:#fdecc8;color:#9a6208}.s-xong{background:#e4e7ec;color:#475467}.s-dung{background:#f9dde1;color:#a3283a}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{color:var(--mut);font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap}
+td .bar{width:90px;display:inline-block;vertical-align:middle;margin-right:6px}
+.ic{background:none;border:0;cursor:pointer;color:var(--mut);padding:4px 6px;font:inherit}.ic:hover{color:var(--ac)}
+.kan{display:grid;grid-template-columns:repeat(5,minmax(210px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px}
+.col{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;min-height:240px}.col.ov{outline:2px dashed var(--ac)}
+.col h4{margin:2px 4px 10px;font-size:14px;display:flex;justify-content:space-between}
+.kc{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:10px;margin-bottom:8px;cursor:grab}.kc b{display:block;margin-bottom:4px}.kc small{color:var(--mut)}
+.gantt{min-width:900px}.gh{display:grid;grid-template-columns:200px 1fr;font-size:12px;color:var(--mut)}
+.yrs{display:grid;grid-template-columns:repeat(4,1fr);border-left:1px solid var(--line)}.yrs div{padding:4px 6px;border-right:1px solid var(--line);font-weight:600;color:var(--ink)}
+.gr{display:grid;grid-template-columns:200px 1fr;border-top:1px solid var(--line);align-items:center;height:40px}
+.gr .n{padding-right:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gt{position:relative;height:100%;background:repeating-linear-gradient(90deg,transparent 0 calc(25% - 1px),var(--line) calc(25% - 1px) 25%)}
+.gb{position:absolute;top:10px;height:20px;border-radius:6px;background:var(--blue);overflow:hidden;cursor:pointer}.gb i{display:block;height:100%;background:rgba(255,255,255,.35)}
+.gb.s-cham{background:var(--ac2)}.gb.s-xong{background:#7b8794}.gb.s-dung{background:var(--bad)}.gb.s-chay{background:var(--ac)}
+.today{position:absolute;top:0;bottom:0;width:2px;background:var(--bad)}
+dialog{border:0;border-radius:14px;padding:0;width:min(560px,94vw);background:var(--card);color:var(--ink)}dialog::backdrop{background:rgba(10,18,32,.55)}
+dialog form{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}dialog label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut)}
+dialog .f{grid-column:1/-1}dialog .acts{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
+.emp{text-align:center;color:var(--mut);padding:30px}
+#toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:9px;opacity:0;transition:.2s;pointer-events:none}#toast.on{opacity:1}
+.ms{display:none;width:100%;margin-top:8px}
+@media(hover:none){.ms{display:block}}
+@media(max-width:1024px){aside{width:176px}main{padding:18px}.kan{grid-template-columns:repeat(5,230px)}header.top input[type=search]{flex:1 1 200px}}
+@media(max-width:760px){
+body{flex-direction:column}
+aside{position:fixed;top:auto;bottom:0;left:0;right:0;width:100%;height:auto;flex-direction:row;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:20;overflow-x:auto;box-shadow:0 -2px 12px rgba(0,0,0,.25)}
+.logo,aside .sp,#fbs{display:none}
+aside button.nav{flex:1 0 auto;text-align:center;padding:10px 12px;font-size:13px;white-space:nowrap;min-height:44px}
+main{padding:14px 14px 92px}
+h1{font-size:19px;flex-basis:100%}
+header.top input,header.top select,dialog input,dialog select,dialog textarea{font-size:16px;min-height:42px}
+header.top input[type=search]{flex-basis:100%}header.top select{flex:1 1 40%}header.top .btn{flex:1;min-height:42px}
+.k4{grid-template-columns:1fr 1fr}.k2{grid-template-columns:1fr}.kpi b{font-size:21px}
+.row .l{width:78px}.row .v{width:72px}
+.tb{padding:0;background:none;border:0}
+table,thead,tbody,tr,td{display:block;min-width:0;width:100%}thead{display:none}
+tr{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+td{border:0;padding:5px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:right}
+td::before{content:attr(data-l);color:var(--mut);font-size:12px;text-align:left;flex-shrink:0}
+td[data-l="Dự án"]{display:block;text-align:left}td[data-l="Dự án"]::before{display:none}
+.ic{padding:10px 14px;border:1px solid var(--line);border-radius:8px;margin-left:6px}
+.kan{grid-template-columns:repeat(5,82vw);scroll-snap-type:x mandatory}.col{scroll-snap-align:start}
+.gh,.gr{grid-template-columns:110px 1fr}.gantt{min-width:700px}
+dialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:16px 16px 0 0;max-height:92vh;overflow:auto}
+#toast{bottom:calc(84px + env(safe-area-inset-bottom,0px));width:max-content;max-width:90vw}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.sv text{fill:var(--mut);font-size:10px}.sv .gl{stroke:var(--line);stroke-width:1}
+.hm{display:grid;grid-template-columns:84px repeat(5,1fr);gap:4px;font-size:12px;text-align:center;align-items:center}.hm div{padding:8px 2px;border-radius:6px}
+.ins{margin:0;padding-left:18px}.ins li{margin:5px 0}.lg{display:flex;gap:14px;flex-wrap:wrap;color:var(--mut);font-size:12px;margin-top:6px}.lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+@media(max-width:760px){.hm{grid-template-columns:62px repeat(5,1fr);font-size:10px}}
+@media print{aside,header.top,.noprint,#toast{display:none!important}body{display:block}main{padding:0}.card{break-inside:avoid}}
+.lr{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}#ll{max-height:38vh;overflow:auto}
+</style>
+</head>
+<body>
+<aside>
+  <div class="logo">HRC Group<small>Danh mục dự án 2027–2030</small></div>
+  <button class="nav on" data-v="dash">Tổng quan</button>
+  <button class="nav" data-v="ana">Phân tích</button>
+  <button class="nav" data-v="dis">Giải ngân</button>
+  <button class="nav" data-v="list">Danh sách dự án</button>
+  <button class="nav" data-v="kan">Bảng Kanban</button>
+  <button class="nav" data-v="gantt">Lộ trình</button>
+  <div class="sp"></div>
+  <div id="fbs" style="padding:6px 12px;font-size:12px;color:#8fa6c0">Chế độ: lưu trên máy</div>
+  <button class="nav" id="login">Đăng nhập Google</button>
+  <button class="nav" id="theme">Giao diện sáng/tối</button>
+</aside>
+<main>
+  <header class="top">
+    <h1 id="title">Tổng quan</h1>
+    <input id="q" type="search" placeholder="Tìm dự án, phụ trách…" aria-label="Tìm kiếm">
+    <select id="fs" aria-label="Lọc trạng thái"></select>
+    <select id="fd" aria-label="Lọc phòng ban"></select>
+    <button class="btn g" id="dm">Phòng ban</button>
+    <button class="btn g" id="exp">Xuất CSV</button>
+    <button class="btn" id="add">Thêm dự án</button>
+  </header>
+  <section id="view"></section>
+</main>
+<dialog id="dlg">
+  <form id="frm" method="dialog">
+    <label class="f">Tên dự án<input name="name" required></label>
+    <label>Mã dự án<input name="code" required></label>
+    <label>Phụ trách<input name="owner" required></label>
+    <label>Phòng ban<select name="dept"></select></label>
+    <label>Trạng thái<select name="status"></select></label>
+    <label>Ưu tiên<select name="prio"><option>Cao</option><option>Trung bình</option><option>Thấp</option></select></label>
+    <label>Tiến độ (%)<input name="progress" type="number" min="0" max="100" value="0"></label>
+    <label>Bắt đầu<input name="start" type="date" required></label>
+    <label>Kết thúc<input name="end" type="date" required></label>
+    <label>Ngân sách (triệu VND)<input name="budget" type="number" min="0" value="0"></label>
+    <label>Đã chi (triệu VND)<input name="spent" type="number" min="0" value="0"></label>
+    <label class="f">Ghi chú / rủi ro<textarea name="note" rows="2"></textarea></label>
+    <div class="acts"><button type="button" class="btn g" id="cx">Hủy</button><button type="submit" class="btn">Lưu dự án</button></div>
+  </form>
+</dialog>
+<dialog id="dd"><div style="padding:20px"><h3 style="margin:0 0 12px">Quản lý phòng ban</h3><div id="dl"></div>
+<div style="display:flex;gap:8px;margin-top:10px"><input id="dn" placeholder="Tên phòng ban mới" style="flex:1"><button class="btn g" id="da">Thêm</button></div>
+<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px"><button class="btn g" id="dc">Đóng</button><button class="btn" id="ds">Lưu thay đổi</button></div></div></dialog>
+<dialog id="ld" style="width:min(680px,94vw)"><div style="padding:20px"><h3 id="lt" style="margin:0 0 4px"></h3><p id="ls" style="margin:0 0 12px;color:var(--mut)"></p><div id="ll"></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:14px"><input id="lfd" type="date" aria-label="Ngày"><input id="lfa" type="number" min="0" placeholder="Số tiền (triệu VND)" aria-label="Số tiền"><select id="lfs" aria-label="Loại"><option value="1">Đã giải ngân</option><option value="0">Kế hoạch</option></select><input id="lfn" placeholder="Nội dung / số chứng từ" style="grid-column:1/-1"><button class="btn" id="lfb">Thêm khoản</button></div>
+<div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn g" id="lc2">Đóng</button></div></div></dialog>
+<div id="toast" role="status"></div>
+<script>
+const ST={lap:'Lập kế hoạch',chay:'Đang thực hiện',cham:'Chậm tiến độ',xong:'Hoàn thành',dung:'Tạm dừng'};
+let DEPT=['Vận hành','Nhân sự','Tài chính','Công nghệ','Kinh doanh','Đầu tư'];
+try{const d=JSON.parse(localStorage.getItem('hrc-depts'));if(Array.isArray(d)&&d.length)DEPT=d}catch(e){}
+const KEY='hrc-projects-2027-2030';
+const seed=[
+['HRC-01','Chuyển đổi số toàn tập đoàn','Nguyễn Minh Khoa','Công nghệ','chay','Cao',45,'2027-02-01','2029-06-30',48000,19500,'Giai đoạn 2 triển khai ERP'],
+['HRC-02','Học viện đào tạo nhân lực HRC','Trần Thu Hà','Nhân sự','chay','Cao',35,'2027-03-01','2028-12-31',12000,3900,''],
+['HRC-03','Mở rộng chuỗi vận hành miền Trung','Lê Quốc Bảo','Vận hành','lap','Cao',10,'2027-07-01','2030-03-31',85000,6200,'Chờ phê duyệt đất'],
+['HRC-04','Kho dữ liệu & BI tập trung','Phạm Gia Huy','Công nghệ','cham','Trung bình',30,'2027-01-15','2028-06-30',9500,5100,'Thiếu nhân sự kỹ thuật'],
+['HRC-05','Tái cấu trúc tài chính & vốn','Võ Thanh Mai','Tài chính','chay','Cao',55,'2027-01-01','2028-09-30',6000,3000,''],
+['HRC-06','Chương trình ESG & năng lượng xanh','Đặng Hoài Nam','Đầu tư','lap','Trung bình',5,'2028-01-01','2030-12-31',38000,1200,''],
+['HRC-07','Nền tảng khách hàng thân thiết','Bùi Ngọc Lan','Kinh doanh','xong','Thấp',100,'2027-01-10','2027-12-20',4200,3980,'Đã nghiệm thu'],
+['HRC-08','Nhà máy trung tâm giai đoạn 1','Hoàng Văn Tùng','Đầu tư','dung','Cao',20,'2028-03-01','2030-06-30',120000,14000,'Tạm dừng chờ giấy phép']
+].map((a,i)=>({id:i+1,code:a[0],name:a[1],owner:a[2],dept:a[3],status:a[4],prio:a[5],progress:a[6],start:a[7],end:a[8],budget:a[9],spent:a[10],note:a[11]}));
+let P,view='dash',sortK='code',sortD=1;
+try{P=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!Array.isArray(P)||!P.length)P=seed;
+const $=s=>document.querySelector(s),vnd=n=>n>=1000?(n/1000).toLocaleString('vi-VN',{maximumFractionDigits:1})+' tỷ':n.toLocaleString('vi-VN')+' tr';
+const YRS=()=>{const ys=P.flatMap(p=>[+p.start.slice(0,4),+p.end.slice(0,4)]),a=Math.min(2027,...ys),b=Math.max(2030,...ys);return Array.from({length:b-a+1},(_,i)=>a+i)};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tag=s=>`<span class="tag s-${s}">${ST[s]}</span>`;
+let U=null,db=null,FS=null;
+function cloud(p){if(U&&db)FS.setDoc(FS.doc(db,'projects',String(p.id)),p).catch(e=>toast('Lỗi đồng bộ: '+e.code))}
+function cdel(p){if(U&&db)FS.deleteDoc(FS.doc(db,'projects',String(p.id))).catch(e=>toast('Lỗi đồng bộ: '+e.code))}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(P))}catch(e){}}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)}
+function opts(el,arr,all){el.innerHTML=(all?`<option value="">${all}</option>`:'')+arr.map(a=>Array.isArray(a)?`<option value="${a[0]}">${a[1]}</option>`:`<option>${a}</option>`).join('')}
+opts($('#fs'),Object.entries(ST),'Mọi trạng thái');
+opts($('#frm').status,Object.entries(ST));
+function fillDept(){P.forEach(p=>{if(p.dept&&!DEPT.includes(p.dept))DEPT.push(p.dept)});const v=$('#fd').value;opts($('#fd'),DEPT,'Mọi phòng ban');$('#fd').value=v;opts($('#frm').dept,DEPT)}
+fillDept();
+function filtered(){const q=$('#q').value.toLowerCase(),s=$('#fs').value,d=$('#fd').value;
+ return P.filter(p=>(!s||p.status===s)&&(!d||p.dept===d)&&(!q||(p.name+p.code+p.owner).toLowerCase().includes(q)))}
+function render(){
+ const T={dis:'Kiểm soát giải ngân',ana:'Phân tích chuyên sâu',dash:'Tổng quan',list:'Danh sách dự án',kan:'Bảng Kanban',gantt:'Lộ trình 2027–2030'};
+ $('#title').textContent=T[view];
+ document.querySelectorAll('.nav[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+ $('#view').innerHTML=({dash,list,kan,gantt,ana,dis})[view]();
+ if(view==='kan')bindKan();
+}
+function dash(){
+ const a=filtered(),n=a.length,B=a.reduce((s,p)=>s+p.budget,0),S=a.reduce((s,p)=>s+p.spent,0),
+ avg=n?Math.round(a.reduce((s,p)=>s+p.progress,0)/n):0,risk=a.filter(p=>p.status==='cham'||p.status==='dung');
+ const yr=YRS().map(y=>[y,a.filter(p=>+p.start.slice(0,4)<=y&&+p.end.slice(0,4)>=y).length,a.filter(p=>+p.start.slice(0,4)===y).reduce((s,p)=>s+p.budget,0)]);
+ const mx=Math.max(1,...yr.map(r=>r[2])),dm=Object.keys(ST).map(k=>[k,a.filter(p=>p.status===k).length]);
+ return `<div class="grid k4">
+ <div class="card kpi"><b>${n}</b><span>Dự án trong danh mục</span></div>
+ <div class="card kpi"><b>${vnd(B)}</b><span>Tổng ngân sách</span></div>
+ <div class="card kpi"><b>${B?Math.round(S/B*100):0}%</b><span>Đã giải ngân (${vnd(S)})</span></div>
+ <div class="card kpi"><b>${avg}%</b><span>Tiến độ trung bình</span></div></div>
+ <div class="grid k2" style="margin-top:14px">
+ <div class="card"><h3>Ngân sách theo năm khởi động</h3>${yr.map(r=>`<div class="row"><span class="l">${r[0]} · ${r[1]} dự án</span><div class="bar"><i style="width:${r[2]/mx*100}%"></i></div><span class="v">${vnd(r[2])}</span></div>`).join('')}</div>
+ <div class="card"><h3>Phân bổ theo trạng thái</h3>${dm.map(r=>`<div class="row"><span class="l">${tag(r[0])}</span><div class="bar"><i style="width:${n?r[1]/n*100:0}%"></i></div><span class="v">${r[1]}</span></div>`).join('')}</div>
+ <div class="card"><h3>Cần chú ý (${risk.length})</h3>${risk.length?risk.map(p=>`<div class="row"><div style="flex:1"><b>${esc(p.name)}</b><br><small style="color:var(--mut)">${esc(p.owner)} · ${esc(p.note)||'Chưa có ghi chú'}</small></div>${tag(p.status)}</div>`).join(''):'<div class="emp">Không có dự án rủi ro.</div>'}</div>
+ <div class="card"><h3>Ngân sách theo phòng ban</h3>${DEPT.map(d=>{const v=a.filter(p=>p.dept===d).reduce((s,p)=>s+p.budget,0);return `<div class="row"><span class="l">${d}</span><div class="bar"><i style="width:${B?v/B*100:0}%;background:var(--blue)"></i></div><span class="v">${vnd(v)}</span></div>`}).join('')}</div></div>`}
+function list(){
+ const a=filtered().sort((x,y)=>(x[sortK]>y[sortK]?1:x[sortK]<y[sortK]?-1:0)*sortD);
+ const th=(k,t)=>`<th data-s="${k}">${t}${sortK===k?(sortD>0?' ▲':' ▼'):''}</th>`;
+ if(!a.length)return '<div class="card emp">Chưa có dự án phù hợp. Chọn “Thêm dự án” để tạo mới.</div>';
+ return `<div class="card tw tb"><table><thead><tr>${th('code','Mã')}${th('name','Dự án')}${th('owner','Phụ trách')}${th('status','Trạng thái')}${th('progress','Tiến độ')}${th('budget','Ngân sách')}${th('end','Kết thúc')}<th></th></tr></thead><tbody>${a.map(p=>`<tr><td data-l="Mã">${esc(p.code)}</td><td data-l="Dự án"><b>${esc(p.name)}</b><br><small style="color:var(--mut)">${esc(p.dept)} · Ưu tiên ${esc(p.prio)}</small></td><td data-l="Phụ trách">${esc(p.owner)}</td><td data-l="Trạng thái">${tag(p.status)}</td><td data-l="Tiến độ"><div class="bar"><i style="width:${p.progress}%"></i></div>${p.progress}%</td><td data-l="Ngân sách">${vnd(p.budget)}</td><td data-l="Kết thúc">${p.end.split('-').reverse().join('/')}</td><td data-l="" style="white-space:nowrap;justify-content:flex-end"><button class="ic" data-e="${p.id}">Sửa</button><button class="ic" data-x="${p.id}">Xóa</button></td></tr>`).join('')}</tbody></table></div>`}
+function kan(){const a=filtered();
+ return `<div class="kan">${Object.entries(ST).map(([k,t])=>{const c=a.filter(p=>p.status===k);return `<div class="col" data-c="${k}"><h4>${t}<span style="color:var(--mut)">${c.length}</span></h4>${c.map(p=>`<div class="kc" draggable="true" data-id="${p.id}"><b>${esc(p.name)}</b><small>${esc(p.owner)} · ${vnd(p.budget)}</small><select class="ms" data-m="${p.id}" aria-label="Đổi trạng thái">${Object.entries(ST).map(([k,t])=>`<option value="${k}"${k===p.status?' selected':''}>${t}</option>`).join('')}</select><div class="bar" style="margin-top:8px"><i style="width:${p.progress}%"></i></div></div>`).join('')}</div>`}).join('')}</div><p style="color:var(--mut)">Kéo thẻ sang cột khác để đổi trạng thái.</p>`}
+function bindKan(){let id=null;
+ document.querySelectorAll('.kc').forEach(c=>{c.ondragstart=()=>id=+c.dataset.id;c.ondblclick=()=>edit(+c.dataset.id)});
+ document.querySelectorAll('.col').forEach(c=>{c.ondragover=e=>{e.preventDefault();c.classList.add('ov')};c.ondragleave=()=>c.classList.remove('ov');
+ c.ondrop=e=>{e.preventDefault();const p=P.find(x=>x.id===id);if(p){p.status=c.dataset.c;if(p.status==='xong')p.progress=100;cloud(p);save();toast('Đã chuyển sang “'+ST[p.status]+'”');render()}}})}
+function gantt(){
+ const YR=YRS(),N=YR.length,t0=new Date(YR[0]+'-01-01'),t1=new Date((YR[N-1]+1)+'-01-01'),W=t1-t0,pc=d=>Math.max(0,Math.min(100,(new Date(d)-t0)/W*100)),a=filtered().sort((x,y)=>x.start>y.start?1:-1),now=pc(new Date());
+ return `<div class="card tw"><div class="gantt"><div class="gh"><div></div><div class="yrs" style="grid-template-columns:repeat(${N},1fr)">${YR.map(y=>`<div>${y}</div>`).join('')}</div></div>${a.map(p=>`<div class="gr"><div class="n" title="${esc(p.name)}">${esc(p.name)}</div><div class="gt" style="background:repeating-linear-gradient(90deg,transparent 0 calc(${100/N}% - 1px),var(--line) calc(${100/N}% - 1px) ${100/N}%)">${now>0&&now<100?`<span class="today" style="left:${now}%"></span>`:''}<div class="gb s-${p.status}" data-e="${p.id}" title="${esc(p.name)} – ${p.progress}%" style="left:${pc(p.start)}%;width:${Math.max(1,pc(p.end)-pc(p.start))}%"><i style="width:${p.progress}%"></i></div></div></div>`).join('')||'<div class="emp">Không có dự án.</div>'}</div></div><p style="color:var(--mut)">Phần sáng trên thanh là tiến độ hoàn thành. Bấm vào thanh để chỉnh sửa.</p>`}
+
+const COL={lap:'#2f6fb0',chay:'#0f9d8a',cham:'#e8a33d',xong:'#7b8794',dung:'#d1495b'},SH={lap:'Lập KH',chay:'Đang chạy',cham:'Chậm',xong:'Xong',dung:'Dừng'};
+let ASOF=null;
+function ana(){
+ const a=filtered();if(!a.length)return '<div class="card emp">Chưa có dữ liệu để phân tích.</div>';
+ const D=x=>new Date(x).getTime(),sum=f=>a.reduce((s,p)=>s+f(p),0),n=a.length,cl=x=>Math.max(0,Math.min(1,x)),
+ now=new Date(),asof=ASOF||(now>=new Date('2027-01-01')?now.toISOString().slice(0,10):'2028-12-31'),T=D(asof),vi=x=>x.split('-').reverse().join('/'),
+ fr=p=>cl((T-D(p.start))/((D(p.end)-D(p.start))||1)),
+ B=sum(p=>p.budget),AC=sum(p=>p.spent),PV=sum(p=>p.budget*fr(p)),EV=sum(p=>p.budget*p.progress/100),
+ SPI=PV?EV/PV:null,CPI=AC?EV/AC:null,EAC=CPI?B/CPI:null,
+ cc=v=>v==null?'var(--mut)':v>=.95?'var(--ac)':v>=.8?'var(--ac2)':'var(--bad)',f2=v=>v==null?'—':v.toFixed(2);
+ const rows=a.map(p=>{const pl=Math.round(fr(p)*100),ev=p.budget*p.progress/100,spi=pl?p.progress/pl:null,cpi=p.spent?ev/p.spent:null;
+  const ok=(k)=>(spi==null||spi>=k)&&(cpi==null||cpi>=k);
+  const r=p.status==='xong'?['Hoàn thành','xong']:p.status==='dung'?['Tạm dừng','dung']:!pl?['Chưa đến hạn','lap']:ok(.9)?['Tốt','chay']:ok(.75)?['Cần chú ý','cham']:['Nguy cơ','dung'];
+  return {p,pl,spi,cpi,r}});
+ const risk=rows.filter(x=>x.r[0]==='Nguy cơ'||x.p.status==='cham'||x.p.status==='dung').length;
+ const K=[['Ngân sách (BAC)',vnd(B),n+' dự án'],['Kế hoạch (PV)',vnd(PV),'đến '+vi(asof)],['Giá trị đạt được (EV)',vnd(EV),''],['Thực chi (AC)',vnd(AC),(B?Math.round(AC/B*100):0)+'% ngân sách'],
+  ['SPI – tiến độ',f2(SPI),SPI==null?'':SPI>=.95?'Đúng tiến độ':SPI>=.8?'Hơi chậm':'Chậm nghiêm trọng',cc(SPI)],['CPI – chi phí',f2(CPI),CPI==null?'':CPI>=.95?'Trong ngân sách':CPI>=.8?'Hơi vượt':'Vượt ngân sách',cc(CPI)],
+  ['Dự báo hoàn thành (EAC)',EAC?vnd(EAC):'—',EAC?(EAC>B?'Vượt '+vnd(EAC-B):'Tiết kiệm '+vnd(B-EAC)):''],['Dự án rủi ro',risk+'/'+n,Math.round(risk/n*100)+'% danh mục',risk?'var(--bad)':'var(--ac)']];
+ const ys=YRS(),t0=D(ys[0]+'-01-01'),t1=D((ys[ys.length-1]+1)+'-01-01'),X=t=>40+cl((t-t0)/(t1-t0))*500,Y=v=>170-Math.min(1.12,B?v/B:0)*150,
+ pvAt=t=>a.reduce((s,p)=>s+p.budget*cl((t-D(p.start))/((D(p.end)-D(p.start))||1)),0),NQ=ys.length*4,
+ pts=Array.from({length:NQ+1},(_,i)=>{const t=t0+(t1-t0)*i/NQ;return X(t).toFixed(1)+','+Y(pvAt(t)).toFixed(1)}).join(' ');
+ const sc=`<svg class="sv" viewBox="0 0 560 200" style="width:100%;height:auto" role="img" aria-label="Đường S ngân sách">${[0,.25,.5,.75,1].map(g=>`<line class="gl" x1="40" x2="540" y1="${Y(B*g)}" y2="${Y(B*g)}"/><text x="36" y="${Y(B*g)+3}" text-anchor="end">${Math.round(g*100)}%</text>`).join('')}${ys.map(y=>`<text x="${X(D(y+'-01-01'))+4}" y="190">${y}</text>`).join('')}<polyline points="${pts}" fill="none" style="stroke:var(--blue)" stroke-width="2.5"/><line x1="${X(T)}" x2="${X(T)}" y1="14" y2="170" style="stroke:var(--bad)" stroke-dasharray="4 3"/><circle cx="${X(T)}" cy="${Y(EV)}" r="5" style="fill:var(--ac)"/><circle cx="${X(T)}" cy="${Y(AC)}" r="5" style="fill:var(--ac2)"/></svg><div class="lg"><span><i style="background:var(--blue)"></i>Kế hoạch tích lũy (PV)</span><span><i style="background:var(--ac)"></i>EV tại mốc</span><span><i style="background:var(--ac2)"></i>AC tại mốc</span><span><i style="background:var(--bad)"></i>Mốc ${vi(asof)}</span></div>`;
+ let off=25;const dn=Object.keys(ST).map(k=>[k,a.filter(p=>p.status===k).length]),
+ donut=`<svg viewBox="0 0 42 42" width="150" height="150" role="img" aria-label="Cơ cấu trạng thái">${dn.map(([k,c])=>{const v=c/n*100,r=`<circle cx="21" cy="21" r="15.9155" fill="none" stroke="${COL[k]}" stroke-width="6" stroke-dasharray="${v} ${100-v}" stroke-dashoffset="${off}"/>`;off-=v;return r}).join('')}<text x="21" y="23" text-anchor="middle" style="font-size:8px;font-weight:700;fill:var(--ink)">${n}</text></svg>`;
+ const yv=ys.map(y=>[y,a.reduce((s,p)=>{const st=D(p.start),e=D(p.end);return s+p.budget*Math.max(0,Math.min(e,D((y+1)+'-01-01'))-Math.max(st,D(y+'-01-01')))/((e-st)||1)},0)]),ym=Math.max(1,...yv.map(r=>r[1]));
+ const dd=DEPT.map(d=>{const q=a.filter(p=>p.dept===d);return [d,q.reduce((s,p)=>s+p.budget,0),q.reduce((s,p)=>s+p.spent,0)]}).filter(r=>r[1]),dm=Math.max(1,...dd.map(r=>r[1]));
+ const ow={};a.forEach(p=>{(ow[p.owner]=ow[p.owner]||[0,0]);ow[p.owner][0]++;ow[p.owner][1]+=p.budget});const oo=Object.entries(ow).sort((x,y)=>y[1][1]-x[1][1]).slice(0,6),om=Math.max(1,...oo.map(r=>r[1][1]));
+ const PR=['Cao','Trung bình','Thấp'],cnt=(pr,k)=>a.filter(p=>p.prio===pr&&p.status===k).length,hmx=Math.max(1,...PR.flatMap(pr=>Object.keys(ST).map(k=>cnt(pr,k))));
+ return `<div class="noprint" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px"><label style="color:var(--mut)">Mốc phân tích <input id="asof" type="date" value="${asof}"></label><button class="btn g" id="prn">In báo cáo</button></div>
+ <div class="grid k4" style="margin:14px 0">${K.map(k=>`<div class="card kpi"><span>${k[0]}</span><b style="color:${k[3]||'inherit'}">${k[1]}</b><span>${k[2]}</span></div>`).join('')}</div>
+ <div class="grid k2"><div class="card" style="grid-column:1/-1"><h3>Đường S: kế hoạch và thực tế</h3>${sc}</div>
+ <div class="card"><h3>Cơ cấu trạng thái</h3><div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">${donut}<div class="lg" style="flex-direction:column;gap:6px;margin:0">${dn.map(([k,c])=>`<span><i style="background:${COL[k]}"></i>${ST[k]}: ${c} (${Math.round(c/n*100)}%)</span>`).join('')}</div></div></div>
+ <div class="card"><h3>Ngân sách phân bổ theo năm</h3>${yv.map(r=>`<div class="row"><span class="l">${r[0]}</span><div class="bar"><i style="width:${r[1]/ym*100}%;background:var(--blue)"></i></div><span class="v">${vnd(r[1])}</span></div>`).join('')}</div>
+ <div class="card"><h3>Ngân sách và chi tiêu theo phòng ban</h3>${dd.map(r=>`<div class="row"><span class="l">${r[0]}</span><div style="flex:1"><div class="bar" style="width:${r[1]/dm*100}%;background:#bcd3ea"><i style="width:${r[2]/r[1]*100}%;background:var(--blue)"></i></div></div><span class="v">${vnd(r[1])}</span></div>`).join('')}<div class="lg"><span><i style="background:#bcd3ea"></i>Ngân sách</span><span><i style="background:var(--blue)"></i>Đã chi</span></div></div>
+ <div class="card"><h3>Ma trận ưu tiên và trạng thái</h3><div class="hm"><div></div>${Object.keys(ST).map(k=>`<div style="color:var(--mut)">${SH[k]}</div>`).join('')}${PR.map(pr=>`<div style="text-align:left;color:var(--mut)">${pr}</div>`+Object.keys(ST).map(k=>{const c=cnt(pr,k);return `<div style="background:${c?`rgba(15,157,138,${.15+c/hmx*.6})`:'var(--bg)'};font-weight:600">${c||''}</div>`}).join('')).join('')}</div></div>
+ <div class="card"><h3>Khối lượng theo người phụ trách</h3>${oo.map(r=>`<div class="row"><span class="l" style="width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r[0])}</span><div class="bar"><i style="width:${r[1][1]/om*100}%;background:var(--ac2)"></i></div><span class="v">${r[1][0]} DA · ${vnd(r[1][1])}</span></div>`).join('')}</div></div>
+ <h3 style="margin:18px 0 8px;font-size:15px">Hiệu suất từng dự án (mốc ${vi(asof)})</h3>
+ <div class="card tw tb"><table><thead><tr><th>Dự án</th><th>Kế hoạch</th><th>Thực tế</th><th>SPI</th><th>CPI</th><th>Chi/Ngân sách</th><th>Đánh giá</th></tr></thead><tbody>${rows.map(x=>`<tr><td data-l="Dự án"><b>${esc(x.p.name)}</b><br><small style="color:var(--mut)">${esc(x.p.owner)}</small></td><td data-l="Kế hoạch">${x.pl}%</td><td data-l="Thực tế"><div class="bar"><i style="width:${x.p.progress}%"></i></div>${x.p.progress}%</td><td data-l="SPI" style="color:${cc(x.spi)};font-weight:600">${f2(x.spi)}</td><td data-l="CPI" style="color:${cc(x.cpi)};font-weight:600">${f2(x.cpi)}</td><td data-l="Chi/Ngân sách">${x.p.budget?Math.round(x.p.spent/x.p.budget*100):0}%</td><td data-l="Đánh giá"><span class="tag s-${x.r[1]}">${x.r[0]}</span></td></tr>`).join('')}</tbody></table></div>
+ <p style="color:var(--mut);font-size:12px">PV: giá trị kế hoạch theo thời gian · EV: ngân sách × tiến độ thực tế · AC: thực chi · SPI = EV/PV · CPI = EV/AC · EAC = ngân sách / CPI. Đổi “Mốc phân tích” để xem tại thời điểm khác.</p>`}
+document.addEventListener('change',e=>{if(e.target.id==='asof'){ASOF=e.target.value||null;render()}});
+document.addEventListener('click',e=>{if(e.target.id==='prn')window.print()});
+let DR=[];
+function dlRender(){$('#dl').innerHTML=DR.map((r,i)=>`<div style="display:flex;gap:8px;margin-bottom:8px"><input data-di="${i}" value="${esc(r.name)}" style="flex:1" aria-label="Tên phòng ban"><span style="align-self:center;color:var(--mut);font-size:12px;width:62px">${P.filter(p=>p.dept===r.old).length} dự án</span><button class="btn g" data-dx="${i}">Xóa</button></div>`).join('')}
+$('#dm').onclick=()=>{DR=DEPT.map(d=>({old:d,name:d}));dlRender();$('#dd').showModal()};
+$('#dl').oninput=e=>{const i=e.target.dataset.di;if(i!=null)DR[i].name=e.target.value};
+$('#dl').onclick=e=>{const i=e.target.dataset.dx;if(i==null)return;const r=DR[i];if(r.old&&P.some(p=>p.dept===r.old)){toast('Phòng ban đang có dự án, hãy đổi tên hoặc chuyển dự án trước');return}DR.splice(i,1);dlRender()};
+$('#da').onclick=()=>{const v=$('#dn').value.trim();if(!v)return;if(DR.some(r=>r.name.trim()===v)){toast('Tên phòng ban đã tồn tại');return}DR.push({old:null,name:v});$('#dn').value='';dlRender()};
+$('#dc').onclick=()=>$('#dd').close();
+$('#ds').onclick=()=>{const nm=DR.map(r=>r.name.trim());if(!nm.length||nm.some(x=>!x)){toast('Tên phòng ban không được để trống');return}
+ if(new Set(nm).size<nm.length){toast('Có tên phòng ban bị trùng');return}
+ DR.forEach((r,i)=>r.name=nm[i]);
+ const mp=Object.fromEntries(DR.filter(r=>r.old).map(r=>[r.old,r.name]));
+ P.forEach(p=>{if(mp[p.dept]&&mp[p.dept]!==p.dept){p.dept=mp[p.dept];cloud(p)}});
+ DEPT=DR.map(r=>r.name);try{localStorage.setItem('hrc-depts',JSON.stringify(DEPT))}catch(e){}
+ save();fillDept();$('#dd').close();toast('Đã lưu phòng ban');render()};
+const paidSum=p=>(p.disb||[]).filter(d=>d.paid).reduce((s,d)=>s+d.amount,0),planSum=p=>(p.disb||[]).filter(d=>!d.paid).reduce((s,d)=>s+d.amount,0),dmy=x=>x.split('-').reverse().join('/');
+function dis(){
+ const a=filtered();if(!a.length)return '<div class="card emp">Chưa có dự án.</div>';
+ const sum=f=>a.reduce((s,p)=>s+f(p),0),B=sum(p=>p.budget),PD=sum(p=>p.spent),PL=sum(planSum),
+ lv=p=>{const r=p.budget-p.spent,pc=p.budget?p.spent/p.budget*100:0;
+  return p.spent>p.budget?['Vượt ngân sách','dung']:pc>=90?['Sắp hết ngân sách','cham']:(p.status!=='xong'&&pc>p.progress+20)?['Chi vượt tiến độ','cham']:planSum(p)>r?['Kế hoạch vượt phần còn lại','cham']:['Ổn','chay']},
+ L=a.map(p=>({p,l:lv(p)})),warn=L.filter(x=>x.l[1]!=='chay').length;
+ const K=[['Tổng ngân sách',vnd(B),a.length+' dự án'],['Đã giải ngân',vnd(PD),(B?Math.round(PD/B*100):0)+'% ngân sách'],['Kế hoạch chờ giải ngân',vnd(PL),'chưa thực hiện'],['Còn khả dụng',vnd(B-PD-PL),'sau khi trừ kế hoạch',B-PD-PL<0?'var(--bad)':'inherit'],['Dự án cần chú ý',warn+'/'+a.length,'cảnh báo giải ngân',warn?'var(--bad)':'var(--ac)']];
+ const all=a.flatMap(p=>(p.disb||[]).map(d=>({...d,p}))),ey=all.map(d=>+d.date.slice(0,4)),ys0=YRS(),y0=Math.min(...ys0,...ey),y1=Math.max(...ys0,...ey),
+ yr=Array.from({length:y1-y0+1},(_,i)=>y0+i).map(y=>[y,all.filter(d=>d.paid&&+d.date.slice(0,4)===y).reduce((s,d)=>s+d.amount,0),all.filter(d=>!d.paid&&+d.date.slice(0,4)===y).reduce((s,d)=>s+d.amount,0)]),ym=Math.max(1,...yr.map(r=>r[1]+r[2])),
+ rc=all.filter(d=>d.paid).sort((x,y)=>x.date<y.date?1:-1).slice(0,8);
+ return `<div class="grid k4">${K.map(k=>`<div class="card kpi"><span>${k[0]}</span><b style="color:${k[3]||'inherit'}">${k[1]}</b><span>${k[2]}</span></div>`).join('')}</div>
+ <h3 style="margin:18px 0 8px;font-size:15px">Theo dõi từng dự án</h3>
+ <div class="card tw tb"><table><thead><tr><th>Dự án</th><th>Ngân sách</th><th>Đã giải ngân</th><th>Tỷ lệ</th><th>Kế hoạch chờ</th><th>Còn lại</th><th>Cảnh báo</th><th></th></tr></thead><tbody>${L.map(({p,l})=>{const pc=p.budget?Math.round(p.spent/p.budget*100):0;return `<tr><td data-l="Dự án"><b>${esc(p.name)}</b><br><small style="color:var(--mut)">${esc(p.code)} · tiến độ ${p.progress}%</small></td><td data-l="Ngân sách">${vnd(p.budget)}</td><td data-l="Đã giải ngân">${vnd(p.spent)}</td><td data-l="Tỷ lệ"><div class="bar"><i style="width:${Math.min(100,pc)}%;background:${l[1]==='dung'?'var(--bad)':l[1]==='cham'?'var(--ac2)':'var(--ac)'}"></i></div>${pc}%</td><td data-l="Kế hoạch chờ">${vnd(planSum(p))}</td><td data-l="Còn lại" style="${p.budget-p.spent<0?'color:var(--bad);font-weight:600':''}">${vnd(p.budget-p.spent)}</td><td data-l="Cảnh báo"><span class="tag s-${l[1]}">${l[0]}</span></td><td data-l="" style="justify-content:flex-end"><button class="btn g" data-lg="${p.id}">Sổ giải ngân</button></td></tr>`}).join('')}</tbody></table></div>
+ <div class="grid k2" style="margin-top:14px"><div class="card"><h3>Giải ngân theo năm (theo ngày chứng từ)</h3>${yr.map(r=>`<div class="row"><span class="l">${r[0]}</span><div class="bar" style="position:relative"><i style="position:absolute;width:${(r[1]+r[2])/ym*100}%;background:#bcd3ea"></i><i style="position:absolute;width:${r[1]/ym*100}%"></i></div><span class="v">${vnd(r[1])}</span></div>`).join('')}<div class="lg"><span><i style="background:var(--ac)"></i>Đã giải ngân</span><span><i style="background:#bcd3ea"></i>Kế hoạch</span></div></div>
+ <div class="card"><h3>Giải ngân gần đây</h3>${rc.length?rc.map(d=>`<div class="row"><span class="l" style="width:76px">${dmy(d.date)}</span><div style="flex:1;min-width:0"><b>${esc(d.p.code)}</b> <small style="color:var(--mut)">${esc(d.note)}</small></div><span class="v">${vnd(d.amount)}</span></div>`).join(''):'<div class="emp">Chưa có khoản giải ngân nào trong sổ. Bấm “Sổ giải ngân” để ghi nhận.</div>'}</div></div>
+ <p style="color:var(--mut);font-size:12px">Cảnh báo khi: giải ngân vượt ngân sách, đạt từ 90% ngân sách, giải ngân cao hơn tiến độ thực tế trên 20 điểm %, hoặc kế hoạch chờ lớn hơn phần ngân sách còn lại. Số tiền tính bằng triệu VND.</p>`}
+let LID=null;
+function openLedger(id){const p=P.find(x=>x.id===id);LID=id;if(!p.disb||!p.disb.length){p.disb=[];if(p.spent>0)p.disb.push({id:Date.now(),date:p.start,amount:p.spent,note:'Số dư đầu kỳ',paid:true})}
+ $('#lfd').value=new Date().toISOString().slice(0,10);lRender();$('#ld').showModal()}
+function lRender(){const p=P.find(x=>x.id===LID),pd=paidSum(p),pl=planSum(p),rest=p.budget-pd;
+ $('#lt').textContent=p.code+' – '+p.name;
+ $('#ls').innerHTML=`Ngân sách ${vnd(p.budget)} · Đã giải ngân ${vnd(pd)} (${p.budget?Math.round(pd/p.budget*100):0}%) · Còn lại <b style="color:${rest<0?'var(--bad)':'inherit'}">${vnd(rest)}</b> · Kế hoạch chờ ${vnd(pl)}`;
+ const Q=[...p.disb].sort((x,y)=>x.date>y.date?1:-1);
+ $('#ll').innerHTML=Q.length?Q.map(d=>`<div class="lr"><span style="width:84px">${dmy(d.date)}</span><span style="flex:1;min-width:120px">${esc(d.note)||'—'}</span><b>${vnd(d.amount)}</b><span class="tag s-${d.paid?'chay':'lap'}">${d.paid?'Đã giải ngân':'Kế hoạch'}</span>${d.paid?'':`<button class="ic" data-lp="${d.id}">Chốt</button>`}<button class="ic" data-ldel="${d.id}">Xóa</button></div>`).join(''):'<div class="emp">Chưa có khoản nào. Thêm khoản đầu tiên bên dưới.</div>'}
+function lSave(p){p.spent=paidSum(p);cloud(p);save();lRender();render()}
+$('#ll').onclick=e=>{const t=e.target,p=P.find(x=>x.id===LID);
+ if(t.dataset.lp){const d=p.disb.find(x=>x.id==t.dataset.lp);if(d){d.paid=true;lSave(p);toast('Đã chốt giải ngân')}}
+ else if(t.dataset.ldel&&confirm('Xóa khoản này khỏi sổ giải ngân?')){p.disb=p.disb.filter(x=>x.id!=t.dataset.ldel);lSave(p)}};
+$('#lfb').onclick=()=>{const p=P.find(x=>x.id===LID),amt=+$('#lfa').value,dt=$('#lfd').value,paid=$('#lfs').value==='1';
+ if(!(amt>0)||!dt){toast('Nhập ngày và số tiền lớn hơn 0');return}
+ const w=[],nx=(paidSum(p)+amt)/(p.budget||1)*100;
+ if(paid){if(paidSum(p)+amt>p.budget)w.push('vượt ngân sách dự án');else if(p.status!=='xong'&&nx>p.progress+20)w.push('vượt tiến độ thực tế (giải ngân '+Math.round(nx)+'% so với tiến độ '+p.progress+'%)')}
+ if(w.length&&!confirm('Cảnh báo: khoản này '+w.join(', ')+'. Vẫn ghi nhận?'))return;
+ p.disb.push({id:Date.now(),date:dt,amount:amt,note:$('#lfn').value.trim(),paid});$('#lfa').value='';$('#lfn').value='';lSave(p);toast('Đã ghi nhận khoản giải ngân')};
+$('#lc2').onclick=()=>$('#ld').close();
+document.addEventListener('click',e=>{if(e.target.dataset.lg)openLedger(+e.target.dataset.lg)});
+const dlg=$('#dlg'),frm=$('#frm');let eid=null;
+function edit(id){eid=id;frm.reset();if(id){const p=P.find(x=>x.id===id);for(const k in p)if(frm[k])frm[k].value=p[k];frm.spent.disabled=!!(p.disb&&p.disb.length)}else{frm.spent.disabled=false;frm.code.value='HRC-'+String(P.length+1).padStart(2,'0');frm.start.value='2027-01-01';frm.end.value='2028-12-31'}dlg.showModal()}
+frm.onsubmit=e=>{const o=Object.fromEntries(new FormData(frm));
+ if(o.end<o.start){e.preventDefault();toast('Ngày kết thúc phải sau ngày bắt đầu');return}
+ ['progress','budget','spent'].forEach(k=>o[k]=+o[k]||0);o.progress=Math.min(100,o.progress);
+ let r;if(eid){r=Object.assign(P.find(x=>x.id===eid),o)}else{o.id=Date.now();P.push(o);r=o}
+ if(r.disb&&r.disb.length)r.spent=paidSum(r);cloud(r);save();toast('Đã lưu dự án');render()};
+$('#cx').onclick=()=>dlg.close();$('#add').onclick=()=>edit(null);
+document.addEventListener('click',e=>{const t=e.target;
+ if(t.dataset.v){view=t.dataset.v;render()}
+ else if(t.dataset.e)edit(+t.dataset.e);
+ else if(t.dataset.x){const p=P.find(x=>x.id===+t.dataset.x);if(p&&confirm('Xóa dự án “'+p.name+'”?')){P=P.filter(x=>x!==p);cdel(p);save();toast('Đã xóa dự án');render()}}
+ else if(t.dataset.s){sortD=sortK===t.dataset.s?-sortD:1;sortK=t.dataset.s;render()}});
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset.m){const p=P.find(x=>x.id===+t.dataset.m);if(p){p.status=t.value;if(p.status==='xong')p.progress=100;cloud(p);save();toast('Đã chuyển sang “'+ST[p.status]+'”');render()}}});
+['#q','#fs','#fd'].forEach(s=>$(s).oninput=render);
+$('#exp').onclick=()=>{const h=['code','name','owner','dept','status','prio','progress','start','end','budget','spent','note'];
+ const csv='\ufeff'+h.join(',')+'\n'+P.map(p=>h.map(k=>'"'+String(k==='status'?ST[p[k]]:p[k]).replace(/"/g,'""')+'"').join(',')).join('\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='hrc-du-an-2027-2030.csv';a.click();toast('Đã xuất CSV')};
+$('#theme').onclick=()=>{const r=document.documentElement,d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#0e1824';r.dataset.theme=d?'light':'dark'};
+render();
+(async()=>{try{
+const V='https://www.gstatic.com/firebasejs/10.12.2/';
+const [A,F,AU]=await Promise.all([import(V+'firebase-app.js'),import(V+'firebase-firestore.js'),import(V+'firebase-auth.js')]);
+const firebaseConfig={apiKey:"AIzaSyBhMtqq-VzD1ka9LjDhXPt0DrcI-HrhvNw",authDomain:"hrcduan.firebaseapp.com",projectId:"hrcduan",storageBucket:"hrcduan.firebasestorage.app",messagingSenderId:"387421508043",appId:"1:387421508043:web:1aa27c6d262f9b2a79a64e",measurementId:"G-NHKJ83JT10"};
+const app=A.initializeApp(firebaseConfig);db=F.getFirestore(app);FS=F;const auth=AU.getAuth(app);let unsub=null,first=true;
+$('#login').onclick=()=>U&&!U.isAnonymous?AU.signOut(auth):AU.signInWithPopup(auth,new AU.GoogleAuthProvider()).catch(e=>toast('Đăng nhập lỗi: '+e.code));
+AU.onAuthStateChanged(auth,u=>{U=u;$('#login').textContent=u&&!u.isAnonymous?'Đăng xuất':'Đăng nhập Google';
+ if(unsub){unsub();unsub=null}
+ if(!u){$('#fbs').textContent='Đang kết nối ẩn danh…';AU.signInAnonymously(auth).catch(e=>{$('#fbs').textContent='Chế độ: lưu trên máy';toast('Hãy bật Anonymous trong Authentication: '+e.code)});return}
+ $('#fbs').textContent='Đồng bộ: '+(u.isAnonymous?'ẩn danh':(u.email||'Firebase'));first=true;
+ unsub=F.onSnapshot(F.collection(db,'projects'),sn=>{
+  if(first&&sn.empty){P.forEach(cloud)}else{P=sn.docs.map(d=>d.data());save();fillDept();render()}
+  first=false},e=>{$('#fbs').textContent='Lỗi Firestore: '+e.code;toast('Kiểm tra Firestore Rules')})});
+}catch(e){$('#fbs').textContent='Không tải được Firebase (cần mạng)'}})();
+</script>
+</body>
+</html>
