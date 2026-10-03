@@ -157,6 +157,7 @@ try{P=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!Array.isArray(P)||!P.length)P=seed;
 const $=s=>document.querySelector(s),vnd=n=>n>=1000?(n/1000).toLocaleString('vi-VN',{maximumFractionDigits:1})+' tỷ':n.toLocaleString('vi-VN')+' tr';
 const YRS=()=>{const ys=P.flatMap(p=>[+p.start.slice(0,4),+p.end.slice(0,4)]),a=Math.min(2027,...ys),b=Math.max(2030,...ys);return Array.from({length:b-a+1},(_,i)=>a+i)};
+const byYear=a=>{const D=x=>new Date(x).getTime();return YRS().map(y=>[y,a.reduce((s,p)=>{const st=D(p.start),e=D(p.end);return s+p.budget*Math.max(0,Math.min(e,D((y+1)+'-01-01'))-Math.max(st,D(y+'-01-01')))/((e-st)||1)},0)])};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const tag=s=>`<span class="tag s-${s}">${ST[s]}</span>`;
 let U=null,db=null,FS=null;
@@ -181,7 +182,7 @@ function render(){
 function dash(){
  const a=filtered(),n=a.length,B=a.reduce((s,p)=>s+p.budget,0),S=a.reduce((s,p)=>s+p.spent,0),
  avg=n?Math.round(a.reduce((s,p)=>s+p.progress,0)/n):0,risk=a.filter(p=>p.status==='cham'||p.status==='dung');
- const yr=YRS().map(y=>[y,a.filter(p=>+p.start.slice(0,4)<=y&&+p.end.slice(0,4)>=y).length,a.filter(p=>+p.start.slice(0,4)===y).reduce((s,p)=>s+p.budget,0)]);
+ const yr=byYear(a).map(([y,v])=>[y,a.filter(p=>+p.start.slice(0,4)<=y&&+p.end.slice(0,4)>=y).length,v]);
  const mx=Math.max(1,...yr.map(r=>r[2])),dm=Object.keys(ST).map(k=>[k,a.filter(p=>p.status===k).length]);
  return `<div class="grid k4">
  <div class="card kpi"><b>${n}</b><span>Dự án trong danh mục</span></div>
@@ -189,7 +190,7 @@ function dash(){
  <div class="card kpi"><b>${B?Math.round(S/B*100):0}%</b><span>Đã giải ngân (${vnd(S)})</span></div>
  <div class="card kpi"><b>${avg}%</b><span>Tiến độ trung bình</span></div></div>
  <div class="grid k2" style="margin-top:14px">
- <div class="card"><h3>Ngân sách theo năm khởi động</h3>${yr.map(r=>`<div class="row"><span class="l">${r[0]} · ${r[1]} dự án</span><div class="bar"><i style="width:${r[2]/mx*100}%"></i></div><span class="v">${vnd(r[2])}</span></div>`).join('')}</div>
+ <div class="card"><h3>Ngân sách phân bổ theo năm</h3>${yr.map(r=>`<div class="row"><span class="l">${r[0]} · ${r[1]} dự án</span><div class="bar"><i style="width:${r[2]/mx*100}%"></i></div><span class="v">${vnd(r[2])}</span></div>`).join('')}<div class="lg"><span>Tổng: <b>${vnd(yr.reduce((s,r)=>s+r[2],0))}</b> (khớp tổng ngân sách) · phân bổ đều theo số ngày của từng dự án</span></div></div>
  <div class="card"><h3>Phân bổ theo trạng thái</h3>${dm.map(r=>`<div class="row"><span class="l">${tag(r[0])}</span><div class="bar"><i style="width:${n?r[1]/n*100:0}%"></i></div><span class="v">${r[1]}</span></div>`).join('')}</div>
  <div class="card"><h3>Cần chú ý (${risk.length})</h3>${risk.length?risk.map(p=>`<div class="row"><div style="flex:1"><b>${esc(p.name)}</b><br><small style="color:var(--mut)">${esc(p.owner)} · ${esc(p.note)||'Chưa có ghi chú'}</small></div>${tag(p.status)}</div>`).join(''):'<div class="emp">Không có dự án rủi ro.</div>'}</div>
  <div class="card"><h3>Ngân sách theo phòng ban</h3>${DEPT.map(d=>{const v=a.filter(p=>p.dept===d).reduce((s,p)=>s+p.budget,0);return `<div class="row"><span class="l">${d}</span><div class="bar"><i style="width:${B?v/B*100:0}%;background:var(--blue)"></i></div><span class="v">${vnd(v)}</span></div>`}).join('')}</div></div>`}
@@ -232,7 +233,7 @@ function ana(){
  const sc=`<svg class="sv" viewBox="0 0 560 200" style="width:100%;height:auto" role="img" aria-label="Đường S ngân sách">${[0,.25,.5,.75,1].map(g=>`<line class="gl" x1="40" x2="540" y1="${Y(B*g)}" y2="${Y(B*g)}"/><text x="36" y="${Y(B*g)+3}" text-anchor="end">${Math.round(g*100)}%</text>`).join('')}${ys.map(y=>`<text x="${X(D(y+'-01-01'))+4}" y="190">${y}</text>`).join('')}<polyline points="${pts}" fill="none" style="stroke:var(--blue)" stroke-width="2.5"/><line x1="${X(T)}" x2="${X(T)}" y1="14" y2="170" style="stroke:var(--bad)" stroke-dasharray="4 3"/><circle cx="${X(T)}" cy="${Y(EV)}" r="5" style="fill:var(--ac)"/><circle cx="${X(T)}" cy="${Y(AC)}" r="5" style="fill:var(--ac2)"/></svg><div class="lg"><span><i style="background:var(--blue)"></i>Kế hoạch tích lũy (PV)</span><span><i style="background:var(--ac)"></i>EV tại mốc</span><span><i style="background:var(--ac2)"></i>AC tại mốc</span><span><i style="background:var(--bad)"></i>Mốc ${vi(asof)}</span></div>`;
  let off=25;const dn=Object.keys(ST).map(k=>[k,a.filter(p=>p.status===k).length]),
  donut=`<svg viewBox="0 0 42 42" width="150" height="150" role="img" aria-label="Cơ cấu trạng thái">${dn.map(([k,c])=>{const v=c/n*100,r=`<circle cx="21" cy="21" r="15.9155" fill="none" stroke="${COL[k]}" stroke-width="6" stroke-dasharray="${v} ${100-v}" stroke-dashoffset="${off}"/>`;off-=v;return r}).join('')}<text x="21" y="23" text-anchor="middle" style="font-size:8px;font-weight:700;fill:var(--ink)">${n}</text></svg>`;
- const yv=ys.map(y=>[y,a.reduce((s,p)=>{const st=D(p.start),e=D(p.end);return s+p.budget*Math.max(0,Math.min(e,D((y+1)+'-01-01'))-Math.max(st,D(y+'-01-01')))/((e-st)||1)},0)]),ym=Math.max(1,...yv.map(r=>r[1]));
+ const yv=byYear(a),ym=Math.max(1,...yv.map(r=>r[1]));
  const dd=DEPT.map(d=>{const q=a.filter(p=>p.dept===d);return [d,q.reduce((s,p)=>s+p.budget,0),q.reduce((s,p)=>s+p.spent,0)]}).filter(r=>r[1]),dm=Math.max(1,...dd.map(r=>r[1]));
  const ow={};a.forEach(p=>{(ow[p.owner]=ow[p.owner]||[0,0]);ow[p.owner][0]++;ow[p.owner][1]+=p.budget});const oo=Object.entries(ow).sort((x,y)=>y[1][1]-x[1][1]).slice(0,6),om=Math.max(1,...oo.map(r=>r[1][1]));
  const PR=['Cao','Trung bình','Thấp'],cnt=(pr,k)=>a.filter(p=>p.prio===pr&&p.status===k).length,hmx=Math.max(1,...PR.flatMap(pr=>Object.keys(ST).map(k=>cnt(pr,k))));
@@ -240,7 +241,7 @@ function ana(){
  <div class="grid k4" style="margin:14px 0">${K.map(k=>`<div class="card kpi"><span>${k[0]}</span><b style="color:${k[3]||'inherit'}">${k[1]}</b><span>${k[2]}</span></div>`).join('')}</div>
  <div class="grid k2"><div class="card" style="grid-column:1/-1"><h3>Đường S: kế hoạch và thực tế</h3>${sc}</div>
  <div class="card"><h3>Cơ cấu trạng thái</h3><div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">${donut}<div class="lg" style="flex-direction:column;gap:6px;margin:0">${dn.map(([k,c])=>`<span><i style="background:${COL[k]}"></i>${ST[k]}: ${c} (${Math.round(c/n*100)}%)</span>`).join('')}</div></div></div>
- <div class="card"><h3>Ngân sách phân bổ theo năm</h3>${yv.map(r=>`<div class="row"><span class="l">${r[0]}</span><div class="bar"><i style="width:${r[1]/ym*100}%;background:var(--blue)"></i></div><span class="v">${vnd(r[1])}</span></div>`).join('')}</div>
+ <div class="card"><h3>Ngân sách phân bổ theo năm</h3>${yv.map(r=>`<div class="row"><span class="l">${r[0]}</span><div class="bar"><i style="width:${r[1]/ym*100}%;background:var(--blue)"></i></div><span class="v">${vnd(r[1])}</span></div>`).join('')}<div class="lg"><span>Tổng: <b>${vnd(yv.reduce((s,r)=>s+r[1],0))}</b> (khớp tổng ngân sách) · phân bổ đều theo số ngày của từng dự án</span></div></div>
  <div class="card"><h3>Ngân sách và chi tiêu theo phòng ban</h3>${dd.map(r=>`<div class="row"><span class="l">${r[0]}</span><div style="flex:1"><div class="bar" style="width:${r[1]/dm*100}%;background:#bcd3ea"><i style="width:${r[2]/r[1]*100}%;background:var(--blue)"></i></div></div><span class="v">${vnd(r[1])}</span></div>`).join('')}<div class="lg"><span><i style="background:#bcd3ea"></i>Ngân sách</span><span><i style="background:var(--blue)"></i>Đã chi</span></div></div>
  <div class="card"><h3>Ma trận ưu tiên và trạng thái</h3><div class="hm"><div></div>${Object.keys(ST).map(k=>`<div style="color:var(--mut)">${SH[k]}</div>`).join('')}${PR.map(pr=>`<div style="text-align:left;color:var(--mut)">${pr}</div>`+Object.keys(ST).map(k=>{const c=cnt(pr,k);return `<div style="background:${c?`rgba(15,157,138,${.15+c/hmx*.6})`:'var(--bg)'};font-weight:600">${c||''}</div>`}).join('')).join('')}</div></div>
  <div class="card"><h3>Khối lượng theo người phụ trách</h3>${oo.map(r=>`<div class="row"><span class="l" style="width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r[0])}</span><div class="bar"><i style="width:${r[1][1]/om*100}%;background:var(--ac2)"></i></div><span class="v">${r[1][0]} DA · ${vnd(r[1][1])}</span></div>`).join('')}</div></div>
