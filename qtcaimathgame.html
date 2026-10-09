@@ -47,6 +47,21 @@ button{font-family:inherit}
 .m,.mh,.ms,.lt{display:none}
 .cw,.tw{display:contents}
 #st{display:flex;align-items:center;font-size:.85cqw;color:#8fa8d8;white-space:nowrap}
+/* lop 2 + the chon lop 3 o */
+.cw{display:grid;position:absolute;left:48.05%;top:39.75%;width:27.1%;height:15.8%;grid-template-columns:repeat(3,1fr);gap:.8cqw;padding:.45cqw;background:#09205e;border-radius:1cqw}
+.cb{position:relative;display:flex;align-items:center;justify-content:center;border:.15cqw solid var(--line);background:var(--cbg,#123b9a);color:#fff;border-radius:1cqw}
+.cb[data-g="2"]{--cbg:linear-gradient(#0e8a6e,#07493f);border-color:#2be28a}
+.cb[data-g="3"]{--cbg:linear-gradient(#123b9a,#0a2570)}
+.cb[data-g="4"]{--cbg:linear-gradient(#4a1fa8,#2a1272);border-color:var(--vio)}
+.cb.on{background:var(--cbg);filter:brightness(1.18)}
+.cb .m{display:block;text-align:center;line-height:1.2}
+.cb .m i{display:block;font-style:normal;font-size:3.2cqw}
+.cb .m b{display:block;font-size:1.7cqw}
+.cb .m small{font-size:.75cqw;color:#cfe0ff}
+.cb.on:after{width:1.5cqw;height:1.5cqw;font-size:.9cqw}
+.bdg{display:grid;place-items:center;background:#8fb5ff;clip-path:polygon(3% 0,97% 0,100% 50%,97% 100%,3% 100%,0 50%)}
+.bdg:before{content:"";position:absolute;inset:.15cqw;background:linear-gradient(90deg,#1b2aa8,#2a1a8a);clip-path:polygon(3% 0,97% 0,100% 50%,97% 100%,3% 100%,0 50%)}
+.bdg span{position:relative;font-style:italic;font-weight:800;font-size:1.9cqw;color:#fff}
 /* game overlay */
 #ov{position:fixed;inset:0;z-index:10;background:#030618dd;backdrop-filter:blur(6px);overflow:auto;display:none;padding:calc(16px + env(safe-area-inset-top,0px)) 14px calc(16px + env(safe-area-inset-bottom,0px))}
 #ov.on{display:block}
@@ -76,9 +91,11 @@ button{font-family:inherit}
 <div class="scroller">
 <div class="stage" id="stage">
  <div class="mh"><div class="br"><span>🧠</span><div style="text-align:left;line-height:1">QTC AI<small>THÔNG MINH HƠN - TƯƠNG LAI TỐT HƠN</small></div></div><h1>QTC AI<br>MATH GAME</h1><span class="bd">TOÁN LỚP 3 &amp; LỚP 4</span><p>Rèn luyện tư duy - Nâng tầm trí tuệ</p></div>
+ <div class="a bdg" style="left:49.2%;top:23.6%;width:24.4%;height:4.7%"><span>TOÁN LỚP 2, 3 &amp; 4</span></div>
  <div class="cw">
-  <button class="a cb" data-g="3" type="button" aria-label="Chọn Lớp 3" style="left:48.2%;top:40%;width:12.9%;height:15.2%"><span class="m"><i>👦</i><b>LỚP 3</b><small>Cơ bản - Tự tin</small></span></button>
-  <button class="a cb" data-g="4" type="button" aria-label="Chọn Lớp 4" style="left:62.3%;top:40%;width:12.7%;height:15.2%"><span class="m"><i>👧</i><b>LỚP 4</b><small>Thử thách - Vượt trội</small></span></button>
+  <button class="cb" data-g="2" type="button" aria-label="Chọn Lớp 2"><span class="m"><i>🧒</i><b>LỚP 2</b><small>Làm quen - Vui học</small></span></button>
+  <button class="cb" data-g="3" type="button" aria-label="Chọn Lớp 3"><span class="m"><i>👦</i><b>LỚP 3</b><small>Cơ bản - Tự tin</small></span></button>
+  <button class="cb" data-g="4" type="button" aria-label="Chọn Lớp 4"><span class="m"><i>👧</i><b>LỚP 4</b><small>Thử thách - Vượt trội</small></span></button>
  </div>
  <div class="a" id="nw" style="left:48.5%;top:61.4%;width:25.5%;height:4.5%"><span class="ni">👤</span><input id="name" type="text" maxlength="24" placeholder="Nhập tên của bạn..." autocomplete="off" aria-label="Tên người chơi"></div>
  <div class="a" id="err" role="alert" style="left:48.5%;top:66%;width:25.5%;height:1.8%"></div>
@@ -206,6 +223,26 @@ const G={
   const a=R(2,9),p=R(5,20)*1000,tt=a*p;return mk(`${a} quyển truyện giá ${tt.toLocaleString("vi-VN")} đồng. Hỏi 1 quyển giá bao nhiêu đồng?`,p,1000)
  }
 };
+const G2={
+ calc(){const t=R(1,4);
+  if(t==1){const a=R(10,60),b=R(10,39);return mk(`${a} + ${b} = ?`,a+b,1)}
+  if(t==2){const a=R(30,99),b=R(10,a-5);return mk(`${a} − ${b} = ?`,a-b,1)}
+  if(t==3){const a=pick([2,3,4,5]),b=R(2,9);return mk(`${a} × ${b} = ?`,a*b,a)}
+  const b=pick([2,3,4,5]),c=R(2,9);return mk(`${b*c} : ${b} = ?`,c,1)},
+ unknown(){const t=R(1,3);
+  if(t==1){const a=R(5,40),x=R(5,50);return mk(`x + ${a} = ${x+a}. Tìm x`,x,1)}
+  if(t==2){const x=R(5,40),c=R(5,40);return mk(`${x+c} − x = ${c}. Tìm x`,x,1)}
+  const a=R(5,40),b=R(5,50);return mk(`x − ${a} = ${b}. Tìm x`,a+b,1)},
+ units(){const t=R(1,4);
+  if(t==1){const d=R(2,9);return mk(`${d} dm = ... cm`,d*10,10)}
+  if(t==2){const m=R(1,5);return mk(`${m} m = ... cm`,m*100,50)}
+  if(t==3){const c=R(1,9);return mk(`${c*10} cm = ... dm`,c,1)}
+  const a=R(2,9),b=R(2,9);return mk(`${a} dm + ${b} dm = ... dm`,a+b,1)},
+ word(){const n=pick(NAMES),t=R(1,3);
+  if(t==1){const a=R(10,50),b=R(5,40);return mk(`${n} có ${a} cái kẹo, mẹ cho thêm ${b} cái. ${n} có tất cả bao nhiêu cái kẹo?`,a+b,1)}
+  if(t==2){const a=R(25,45),b=R(3,20);return mk(`Lớp có ${a} học sinh, hôm nay ${b} bạn nghỉ học. Hỏi lớp còn lại bao nhiêu học sinh?`,a-b,1)}
+  const a=R(2,5),b=R(2,9);return mk(`Mỗi túi có ${a} quả cam. ${b} túi như vậy có bao nhiêu quả cam?`,a*b,a)}
+};
 const TOPICS=[["calc","➕","Cộng - Trừ - Nhân - Chia"],["unknown","🧠","So sánh - Tìm số chưa biết"],["units","📏","Đo lường - Đơn vị"],["word","📝","Toán có lời văn - Tư duy logic"],["mix","🎯","Rèn luyện kỹ năng"]];
 
 
@@ -217,7 +254,7 @@ document.querySelectorAll(".cb").forEach(b=>b.onclick=()=>{grade=+b.dataset.g;do
 $("more").onclick=()=>{showAll=!showAll;renderLB()};
 function tryStart(topic){
  const n=$("name").value.trim();
- if(!grade){setErr("Hãy chọn Lớp 3 hoặc Lớp 4");return}
+ if(!grade){setErr("Hãy chọn Lớp 2, 3 hoặc 4");return}
  if(!n){setErr("Hãy nhập tên của bạn");$("name").focus();return}
  setErr("");player=n;
  if(topic)return begin(topic);
@@ -234,7 +271,7 @@ $("again").onclick=()=>tryStart();
 
 function begin(t){
  topic=t;qs=[];const keys=["calc","unknown","units","word"];
- for(let i=0;i<10;i++){const k=t==="mix"?keys[i%4]:t;qs.push(G[k](grade))}
+ for(let i=0;i<10;i++){const k=t==="mix"?keys[i%4]:t;qs.push((grade==2?G2:G)[k](grade))}
  idx=0;score=0;right=0;streak=0;showS("play");next();
 }
 function next(){
