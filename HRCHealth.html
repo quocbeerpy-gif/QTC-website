@@ -210,6 +210,13 @@ footer{margin-top:56px;background:var(--surface);border-top:1px solid var(--line
 .modal .x{float:right;background:none;border:0;font-size:22px;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#0A2540;color:#fff;padding:11px 18px;border-radius:12px;font-weight:600;z-index:80;box-shadow:0 10px 30px rgba(0,0,0,.3);max-width:90vw}
 
+.consent{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px;margin:4px 0 14px;font-size:13.5px}
+.consent p{margin:8px 0;color:var(--muted)}
+.linkbtn{background:none;border:0;padding:0;color:var(--brand-ink);font-weight:700;text-decoration:underline}
+.chk{display:flex;gap:10px;align-items:flex-start;cursor:pointer;margin-top:10px;font-weight:600}
+.chk input{width:20px;height:20px;margin-top:2px;flex:none;accent-color:var(--brand)}
+.policy{max-height:50vh;overflow:auto;font-size:14px;margin-top:10px}
+.policy p{margin:0 0 10px}
 /* tabbar */
 .tabbar{display:none;position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:40;padding-bottom:env(safe-area-inset-bottom,0px)}
 .tabbar button{flex:1;background:none;border:0;padding:8px 0 7px;font-size:11.5px;font-weight:600;color:var(--muted);display:grid;justify-items:center;gap:2px}
@@ -696,11 +703,26 @@ function homeSearch(q){
 
 /* ---------- modals ---------- */
 function loginModal(){
-  openModal(`<button class="x" data-act="closeModal" aria-label="Đóng">×</button><h2>Đăng nhập</h2><p class="meta">Nhập số điện thoại để nhận mã xác thực (OTP).</p>
-    <div class="field" style="margin-top:14px"><label for="lg_phone">Số điện thoại</label><input id="lg_phone" type="tel" inputmode="tel" placeholder="09xx xxx xxx" autocomplete="tel"></div>
-    <div class="field" id="otpBox" style="display:none"><label for="lg_otp">Mã OTP (6 số)</label><input id="lg_otp" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code"></div>
-    <div class="notice" id="otpNote" style="display:none">Bản minh họa: nhập bất kỳ 6 chữ số nào để đăng nhập.</div>
-    <button class="btn" style="width:100%" data-act="loginStep" id="lgBtn">Nhận mã OTP</button>`);
+  openModal(`<button class="x" data-act="closeModal" aria-label="Đóng">×</button>
+    <div id="loginBox"><h2>Đăng nhập</h2><p class="meta">Nhập thông tin để tạo tài khoản và đăng nhập.</p>
+    <div class="field" style="margin-top:14px"><label for="lg_name">Họ và tên</label><input id="lg_name" placeholder="NGUYỄN VĂN A" autocomplete="name"></div>
+    <div class="field"><label for="lg_phone">Số điện thoại</label><input id="lg_phone" type="tel" inputmode="tel" placeholder="09xx xxx xxx" autocomplete="tel"></div>
+    <div class="consent">
+      <b>Thông báo về Chính sách bảo mật và xử lý dữ liệu cá nhân</b>
+      <p>Bạn có đồng ý để HRC Health sử dụng thông tin cá nhân bao gồm Họ tên, Số điện thoại và các thông tin khác mà bạn vừa cung cấp, để tạo tài khoản?</p>
+      <p>Vui lòng dành vài phút để đọc và tìm hiểu thêm về chính sách tại <button type="button" class="linkbtn" data-act="policy">Chính sách bảo mật</button>.</p>
+      <label class="chk"><input type="checkbox" id="lg_ok" data-bind="consent"><span>Tôi đã xem và đồng ý với Chính sách bảo mật và xử lý dữ liệu cá nhân của HRC Health.</span></label>
+    </div>
+    <button class="btn" style="width:100%" data-act="loginStep" id="lgBtn" disabled>Đồng ý và đăng nhập</button></div>
+    <div id="policyBox" style="display:none"><h2>Chính sách bảo mật</h2>
+      <div class="policy">
+        <p><b>1. Mục đích xử lý.</b> HRC Health sử dụng thông tin của bạn để tạo và quản lý tài khoản, đặt lịch khám, gửi thông báo liên quan đến phiếu khám và hỗ trợ khi cần.</p>
+        <p><b>2. Dữ liệu được thu thập.</b> Họ tên, số điện thoại và các thông tin bạn cung cấp khi tạo hồ sơ bệnh nhân (ngày sinh, giới tính, địa chỉ, mã BHYT nếu có).</p>
+        <p><b>3. Chia sẻ dữ liệu.</b> Thông tin đặt khám chỉ được chuyển đến cơ sở y tế bạn chọn để thực hiện việc khám. HRC Health không bán dữ liệu cá nhân cho bên thứ ba.</p>
+        <p><b>4. Quyền của bạn.</b> Bạn có quyền xem, chỉnh sửa, yêu cầu xóa dữ liệu và rút lại sự đồng ý bất kỳ lúc nào bằng cách liên hệ hotline 1900 6789.</p>
+        <p class="meta">Đây là nội dung minh họa. Hãy thay bằng chính sách bảo mật chính thức của HRC Health trước khi vận hành thật.</p>
+      </div>
+      <button class="btn ghost" style="width:100%;margin-top:10px" data-act="policyBack">← Quay lại đăng nhập</button></div>`);
 }
 function lookupModal(){
   openModal(`<button class="x" data-act="closeModal" aria-label="Đóng">×</button><h2>Tra cứu phiếu khám</h2><p class="meta">Nhập mã phiếu (VD: HRC7K2Q9X).</p>
@@ -746,17 +768,15 @@ const H = {
   cancelOk(d){ const a = appts.find(x=>x.id===d.id); if(a) a.status = 'cancelled'; saveAll(); closeModal(); toast('Đã hủy phiếu khám'); render(); },
   login:loginModal,
   loginStep(){
-    const otp = $('#otpBox');
-    if(otp.style.display==='none'){
-      const ph = $('#lg_phone').value.replace(/\s/g,'');
-      if(!/^(0|\+84)\d{9,10}$/.test(ph)) return toast('Số điện thoại chưa đúng (VD: 0912345678)');
-      otp.style.display = 'grid'; $('#otpNote').style.display = 'block'; $('#lgBtn').textContent = 'Xác nhận đăng nhập'; $('#lg_otp').focus();
-    } else {
-      if(!/^\d{6}$/.test($('#lg_otp').value)) return toast('Nhập đủ 6 chữ số');
-      state.user = {phone: $('#lg_phone').value.replace(/\s/g,'')}; saveAll(); closeModal(); toast('Đăng nhập thành công'); renderChrome();
-    }
+    const name = $('#lg_name').value.trim(), ph = $('#lg_phone').value.replace(/\s/g,'');
+    if(name.length<4) return toast('Nhập họ và tên đầy đủ');
+    if(!/^(0|\+84)\d{9,10}$/.test(ph)) return toast('Số điện thoại chưa đúng (VD: 0912345678)');
+    if(!$('#lg_ok').checked) return toast('Vui lòng đồng ý Chính sách bảo mật để tiếp tục');
+    state.user = {name, phone: ph, consentAt: Date.now()}; saveAll(); closeModal(); toast('Đăng nhập thành công'); renderChrome();
   },
-  account(){ openModal(`<button class="x" data-act="closeModal" aria-label="Đóng">×</button><h2>Tài khoản</h2><p class="meta">Số điện thoại: <b>${esc(state.user.phone)}</b></p><div class="actions"><button class="btn ghost" data-act="go" data-view="appts">Phiếu khám</button><button class="btn danger" data-act="logout">Đăng xuất</button></div>`); },
+  policy(){ $('#loginBox').style.display='none'; $('#policyBox').style.display='block'; },
+  policyBack(){ $('#policyBox').style.display='none'; $('#loginBox').style.display='block'; },
+  account(){ openModal(`<button class="x" data-act="closeModal" aria-label="Đóng">×</button><h2>Tài khoản</h2><p class="meta">${state.user.name?'Họ tên: <b>'+esc(state.user.name)+'</b><br>':''}Số điện thoại: <b>${esc(state.user.phone)}</b></p><div class="actions"><button class="btn ghost" data-act="go" data-view="appts">Phiếu khám</button><button class="btn danger" data-act="logout">Đăng xuất</button></div>`); },
   logout(){ state.user = null; saveAll(); closeModal(); toast('Đã đăng xuất'); renderChrome(); },
   lookup(){
     const c = $('#lk_code').value.trim().toUpperCase(), a = appts.find(x=>x.code===c), out = $('#lkOut');
@@ -778,7 +798,8 @@ document.addEventListener('input', e => {
   if(k==='hq'){ state.hq = e.target.value; $('#hList').innerHTML = hospitalList(); }
   if(k==='dq'){ state.dq = e.target.value; $('#dList').innerHTML = doctorList(); }
 });
-document.addEventListener('change', e => { if(e.target.dataset && e.target.dataset.bind==='dspec'){ state.dspec = e.target.value; $('#dList').innerHTML = doctorList(); } });
+document.addEventListener('change', e => { if(e.target.dataset && e.target.dataset.bind==='consent'){ const b=$('#lgBtn'); if(b) b.disabled = !e.target.checked; }
+  if(e.target.dataset && e.target.dataset.bind==='dspec'){ state.dspec = e.target.value; $('#dList').innerHTML = doctorList(); } });
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); if(e.key==='Enter' && e.target.id==='lk_code') H.lookup(); });
 
 render();
