@@ -85,6 +85,24 @@ button{font-family:inherit}
 .btn{padding:11px 28px;border-radius:12px;border:2px solid var(--cy);background:linear-gradient(#1f6bff,#0c3fc4);color:#fff;font-weight:800;font-size:17px;cursor:pointer}
 .btn.g{background:transparent}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.vis{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:8px 0 0}
+.vis:empty{display:none}
+.vis .g{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px;padding:6px 10px;border-radius:14px;background:#ffffff12;border:1.5px dashed #38d6ff88;max-width:46%}
+.vis .e{display:inline-block;font-size:28px;line-height:1.1;animation:pop .35s both}
+.vis .e.big{font-size:46px}
+.vis.sm .e{font-size:18px}
+.vis .cnt{font-weight:800;color:var(--gold);font-size:20px;align-self:center;padding:0 4px}
+.vis .op{font-size:34px;font-weight:800;color:var(--gold)}
+.q{min-height:64px!important}
+.mc{font-size:34px;display:inline-block;line-height:1}
+.mc.bounce{animation:bounce .6s}.mc.shake{animation:shake .5s}
+.rst{font-size:40px;text-align:center;letter-spacing:4px}
+.cf{position:fixed;z-index:30;font-size:24px;pointer-events:none;animation:cf 1s ease-out forwards}
+@keyframes pop{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}30%{transform:translateY(-14px) scale(1.2)}60%{transform:translateY(0)}80%{transform:translateY(-6px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}60%{transform:translateX(7px)}}
+@keyframes cf{to{transform:translate(var(--dx),var(--dy)) rotate(220deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){.vis .e,.mc,.cf{animation:none!important}}
 </style>
 </head>
 <body>
@@ -125,12 +143,12 @@ button{font-family:inherit}
   <div class="row"><button class="btn g" id="close1" type="button">Quay lại</button></div>
  </div>
  <div class="pn" id="s-play" hidden>
-  <div class="bar"><span id="pi"></span><span id="pt"></span><span id="ps"></span><button class="btn g" id="quit" type="button" style="padding:4px 14px;font-size:14px">Thoát</button></div>
+  <div class="bar"><span id="mc" class="mc">🦉</span><span id="pi"></span><span id="pt"></span><span id="ps"></span><button class="btn g" id="quit" type="button" style="padding:4px 14px;font-size:14px">Thoát</button></div>
   <div class="prog"><div id="pb"></div></div>
-  <div class="q" id="pq"></div><div class="opts" id="po"></div><p class="fb2" id="pf"></p>
+  <div class="vis" id="pv"></div><div class="q" id="pq"></div><div class="opts" id="po"></div><p class="fb2" id="pf"></p>
  </div>
  <div class="pn" id="s-res" hidden>
-  <h2>KẾT QUẢ</h2><div class="big" id="rs"></div><p class="sub" id="rt"></p>
+  <h2>KẾT QUẢ</h2><div class="rst" id="rst"></div><div class="big" id="rs"></div><p class="sub" id="rt"></p><p class="sub" id="rn" style="color:#ffb86b"></p>
   <div class="row"><button class="btn" id="again" type="button">Chơi lại</button><button class="btn g" id="home" type="button">Về trang chủ</button></div>
  </div>
 </div>
@@ -153,7 +171,7 @@ const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 const pick=a=>a[R(0,a.length-1)];
 const NAMES=["Lan","Nam","Minh","Hoa","Bình","An"];
 const SEED=[["Nguyễn Minh Anh",4,3850],["Trần Gia Huy",4,3420],["Lê Phương Thảo",3,3210],["Hoàng Đức Minh",4,2980],["Phạm Bảo Ngọc",3,2760],["Đỗ Minh Quân",4,2540],["Nguyễn Thảo Vy",3,2310],["Lê Quang Anh",4,2180],["Vũ Hoàng Long",3,1980],["Phan Nhật Minh",4,1760]];
-let grade=0,player="",qs=[],idx=0,score=0,right=0,streak=0,tmr=null,left=20,showAll=false,locked=false,lastKey="",topic="",db=null,online=false,cache=null;
+let grade=0,player="",qs=[],idx=0,score=0,right=0,streak=0,tmr=null,left=20,showAll=false,locked=false,lastKey="",lastErr="",topic="",db=null,online=false,cache=null;
 
 function loadLB(){return online&&cache?cache.slice():localLoad()}
 function localLoad(){try{const s=localStorage.getItem("qtc-lb");if(s)return JSON.parse(s)}catch(e){}return SEED.map(x=>({n:x[0],g:x[1],s:x[2]}))}
@@ -247,6 +265,43 @@ const TOPICS=[["calc","➕","Cộng - Trừ - Nhân - Chia"],["unknown","🧠","
 
 
 
+const FR=["🍎","⭐","🐟","🍓","🐥","🍭","🎈","⚽","🍌","🚗"];
+function items(em,n){if(n<=15)return Array.from({length:n},(_,i)=>`<span class="e" style="animation-delay:${i*35}ms">${em}</span>`).join("");return `<span class="e big">${em}</span><span class="cnt">× ${n}</span>`}
+const grp=(em,n)=>`<div class="g">${items(em,n)}</div>`;
+const op=t=>`<span class="op">${t}</span>`;
+const mulv=(b,a,em)=>Array.from({length:b},()=>grp(em,a)).join("");
+const chip=(em,t)=>`<div class="g"><span class="e">${em}</span><span class="cnt">${t}</span></div>`;
+function visualize(q){
+ const t=q.q,e=pick(FR);let m;
+ try{
+  if(m=t.match(/^(\d+) \+ (\d+) = \?$/)){if(+m[1]<=99&&+m[2]<=99)return grp(e,+m[1])+op("+")+grp(e,+m[2]);}
+  if(m=t.match(/^(\d+) − (\d+) = \?$/)){if(+m[1]<=99)return grp(e,+m[1])+op("−")+grp(e,+m[2]);}
+  if(m=t.match(/^(\d+) × (\d+) = \?$/)){if(+m[1]<=9&&+m[2]<=9)return mulv(+m[2],+m[1],e);}
+  if(m=t.match(/^(\d+) : (\d+) = \?$/)){if(+m[1]<=45)return grp(e,+m[1])+op("➗")+grp("🧺",+m[2]);}
+  if(/Số lớn hơn/.test(t))return `<span class="e big">⚖️</span><span class="cnt">Hai số đang so tài!</span>`;
+  if(/Tìm x/.test(t))return `<span class="e big">🎁</span><span class="cnt">Số bí ẩn đang chờ em tìm!</span>`;
+  if(/= \.\.\./.test(t)){const i=/kg|tấn/.test(t)?"⚖️":/phút|giờ|giây/.test(t)?"⏰":/dm²|cm²/.test(t)?"🟦":/km/.test(t)?"🚌":"📏";return `<span class="e big">${i}</span>`}
+  if(m=t.match(/có (\d+) viên bi, được cho thêm (\d+) viên/))return grp("🔵",+m[1])+op("+")+grp("🔵",+m[2]);
+  if(m=t.match(/có (\d+) cái kẹo, mẹ cho thêm (\d+) cái/))return grp("🍬",+m[1])+op("+")+grp("🍬",+m[2]);
+  if(m=t.match(/Lớp có (\d+) học sinh, hôm nay (\d+) bạn nghỉ/))return grp("🧒",+m[1])+op("−")+grp("🧒",+m[2]);
+  if(m=t.match(/Mỗi túi có (\d+) quả cam\. (\d+) túi/))return mulv(+m[2],+m[1],"🍊");
+  if(m=t.match(/Mỗi hộp có (\d+) cái bánh\. (\d+) hộp/))return mulv(+m[2],+m[1],"🍪");
+  if(m=t.match(/Có (\d+) quyển vở chia đều cho (\d+) bạn/))return grp("📒",+m[1])+op("➗")+grp("🧒",+m[2]);
+  if(m=t.match(/đọc (\d+) trang sách\. Hỏi sau (\d+) ngày/))return Array.from({length:+m[2]},()=>chip("📖",m[1]+" trang")).join("");
+  if(m=t.match(/cân nặng (\d+) kg, (\d+) kg và (\d+) kg/))return [m[1],m[2],m[3]].map(x=>chip("🧒",x+" kg")).join("");
+  if(m=t.match(/(\d+) quyển truyện giá/))return grp("📚",+m[1]);
+ }catch(err){}
+ if(/= \?$/.test(t))return `<span class="e big">${pick(["🧮","🚀","🤖","🏅"])}</span>`;
+ return "";
+}
+function mood(e,c){const m=$("mc");m.className="mc";m.textContent=e;void m.offsetWidth;m.className="mc "+c}
+function burst(){
+ if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+ const r=$("po").getBoundingClientRect();
+ for(let i=0;i<14;i++){const x=document.createElement("span");x.className="cf";x.textContent=pick(["⭐","✨","🎉","💎","🌟"]);
+  x.style.left=(r.left+r.width/2)+"px";x.style.top=(r.top+r.height/2)+"px";x.style.setProperty("--dx",R(-170,170)+"px");x.style.setProperty("--dy",R(-210,-40)+"px");
+  document.body.appendChild(x);setTimeout(()=>x.remove(),1000)}
+}
 function showS(id){["menu","play","res"].forEach(x=>$("s-"+x).hidden=x!==id);$("ov").classList.add("on");$("ov").scrollTop=0}
 function closeOv(){clearInterval(tmr);$("ov").classList.remove("on");renderLB()}
 function setErr(t){$("err").textContent=t}
@@ -279,7 +334,7 @@ function next(){
  if(idx>=qs.length)return finish();
  const q=qs[idx];left=20;
  $("pi").textContent=`Câu ${idx+1}/10`;$("ps").textContent=`⭐ ${score}`;$("pt").textContent=`⏱ ${left}s`;
- $("pb").style.width=(idx/10*100)+"%";$("pq").textContent=q.q;$("pf").textContent="";
+ $("pb").style.width=(idx/10*100)+"%";$("pq").textContent=q.q;{const h=visualize(q);$("pv").className="vis"+(h.length>1800?" sm":"");$("pv").innerHTML=h}mood("🦉","");$("pf").textContent="";
  $("po").innerHTML=q.o.map(v=>`<button type="button" data-v="${v}">${v.toLocaleString("vi-VN")}</button>`).join("");
  document.querySelectorAll("#po button").forEach(b=>b.onclick=()=>answer(+b.dataset.v,b));
  tmr=setInterval(()=>{left--;$("pt").textContent=`⏱ ${left}s`;if(left<=0)answer(null)},1000);
@@ -288,32 +343,43 @@ function answer(v,btn){
  if(locked)return;locked=true;clearInterval(tmr);
  const q=qs[idx],ok=v===q.a;
  document.querySelectorAll("#po button").forEach(b=>{if(+b.dataset.v===q.a)b.classList.add("ok")});
- if(ok){streak++;right++;const g=100+left*5+Math.min(streak-1,5)*20;score+=g;$("pf").textContent=`Chính xác! +${g} điểm`}
- else{streak=0;if(btn)btn.classList.add("no");$("pf").textContent=(v===null?"Hết giờ! ":"Chưa đúng. ")+`Đáp án: ${q.a.toLocaleString("vi-VN")}`}
+ if(ok){streak++;right++;const g=100+left*5+Math.min(streak-1,5)*20;score+=g;$("pf").textContent=pick(["Giỏi quá!","Tuyệt vời!","Chính xác!","Siêu đẳng!"])+` +${g} điểm`;mood(pick(["🤩","🥳","😆"]),"bounce");burst()}
+ else{streak=0;mood(v===null?"⏰":"🤔","shake");if(btn)btn.classList.add("no");$("pf").textContent=(v===null?"Hết giờ! ":"Chưa đúng. ")+`Đáp án: ${q.a.toLocaleString("vi-VN")}`}
  $("ps").textContent=`⭐ ${score}`;
  setTimeout(()=>{if(!$("ov").classList.contains("on"))return;idx++;next()},1300);
 }
+function errNote(c){
+ if(c==="permission-denied")return "Chưa lưu được lên Firebase: bị chặn bởi Rules. Vào Firestore > Rules, cho phép read và create ở collection scores (grade cho phép 2, 3, 4). Điểm được lưu tạm trên máy.";
+ if(c==="unavailable"||c==="failed-precondition"||c==="not-found")return "Chưa kết nối được Firestore (mã: "+c+"). Kiểm tra đã tạo Firestore Database chưa và máy có mạng không. Điểm được lưu tạm trên máy.";
+ if(c==="sdk")return "Không tải được thư viện Firebase. Hãy mở file từ máy hoặc từ hosting riêng (không mở trong bản xem trước của claude.ai) và kiểm tra mạng. Điểm được lưu tạm trên máy.";
+ return "Chưa lưu được lên Firebase (mã: "+c+"). Điểm được lưu tạm trên máy.";
+}
 function finish(){
  const base=loadLB(),rank=1+base.filter(p=>p.s>score).length;
- lastKey=player+grade+score;
- if(db&&online){
-  db.collection("scores").add({name:player,grade:grade,score:score,correct:right,topic:topic,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(e=>console.error("Firebase:",e));
- }else{const l=base.slice();l.push({n:player,g:grade,s:score});l.sort((a,b)=>b.s-a.s);saveLB(l.slice(0,20))}
- $("rs").textContent=score.toLocaleString("en-US");
+ lastKey=player+grade+score;$("rn").textContent="";
+ const localSave=()=>{const l=localLoad();l.push({n:player,g:grade,s:score});l.sort((x,y)=>y.s-x.s);saveLB(l.slice(0,20))};
+ if(db){
+  db.collection("scores").add({name:player,grade:grade,score:score,correct:right,topic:topic,createdAt:firebase.firestore.FieldValue.serverTimestamp()})
+   .catch(e=>{lastErr=e.code||String(e.message||e);console.error("Firebase:",e);localSave();setSt();$("rn").textContent=errNote(lastErr)});
+ }else{
+  localSave();
+  if(FIREBASE_CONFIG.apiKey)$("rn").textContent=errNote("sdk");
+ }
+ $("rs").textContent=score.toLocaleString("en-US");{const st=right>=9?3:right>=6?2:right>=3?1:0;$("rst").textContent="⭐".repeat(st)+"☆".repeat(3-st)+" "+["💪","👍","🥳","🏆"][st]}
  $("rt").textContent=`${player} trả lời đúng ${right}/10 câu. `+(rank<=20?`Hạng ${rank} trên bảng xếp hạng.`:"Cố gắng thêm để vào Top 20 nhé!");
  showS("res");
 }
-function setSt(){const e=$("st");e.textContent=online?"● Online":"● Lưu trên máy";e.style.color=online?"#2be28a":"#8fa8d8"}
+function setSt(){const e=$("st");e.textContent=online?"● Online":(lastErr?"● Lỗi Firebase":"● Lưu trên máy");e.style.color=online?"#2be28a":(lastErr?"#ff8da1":"#8fa8d8");e.title=lastErr||""}
 function initDB(){
  try{
-  if(!FIREBASE_CONFIG.apiKey||typeof firebase==="undefined"){setSt();return}
+  if(!FIREBASE_CONFIG.apiKey||typeof firebase==="undefined"){if(FIREBASE_CONFIG.apiKey)lastErr="sdk";setSt();return}
   if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);
   db=firebase.firestore();
   db.collection("scores").orderBy("score","desc").limit(20).onSnapshot(snap=>{
    cache=snap.docs.map(d=>{const x=d.data();return{n:String(x.name||""),g:+x.grade||0,s:+x.score||0}});
-   online=true;setSt();renderLB();
-  },err=>{console.error("Firebase:",err);online=false;cache=null;setSt();renderLB()});
- }catch(e){console.error(e);online=false;setSt()}
+   online=true;lastErr="";setSt();renderLB();
+  },err=>{lastErr=err.code||String(err.message||err);console.error("Firebase:",err);online=false;cache=null;setSt();renderLB()});
+ }catch(e){lastErr=String(e.message||e);console.error(e);online=false;setSt()}
 }
 renderLB();
 initDB();
