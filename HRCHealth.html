@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HRC Health – Đặt lịch khám bệnh trực tuyến</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF4F8;--surface:#FFFFFF;--surface-2:#F6FAFC;--ink:#0A2540;--muted:#566B7F;--line:#D8E4EC;
+  --brand:#0A84C6;--brand-ink:#06527F;--brand-soft:#E1F2FC;--hero:#06527F;--hero-2:#0A6AA3;
+  --ok:#0B8F63;--ok-soft:#DDF5EA;--warn:#A86400;--warn-soft:#FFF1D6;--danger:#C73A3A;--danger-soft:#FCE4E4;
+  --shadow:0 1px 2px rgba(10,37,64,.06),0 6px 20px rgba(10,37,64,.06);
+  --font:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A1620;--surface:#112334;--surface-2:#15293C;--ink:#E8F1F8;--muted:#9BB1C4;--line:#233B52;
+    --brand:#3DB0F0;--brand-ink:#8FD3FA;--brand-soft:#12354B;--hero:#0A3552;--hero-2:#0E4A72;
+    --ok:#3DD39E;--ok-soft:#103A2C;--warn:#F3B24A;--warn-soft:#3B2C0F;--danger:#F27C7C;--danger-soft:#3E1B1B;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0A1620;--surface:#112334;--surface-2:#15293C;--ink:#E8F1F8;--muted:#9BB1C4;--line:#233B52;
+  --brand:#3DB0F0;--brand-ink:#8FD3FA;--brand-soft:#12354B;--hero:#0A3552;--hero-2:#0E4A72;
+  --ok:#3DD39E;--ok-soft:#103A2C;--warn:#F3B24A;--warn-soft:#3B2C0F;--danger:#F27C7C;--danger-soft:#3E1B1B;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3);
+}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--brand-ink)}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* header */
+.top{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:30}
+.top .wrap{display:flex;align-items:center;gap:20px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.02em;color:var(--brand-ink);background:none;border:0;padding:0}
+.logo i{width:34px;height:34px;border-radius:10px;background:var(--brand);display:grid;place-items:center;color:#fff;font-style:normal}
+.nav{display:flex;gap:4px;margin-left:12px}
+.nav button{background:none;border:0;padding:8px 12px;border-radius:8px;font-weight:600;color:var(--muted)}
+.nav button:hover{background:var(--surface-2);color:var(--ink)}
+.nav button[aria-current="page"]{color:var(--brand-ink);background:var(--brand-soft)}
+.top .sp{flex:1}
+.hot{font-size:13px;color:var(--muted);text-align:right;line-height:1.2}
+.hot b{display:block;color:var(--ink);font-size:15px}
+.iconbtn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}
+
+/* buttons / forms */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;padding:11px 18px;font-weight:700;background:var(--brand);color:#fff;transition:background .15s}
+.btn:hover{background:var(--brand-ink)}
+.btn.ghost{background:var(--surface);color:var(--brand-ink);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--brand-soft)}
+.btn.danger{background:var(--danger-soft);color:var(--danger)}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:8px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field label{font-weight:600;font-size:13px;color:var(--muted)}
+.field input,.field select,.field textarea{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:11px 12px;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--brand);border-color:transparent}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+
+/* hero */
+.hero{background:var(--hero);color:#fff;padding:44px 0 64px}
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center}
+.hero h1{font-size:clamp(28px,4.2vw,46px);line-height:1.12;letter-spacing:-.025em;margin:0 0 14px;font-weight:800}
+.hero p.lead{font-size:17px;opacity:.88;max-width:52ch;margin:0 0 22px}
+.searchbox{position:relative}
+.searchbox input{width:100%;padding:16px 18px 16px 48px;border-radius:14px;border:0;font-size:16px;background:#fff;color:#0A2540;box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.searchbox svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#566B7F}
+.results{position:absolute;left:0;right:0;top:calc(100% + 8px);background:var(--surface);color:var(--ink);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.28);z-index:10;max-height:380px;overflow:auto;display:none}
+.results.on{display:block}
+.results h4{margin:0;padding:10px 16px 4px;font-size:12px;color:var(--muted);font-weight:600}
+.results button{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:10px 16px}
+.results button:hover{background:var(--brand-soft)}
+.results .none{padding:18px;color:var(--muted)}
+.quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
+.chip:hover{background:rgba(255,255,255,.14)}
+.chip.dk{border-color:var(--line);color:var(--ink);background:var(--surface)}
+.chip.dk:hover{background:var(--brand-soft)}
+.chip.dk.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* ticket */
+.ticket{--notch:var(--hero);position:relative;background:var(--surface);color:var(--ink);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.28);max-width:380px;width:100%;margin-left:auto}
+.ticket .th{padding:18px 22px 16px;border-bottom:2px dashed var(--line)}
+.ticket .tb{padding:16px 22px 20px}
+.ticket .tag{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;background:var(--brand-soft);color:var(--brand-ink)}
+.ticket .tag.ok{background:var(--ok-soft);color:var(--ok)}
+.ticket .tag.cx{background:var(--danger-soft);color:var(--danger)}
+.ticket .tag.dn{background:var(--surface-2);color:var(--muted)}
+.ticket .notch{position:absolute;width:22px;height:22px;border-radius:50%;background:var(--notch);top:calc(var(--cut,96px) - 11px)}
+.ticket .notch.l{left:-11px}.ticket .notch.r{right:-11px}
+.stt{display:flex;align-items:baseline;gap:10px;margin:10px 0 2px}
+.stt b{font-size:56px;line-height:1;letter-spacing:-.04em;color:var(--brand-ink);font-weight:800}
+.stt span{color:var(--muted);font-weight:600}
+.kv{display:grid;grid-template-columns:96px 1fr;gap:6px 12px;font-size:14px;margin:0}
+.kv dt{color:var(--muted)}.kv dd{margin:0;font-weight:600}
+.qrrow{display:flex;gap:14px;align-items:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.qrrow svg{width:84px;height:84px;color:var(--ink);flex:none}
+.qrrow small{color:var(--muted);display:block;line-height:1.4}
+.qrrow code{font-weight:800;font-size:16px;letter-spacing:.06em}
+
+/* sections */
+.section{padding:40px 0 8px}
+.section h2{font-size:24px;letter-spacing:-.02em;margin:0 0 4px}
+.section .sub{color:var(--muted);margin:0 0 20px}
+.sechead{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sechead h2,.sechead .sub{margin:0}
+.up{margin-top:-34px;position:relative;z-index:2}
+.services{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.svc{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 10px;text-align:center;font-weight:700;font-size:13.5px;box-shadow:var(--shadow);display:grid;gap:10px;justify-items:center}
+.svc:hover{border-color:var(--brand)}
+.svc .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:var(--brand-soft)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.hcard{display:grid;gap:10px}
+.hcard .row,.dcard .row{display:flex;gap:12px;align-items:center}
+.logoh{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;flex:none}
+.av{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;flex:none}
+.card h3{margin:0;font-size:15.5px;line-height:1.3}
+.meta{color:var(--muted);font-size:13px}
+.stars{color:var(--warn);font-weight:700;font-size:13px}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag2{font-size:12px;border-radius:6px;padding:2px 8px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted);font-weight:600}
+.specgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.spec{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:10px;align-items:center;font-weight:600;text-align:left}
+.spec:hover{border-color:var(--brand);background:var(--brand-soft)}
+.tips{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tip{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.tip h3{margin:0 0 6px;font-size:16px}.tip p{margin:0;color:var(--muted);font-size:14px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+summary{font-weight:700;cursor:pointer}
+details p{margin:10px 0 0;color:var(--muted)}
+footer{margin-top:56px;background:var(--surface);border-top:1px solid var(--line);padding:28px 0 96px;color:var(--muted);font-size:13.5px}
+
+/* page */
+.page{padding:28px 0 20px}
+.page h1{font-size:26px;letter-spacing:-.02em;margin:0 0 6px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.toolbar input,.toolbar select{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;min-width:220px}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:16px;padding:40px 20px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+
+/* booking */
+.bk{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+.stepper{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:18px}
+.stepper button{flex:1;min-width:110px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;text-align:left;font-size:13px;color:var(--muted);font-weight:600;display:flex;gap:8px;align-items:center}
+.stepper button b{width:22px;height:22px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;font-size:12px;flex:none}
+.stepper button.cur{border-color:var(--brand);color:var(--brand-ink);background:var(--brand-soft)}
+.stepper button.cur b{background:var(--brand);color:#fff;border-color:var(--brand)}
+.stepper button.done b{background:var(--ok);color:#fff;border-color:var(--ok)}
+.stepper button[disabled]{opacity:.5;cursor:not-allowed}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.panel h2{margin:0 0 4px;font-size:19px}
+.panel .sub{margin:0 0 16px;color:var(--muted)}
+.list{display:grid;gap:10px}
+.item{display:flex;gap:14px;align-items:center;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.item:hover{border-color:var(--brand);background:var(--brand-soft)}
+.item.sel{border:2px solid var(--brand);background:var(--brand-soft)}
+.item .grow{flex:1;min-width:0}
+.item .grow b{display:block}
+.side{position:sticky;top:84px}
+.side h3{margin:0 0 12px;font-size:15px}
+.sline{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:14px}
+.sline:first-of-type{border-top:0}
+.sline span{color:var(--muted);width:78px;flex:none}
+.sline b{flex:1}
+.sline .ed{background:none;border:0;color:var(--brand-ink);font-weight:700;font-size:12px}
+.total{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:2px dashed var(--line);font-weight:800;font-size:17px}
+.dates{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px}
+.date{flex:none;width:62px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 0;text-align:center}
+.date small{display:block;color:var(--muted);font-weight:600}
+.date b{font-size:18px}
+.date.sel{background:var(--brand);color:#fff;border-color:var(--brand)}
+.date.sel small{color:#fff}
+.date[disabled]{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin:8px 0 16px}
+.slot{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 6px;font-weight:600;font-size:13.5px}
+.slot:hover:not([disabled]){border-color:var(--brand);background:var(--brand-soft)}
+.slot.sel{background:var(--brand);color:#fff;border-color:var(--brand)}
+.slot[disabled]{background:var(--surface-2);color:var(--muted);opacity:.6;cursor:not-allowed;text-decoration:line-through}
+.sess{font-weight:700;font-size:13px;color:var(--muted);margin-top:10px}
+.pays{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.pay{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px}
+.pay.sel{border:2px solid var(--brand);background:var(--brand-soft)}
+.pay i{font-style:normal;font-size:22px}
+.actions{display:flex;gap:10px;justify-content:space-between;margin-top:18px;flex-wrap:wrap}
+.notice{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:13.5px;margin:12px 0}
+.okbox{text-align:center;padding:8px 0 18px}
+.okbox .big{width:64px;height:64px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;margin:0 auto 12px;font-size:32px}
+.okbox h1{margin:0 0 4px;font-size:24px}
+.tabs{display:flex;gap:6px;margin:14px 0}
+.tabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 16px;font-weight:600;color:var(--muted)}
+.tabs button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.apt{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+
+/* modal / toast */
+.ov{position:fixed;inset:0;background:rgba(5,20,35,.6);display:grid;place-items:center;z-index:60;padding:16px;overflow:auto}
+.modal{background:var(--surface);border-radius:18px;max-width:440px;width:100%;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.4);--notch:var(--surface)}
+.modal.wide{max-width:420px;padding:0;background:transparent;box-shadow:none}
+.modal h2{margin:0 0 6px}
+.modal .x{float:right;background:none;border:0;font-size:22px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#0A2540;color:#fff;padding:11px 18px;border-radius:12px;font-weight:600;z-index:80;box-shadow:0 10px 30px rgba(0,0,0,.3);max-width:90vw}
+
+/* tabbar */
+.tabbar{display:none;position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:40;padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabbar button{flex:1;background:none;border:0;padding:8px 0 7px;font-size:11.5px;font-weight:600;color:var(--muted);display:grid;justify-items:center;gap:2px}
+.tabbar button span{font-size:20px;line-height:1}
+.tabbar button[aria-current="page"]{color:var(--brand-ink)}
+
+@media (max-width:960px){
+  .hero .wrap{grid-template-columns:1fr}
+  .ticket{margin:8px auto 0}
+  .services{grid-template-columns:repeat(3,1fr)}
+  .tips{grid-template-columns:1fr}
+  .bk{grid-template-columns:1fr}
+  .side{position:static}
+  .nav,.hot{display:none}
+  .tabbar{display:flex}
+}
+@media (max-width:560px){
+  .wrap{padding:0 14px}
+  .grid2{grid-template-columns:1fr}
+  .hero{padding:28px 0 56px}
+  .kv{grid-template-columns:84px 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <button class="logo" data-act="go" data-view="home" aria-label="HRC Health - Trang chủ"><i>✚</i>HRC Health</button>
+    <nav class="nav" id="nav" aria-label="Điều hướng chính"></nav>
+    <div class="sp"></div>
+    <div class="hot">Hotline hỗ trợ<b>1900 6789</b></div>
+    <button class="iconbtn" data-act="theme" aria-label="Đổi giao diện sáng/tối" title="Đổi giao diện">◐</button>
+    <button class="btn sm" id="loginBtn" data-act="login">Đăng nhập</button>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<footer>
+  <div class="wrap">
+    <b style="color:var(--ink)">HRC Health</b> – Nền tảng đặt lịch khám bệnh trực tuyến. Dữ liệu cơ sở y tế, bác sĩ và thanh toán trong trang này chỉ là bản minh họa, không phải dịch vụ y tế thật.
+    <br>Cần hỗ trợ? Gọi 1900 6789 (07:00 – 21:00 mỗi ngày).
+  </div>
+</footer>
+
+<nav class="tabbar" id="tabbar" aria-label="Điều hướng nhanh"></nav>
+<div id="modalRoot"></div>
+<div id="toastRoot" aria-live="polite"></div>
+
+<script>
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => n.toLocaleString('vi-VN') + 'đ';
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+function hash(str){ let h = 2166136261; for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h,16777619); } return h>>>0; }
+const COLORS = ['#0A84C6','#0B8F63','#7A5AF8','#D9480F','#C2255C','#1C7ED6','#2B8A3E','#9C36B5'];
+const colorOf = s => COLORS[hash(String(s)) % COLORS.length];
+const initials = name => { const w = name.replace(/^(PGS\.|GS\.|TS\.|ThS\.|BS\.|CKI+\.)+/g,'').trim().split(/\s+/); return (w.length>1 ? w[w.length-2][0] + w[w.length-1][0] : w[0].slice(0,2)).toUpperCase(); };
+const DOW = ['CN','T2','T3','T4','T5','T6','T7'];
+const DOWL = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+const ymd = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const fromYmd = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
+const fmtDate = s => { const d = fromYmd(s); return DOWL[d.getDay()]+', '+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear(); };
+const fmtShort = s => { const d = fromYmd(s); return d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear(); };
+const hh = m => String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+const todayStr = () => ymd(new Date());
+
+/* ---------- data (minh họa) ---------- */
+const SPECS = [
+  {id:'noi',name:'Nội tổng quát',ic:'🩺'},{id:'tim',name:'Tim mạch',ic:'❤️'},{id:'nhi',name:'Nhi khoa',ic:'🧒'},
+  {id:'san',name:'Sản phụ khoa',ic:'🤰'},{id:'da',name:'Da liễu',ic:'🧴'},{id:'tmh',name:'Tai mũi họng',ic:'👂'},
+  {id:'mat',name:'Mắt',ic:'👁️'},{id:'rhm',name:'Răng hàm mặt',ic:'🦷'},{id:'cokhop',name:'Cơ xương khớp',ic:'🦴'},
+  {id:'tieuhoa',name:'Tiêu hóa',ic:'🍽️'},{id:'thankinh',name:'Thần kinh',ic:'🧠'}
+];
+const HOSPITALS = [
+  {id:'h1',name:'Bệnh viện Đa khoa An Phúc',city:'TP. Hồ Chí Minh',addr:'Quận 3, TP. Hồ Chí Minh',type:'Bệnh viện công',rating:4.8,hours:'06:30 – 16:30, Thứ 2 – Thứ 7'},
+  {id:'h2',name:'Phòng khám Đa khoa Minh Tâm',city:'TP. Hồ Chí Minh',addr:'Bình Thạnh, TP. Hồ Chí Minh',type:'Phòng khám tư',rating:4.6,hours:'07:30 – 16:30, Thứ 2 – Thứ 7'},
+  {id:'h7',name:'Nha khoa Quốc tế Bạch Dương',city:'TP. Hồ Chí Minh',addr:'Quận 7, TP. Hồ Chí Minh',type:'Phòng khám tư',rating:4.7,hours:'07:30 – 16:30, Thứ 2 – Thứ 7'},
+  {id:'h3',name:'Bệnh viện Nhi Hướng Dương',city:'Hà Nội',addr:'Cầu Giấy, Hà Nội',type:'Bệnh viện chuyên khoa',rating:4.9,hours:'06:30 – 16:30, Thứ 2 – Thứ 7'},
+  {id:'h4',name:'Bệnh viện Tim mạch Hồng Ngọc',city:'Hà Nội',addr:'Đống Đa, Hà Nội',type:'Bệnh viện chuyên khoa',rating:4.8,hours:'07:00 – 16:30, Thứ 2 – Thứ 7'},
+  {id:'h8',name:'Bệnh viện Mắt Sáng Việt',city:'Hà Nội',addr:'Hai Bà Trưng, Hà Nội',type:'Bệnh viện chuyên khoa',rating:4.5,hours:'07:30 – 16:30, Thứ 2 – Thứ 7'},
+  {id:'h5',name:'Bệnh viện Đa khoa Sông Hàn',city:'Đà Nẵng',addr:'Hải Châu, Đà Nẵng',type:'Bệnh viện công',rating:4.6,hours:'06:30 – 16:30, Thứ 2 – Thứ 7'},
+  {id:'h6',name:'Trung tâm Sản Nhi Nắng Mai',city:'Đà Nẵng',addr:'Thanh Khê, Đà Nẵng',type:'Bệnh viện chuyên khoa',rating:4.7,hours:'07:00 – 16:30, Thứ 2 – Thứ 7'}
+];
+const W6 = [1,2,3,4,5,6];
+const DOCTORS = [
+  {id:'d1',name:'PGS.TS.BS Nguyễn Thị Lan Hương',spec:'noi',h:'h1',years:22,fee:300000,rating:4.9,days:W6,bio:'Chuyên bệnh lý nội khoa, tăng huyết áp, đái tháo đường.'},
+  {id:'d2',name:'ThS.BS Trần Quốc Bảo',spec:'tim',h:'h1',years:12,fee:250000,rating:4.7,days:W6,bio:'Siêu âm tim, tầm soát nguy cơ tim mạch.'},
+  {id:'d3',name:'BS.CKII Lê Minh Châu',spec:'tieuhoa',h:'h1',years:18,fee:280000,rating:4.8,days:[1,2,4,5],bio:'Nội soi tiêu hóa, bệnh dạ dày – gan mật.'},
+  {id:'d4',name:'ThS.BS Phạm Gia Hân',spec:'da',h:'h2',years:9,fee:200000,rating:4.6,days:W6,bio:'Điều trị mụn, viêm da cơ địa, nám.'},
+  {id:'d5',name:'BS.CKI Võ Thanh Tùng',spec:'cokhop',h:'h2',years:14,fee:220000,rating:4.7,days:[1,3,5,6],bio:'Thoái hóa khớp, đau cột sống, phục hồi chức năng.'},
+  {id:'d6',name:'BS.CKII Đặng Thu Phương',spec:'nhi',h:'h3',years:20,fee:250000,rating:4.9,days:W6,bio:'Khám nhi tổng quát, dinh dưỡng và hô hấp trẻ em.'},
+  {id:'d7',name:'ThS.BS Hoàng Anh Đức',spec:'tmh',h:'h3',years:11,fee:200000,rating:4.6,days:W6,bio:'Viêm xoang, viêm họng mạn, nội soi tai mũi họng.'},
+  {id:'d8',name:'GS.TS.BS Bùi Văn Khoa',spec:'tim',h:'h4',years:30,fee:500000,rating:5.0,days:[1,3,5],bio:'Can thiệp tim mạch, rối loạn nhịp, suy tim.'},
+  {id:'d9',name:'TS.BS Ngô Mai Anh',spec:'tim',h:'h4',years:16,fee:350000,rating:4.8,days:W6,bio:'Tăng huyết áp, bệnh mạch vành, tim mạch phụ nữ.'},
+  {id:'d10',name:'BS.CKII Trương Hải Yến',spec:'noi',h:'h5',years:17,fee:250000,rating:4.7,days:W6,bio:'Khám sức khỏe tổng quát, bệnh nội tiết – chuyển hóa.'},
+  {id:'d11',name:'ThS.BS Đỗ Khánh Linh',spec:'san',h:'h6',years:13,fee:300000,rating:4.8,days:W6,bio:'Theo dõi thai kỳ, siêu âm thai, bệnh phụ khoa.'},
+  {id:'d12',name:'BS.CKI Phan Nhật Nam',spec:'nhi',h:'h6',years:10,fee:200000,rating:4.5,days:[1,2,3,4,5],bio:'Tiêm chủng, khám sơ sinh và trẻ nhỏ.'},
+  {id:'d13',name:'ThS.BS Lý Tuấn Kiệt',spec:'rhm',h:'h7',years:12,fee:250000,rating:4.7,days:W6,bio:'Nha khoa tổng quát, chỉnh nha, phục hình răng.'},
+  {id:'d14',name:'TS.BS Vũ Thanh Hà',spec:'mat',h:'h8',years:19,fee:300000,rating:4.6,days:W6,bio:'Tật khúc xạ, bệnh võng mạc, phẫu thuật đục thủy tinh thể.'},
+  {id:'d15',name:'BS.CKI Mai Quốc Việt',spec:'thankinh',h:'h5',years:15,fee:280000,rating:4.6,days:[2,4,6],bio:'Đau đầu, mất ngủ, rối loạn tiền đình.'},
+  {id:'d16',name:'ThS.BS Cao Ngọc Diệp',spec:'da',h:'h5',years:8,fee:180000,rating:4.5,days:W6,bio:'Da liễu thẩm mỹ, dị ứng da, nấm da.'}
+];
+HOSPITALS.forEach(h => h.specs = [...new Set(DOCTORS.filter(d => d.h===h.id).map(d => d.spec))]);
+const CITIES = ['Tất cả', ...new Set(HOSPITALS.map(h => h.city))];
+const PAYS = [
+  {id:'vnpay',name:'VNPay QR',ic:'🏦'},{id:'momo',name:'Ví MoMo',ic:'🟣'},{id:'zalopay',name:'ZaloPay',ic:'🔵'},
+  {id:'card',name:'Thẻ ATM / Visa / Master',ic:'💳'},{id:'counter',name:'Thanh toán tại quầy',ic:'🧾'}
+];
+const hosp = id => HOSPITALS.find(h => h.id===id);
+const doc = id => DOCTORS.find(d => d.id===id);
+const spec = id => SPECS.find(s => s.id===id);
+
+/* ---------- state ---------- */
+let profiles = store.get('ml_profiles', []);
+let appts = store.get('ml_appts', []);
+const state = {
+  view:'home', apptTab:'upcoming', user: store.get('ml_user', null),
+  b:{step:1}, last:null, city:'Tất cả', hq:'', dq:'', dspec:'all', addingProfile:false
+};
+const saveAll = () => { store.set('ml_profiles', profiles); store.set('ml_appts', appts); store.set('ml_user', state.user); };
+
+function statusOf(a){
+  if(a.status==='cancelled') return 'cancelled';
+  const end = fromYmd(a.date); end.setHours(23,59,59);
+  return end < new Date() ? 'done' : 'upcoming';
+}
+
+/* ---------- slots ---------- */
+function slotsFor(d, date){
+  const day = fromYmd(date);
+  if(!d.days.includes(day.getDay())) return [];
+  const times = [];
+  for(let m=7*60+30;m<11*60+30;m+=30) times.push(m);
+  for(let m=13*60+30;m<16*60+30;m+=30) times.push(m);
+  const now = new Date(), isToday = date===ymd(now), nowM = now.getHours()*60 + now.getMinutes();
+  return times.map(m => {
+    const label = hh(m)+' – '+hh(m+30);
+    const taken = appts.some(a => statusOf(a)==='upcoming' && a.doctor===d.id && a.date===date && a.slot===label);
+    const full = hash(d.id+date+m) % 5 === 0;
+    const past = isToday && m <= nowM + 30;
+    return {label, ok: !(taken||full||past), session: m<12*60 ? 'Buổi sáng' : 'Buổi chiều'};
+  });
+}
+const nextDays = n => { const t = new Date(); t.setHours(0,0,0,0); return Array.from({length:n},(_,i)=>{ const d = new Date(t); d.setDate(t.getDate()+i); return d; }); };
+
+/* ---------- pseudo QR (minh họa) ---------- */
+function qrSvg(code){
+  let s = hash(code) || 1; const n = 21, rects = [];
+  const rnd = () => { s ^= s<<13; s ^= s>>>17; s ^= s<<5; return (s>>>0)/4294967296; };
+  const inFinder = (x,y) => (x<8&&y<8)||(x>=n-8&&y<8)||(x<8&&y>=n-8);
+  for(let y=0;y<n;y++) for(let x=0;x<n;x++){ if(!inFinder(x,y) && rnd()>.5) rects.push(`<rect x="${x}" y="${y}" width="1" height="1"/>`); }
+  const finder = (x,y) => `<rect x="${x}" y="${y}" width="7" height="7"/><rect x="${x+1}" y="${y+1}" width="5" height="5" fill="var(--surface)"/><rect x="${x+2}" y="${y+2}" width="3" height="3"/>`;
+  return `<svg viewBox="0 0 21 21" fill="currentColor" role="img" aria-label="Mã QR minh họa của phiếu ${esc(code)}" shape-rendering="crispEdges">${rects.join('')}${finder(0,0)}${finder(n-7,0)}${finder(0,n-7)}</svg>`;
+}
+
+/* ---------- ticket ---------- */
+function ticketHTML(a, opts={}){
+  const st = statusOf(a);
+  const tag = st==='upcoming' ? '<span class="tag">Chờ khám</span>' : st==='done' ? '<span class="tag dn">Đã qua ngày khám</span>' : '<span class="tag cx">Đã hủy</span>';
+  const h = hosp(a.hospital), d = doc(a.doctor);
+  return `<div class="ticket" style="--cut:${opts.cut||112}px;${opts.notch?`--notch:${opts.notch};`:''}">
+    <span class="notch l"></span><span class="notch r"></span>
+    <div class="th">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>Phiếu khám bệnh</b>${tag}</div>
+      <div class="stt"><b>${String(a.stt).padStart(2,'0')}</b><span>số thứ tự · ${esc(a.room)}</span></div>
+    </div>
+    <div class="tb">
+      <dl class="kv">
+        <dt>Bệnh nhân</dt><dd>${esc(a.profile.name)}</dd>
+        <dt>Ngày khám</dt><dd>${fmtDate(a.date)}</dd>
+        <dt>Giờ khám</dt><dd>${esc(a.slot)}</dd>
+        <dt>Chuyên khoa</dt><dd>${esc(spec(a.spec).name)}</dd>
+        <dt>Bác sĩ</dt><dd>${esc(d.name)}</dd>
+        <dt>Cơ sở</dt><dd>${esc(h.name)}<br><span class="meta" style="font-weight:500">${esc(h.addr)}</span></dd>
+        <dt>Thanh toán</dt><dd>${a.pay==='counter' ? 'Tại quầy · '+money(a.fee) : 'Đã thanh toán · '+money(a.fee)}</dd>
+      </dl>
+      <div class="qrrow">${qrSvg(a.code)}<div><small>Mã phiếu · đưa mã này tại quầy tiếp đón</small><code>${esc(a.code)}</code></div></div>
+    </div>
+  </div>`;
+}
+
+/* ---------- UI chrome ---------- */
+const NAV = [
+  {v:'home',t:'Trang chủ',ic:'🏠'},{v:'book',t:'Đặt khám',ic:'📅'},{v:'hospitals',t:'Cơ sở y tế',ic:'🏥'},
+  {v:'doctors',t:'Bác sĩ',ic:'👨‍⚕️'},{v:'appts',t:'Phiếu khám',ic:'🎫'},{v:'profiles',t:'Hồ sơ',ic:'👤'}
+];
+function renderChrome(){
+  const cur = state.view==='success' ? 'appts' : state.view;
+  $('#nav').innerHTML = NAV.map(n => `<button data-act="go" data-view="${n.v}" ${cur===n.v?'aria-current="page"':''}>${n.t}</button>`).join('');
+  const tb = [NAV[0],NAV[1],NAV[4],NAV[5]];
+  $('#tabbar').innerHTML = tb.map(n => `<button data-act="go" data-view="${n.v}" ${cur===n.v?'aria-current="page"':''}><span>${n.ic}</span>${n.t}</button>`).join('')
+    + `<button data-act="${state.user?'account':'login'}"><span>🔐</span>${state.user?'Tài khoản':'Đăng nhập'}</button>`;
+  const lb = $('#loginBtn');
+  if(state.user){ lb.textContent = '☎ ' + state.user.phone.replace(/(\d{3})\d{4}(\d{3})/,'$1••••$2'); lb.dataset.act = 'account'; lb.className = 'btn sm ghost'; }
+  else { lb.textContent = 'Đăng nhập'; lb.dataset.act = 'login'; lb.className = 'btn sm'; }
+}
+function toast(msg){
+  const r = $('#toastRoot'); r.innerHTML = `<div class="toast" role="status">${esc(msg)}</div>`;
+  clearTimeout(toast.t); toast.t = setTimeout(() => r.innerHTML = '', 2800);
+}
+function openModal(html, cls=''){
+  $('#modalRoot').innerHTML = `<div class="ov" data-act="ovclose"><div class="modal ${cls}" role="dialog" aria-modal="true">${html}</div></div>`;
+  const f = $('#modalRoot input, #modalRoot button'); if(f) f.focus();
+}
+const closeModal = () => $('#modalRoot').innerHTML = '';
+
+/* ---------- views ---------- */
+function stars(r){ return `<span class="stars">★ ${r.toFixed(1)}</span>`; }
+function hospitalCard(h, btn='Đặt khám'){
+  return `<div class="card hcard">
+    <div class="row"><div class="logoh" style="background:${colorOf(h.id)}">${initials(h.name.replace(/^(Bệnh viện|Phòng khám|Trung tâm|Nha khoa)( Đa khoa| Nhi| Tim mạch| Mắt| Sản Nhi| Quốc tế)?/,'').trim()||h.name)}</div>
+      <div><h3>${esc(h.name)}</h3><div class="meta">${esc(h.addr)}</div></div></div>
+    <div class="tags"><span class="tag2">${esc(h.type)}</span>${h.specs.slice(0,3).map(s=>`<span class="tag2">${esc(spec(s).name)}</span>`).join('')}</div>
+    <div class="meta">⏰ ${esc(h.hours)}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center">${stars(h.rating)}<button class="btn sm" data-act="bookHospital" data-id="${h.id}">${btn}</button></div>
+  </div>`;
+}
+function doctorCard(d){
+  const h = hosp(d.h);
+  return `<div class="card dcard" style="display:grid;gap:10px">
+    <div class="row"><div class="av" style="background:${colorOf(d.id)}">${initials(d.name)}</div>
+      <div><h3>${esc(d.name)}</h3><div class="meta">${esc(spec(d.spec).name)} · ${d.years} năm kinh nghiệm</div></div></div>
+    <div class="meta">${esc(d.bio)}</div>
+    <div class="meta">🏥 ${esc(h.name)}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center"><span><b>${money(d.fee)}</b> <span class="meta">/ lượt</span> &nbsp;${stars(d.rating)}</span>
+      <button class="btn sm" data-act="bookDoctor" data-id="${d.id}">Đặt khám</button></div>
+  </div>`;
+}
+
+function renderHome(){
+  const next = appts.filter(a => statusOf(a)==='upcoming').sort((a,b) => (a.date+a.slot).localeCompare(b.date+b.slot))[0];
+  const demo = {code:'HRC7K2Q9X',stt:12,room:'Phòng 108',profile:{name:'Nguyễn Văn An'},date:ymd(nextDays(2)[1]),slot:'08:30 – 09:00',spec:'tim',doctor:'d2',hospital:'h1',pay:'vnpay',fee:250000,status:'upcoming'};
+  return `
+  <section class="hero"><div class="wrap">
+    <div>
+      <h1>Đặt lịch khám trong 3 phút. Đến viện là được khám.</h1>
+      <p class="lead">Chọn bác sĩ, chọn giờ, nhận số thứ tự ngay trên điện thoại. Không còn cảnh xếp hàng lấy số từ sáng sớm.</p>
+      <div class="searchbox">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <label class="sr" for="homeSearch">Tìm bệnh viện, bác sĩ, chuyên khoa</label>
+        <input id="homeSearch" data-bind="homeSearch" type="search" autocomplete="off" placeholder="Tìm bệnh viện, bác sĩ hoặc chuyên khoa…">
+        <div class="results" id="homeResults"></div>
+      </div>
+      <div class="quick">${['tim','nhi','da','rhm','san'].map(s=>`<button class="chip" data-act="bookSpec" data-id="${s}">${spec(s).ic} ${esc(spec(s).name)}</button>`).join('')}</div>
+    </div>
+    <div>
+      ${ticketHTML(next || demo, {cut:112})}
+      <div style="text-align:center;margin-top:12px;font-size:13px;opacity:.8">${next ? 'Phiếu khám sắp tới của bạn' : 'Phiếu khám mẫu – đặt khám để nhận phiếu của bạn'}</div>
+    </div>
+  </div></section>
+
+  <div class="wrap up"><div class="services">
+    ${[['📅','Đặt khám tại cơ sở','book'],['👨‍⚕️','Đặt khám theo bác sĩ','doctors'],['🩻','Khám theo chuyên khoa','specs'],['🎫','Phiếu khám của tôi','appts'],['🔎','Tra cứu phiếu khám','lookup'],['👤','Hồ sơ bệnh nhân','profiles']]
+      .map(([ic,t,v])=>`<button class="svc" data-act="svc" data-v="${v}"><span class="ic">${ic}</span>${t}</button>`).join('')}
+  </div></div>
+
+  <div class="wrap">
+    <section class="section" id="specs"><div class="sechead"><div><h2>Chuyên khoa</h2><p class="sub">Chọn chuyên khoa phù hợp với triệu chứng của bạn.</p></div></div>
+      <div class="specgrid">${SPECS.map(s=>`<button class="spec" data-act="bookSpec" data-id="${s.id}"><span style="font-size:22px">${s.ic}</span>${esc(s.name)}</button>`).join('')}</div></section>
+
+    <section class="section"><div class="sechead"><div><h2>Cơ sở y tế nổi bật</h2><p class="sub">Được đánh giá cao bởi người bệnh.</p></div><button class="btn ghost sm" data-act="go" data-view="hospitals">Xem tất cả</button></div>
+      <div class="cards">${HOSPITALS.slice().sort((a,b)=>b.rating-a.rating).slice(0,4).map(h=>hospitalCard(h)).join('')}</div></section>
+
+    <section class="section"><div class="sechead"><div><h2>Bác sĩ nổi bật</h2><p class="sub">Đặt thẳng lịch với bác sĩ bạn tin tưởng.</p></div><button class="btn ghost sm" data-act="go" data-view="doctors">Xem tất cả</button></div>
+      <div class="cards">${DOCTORS.slice().sort((a,b)=>b.rating-a.rating||b.years-a.years).slice(0,4).map(doctorCard).join('')}</div></section>
+
+    <section class="section"><div class="sechead"><div><h2>Đặt khám qua 4 bước</h2></div></div>
+      <div class="tips">
+        <div class="tip"><h3>1. Chọn nơi khám</h3><p>Chọn cơ sở y tế, chuyên khoa và bác sĩ phù hợp.</p></div>
+        <div class="tip"><h3>2. Chọn ngày giờ</h3><p>Xem khung giờ còn trống theo từng bác sĩ và giữ chỗ ngay.</p></div>
+        <div class="tip"><h3>3. Xác nhận &amp; thanh toán</h3><p>Chọn hồ sơ bệnh nhân, thanh toán online hoặc trả tại quầy.</p></div>
+      </div></section>
+
+    <section class="section"><div class="sechead"><div><h2>Cẩm nang trước khi đi khám</h2></div></div>
+      <div class="tips">
+        <div class="tip"><h3>Mang theo giấy tờ</h3><p>CCCD, thẻ BHYT (nếu có), đơn thuốc và kết quả xét nghiệm gần nhất.</p></div>
+        <div class="tip"><h3>Đến sớm 15 phút</h3><p>Đưa mã phiếu tại quầy tiếp đón để xác nhận và vào phòng khám đúng giờ.</p></div>
+        <div class="tip"><h3>Nhịn ăn khi cần</h3><p>Nếu có xét nghiệm máu hoặc siêu âm bụng, hãy hỏi cơ sở y tế về thời gian nhịn ăn.</p></div>
+      </div></section>
+
+    <section class="section"><div class="sechead"><div><h2>Câu hỏi thường gặp</h2></div></div>
+      <details><summary>Tôi có thể hủy hoặc đổi lịch khám không?</summary><p>Có. Vào mục Phiếu khám, chọn phiếu sắp tới và bấm Hủy phiếu. Sau đó đặt lại khung giờ khác.</p></details>
+      <details><summary>Phí đặt khám là bao nhiêu?</summary><p>Bạn chỉ trả phí khám của bác sĩ. Phí đặt lịch trên HRC Health là 0đ.</p></details>
+      <details><summary>Tôi có cần thanh toán trước không?</summary><p>Không bắt buộc. Bạn có thể chọn thanh toán tại quầy khi đến khám.</p></details>
+      <details><summary>Một tài khoản đặt cho người thân được không?</summary><p>Được. Tạo thêm hồ sơ bệnh nhân cho từng người thân và chọn hồ sơ khi đặt khám.</p></details>
+    </section>
+  </div>`;
+}
+
+/* --- hospitals --- */
+function hospitalList(){
+  const q = state.hq.trim().toLowerCase();
+  const list = HOSPITALS.filter(h => (state.city==='Tất cả'||h.city===state.city) && (!q || (h.name+h.addr).toLowerCase().includes(q)));
+  return list.length ? `<div class="cards">${list.map(h=>hospitalCard(h)).join('')}</div>` : `<div class="empty"><b>Không tìm thấy cơ sở y tế</b>Thử đổi từ khóa hoặc chọn khu vực khác.</div>`;
+}
+function renderHospitals(){
+  return `<div class="wrap page"><h1>Cơ sở y tế</h1><p class="meta">Chọn cơ sở để bắt đầu đặt khám.</p>
+    <div class="toolbar"><input data-bind="hq" type="search" placeholder="Tìm tên hoặc địa chỉ…" value="${esc(state.hq)}" aria-label="Tìm cơ sở y tế">
+    <span style="display:flex;gap:6px;flex-wrap:wrap" id="cityChips">${cityChips()}</span></div>
+    <div id="hList">${hospitalList()}</div></div>`;
+}
+const cityChips = () => CITIES.map(c => `<button class="chip dk ${state.city===c?'on':''}" data-act="city" data-c="${esc(c)}">${esc(c)}</button>`).join('');
+
+/* --- doctors --- */
+function doctorList(){
+  const q = state.dq.trim().toLowerCase();
+  const list = DOCTORS.filter(d => (state.dspec==='all'||d.spec===state.dspec) && (!q || (d.name+hosp(d.h).name+spec(d.spec).name).toLowerCase().includes(q)));
+  return list.length ? `<div class="cards">${list.map(doctorCard).join('')}</div>` : `<div class="empty"><b>Không tìm thấy bác sĩ</b>Thử đổi từ khóa hoặc chuyên khoa.</div>`;
+}
+function renderDoctors(){
+  return `<div class="wrap page"><h1>Bác sĩ</h1><p class="meta">Đặt lịch trực tiếp với bác sĩ bạn chọn.</p>
+    <div class="toolbar"><input data-bind="dq" type="search" placeholder="Tìm bác sĩ, bệnh viện…" value="${esc(state.dq)}" aria-label="Tìm bác sĩ">
+    <select data-bind="dspec" aria-label="Lọc theo chuyên khoa"><option value="all">Tất cả chuyên khoa</option>${SPECS.map(s=>`<option value="${s.id}" ${state.dspec===s.id?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
+    <div id="dList">${doctorList()}</div></div>`;
+}
+
+/* --- profile form --- */
+function profileForm(){
+  return `<div class="panel" style="margin-top:12px"><h2>Thêm hồ sơ bệnh nhân</h2><p class="sub">Nhập đúng thông tin như trên giấy tờ để làm thủ tục nhanh hơn.</p>
+    <div class="field"><label for="pf_name">Họ và tên</label><input id="pf_name" placeholder="NGUYỄN VĂN A" autocomplete="name"></div>
+    <div class="grid2"><div class="field"><label for="pf_dob">Ngày sinh</label><input id="pf_dob" type="date" max="${todayStr()}"></div>
+    <div class="field"><label for="pf_gender">Giới tính</label><select id="pf_gender"><option value="">Chọn</option><option>Nam</option><option>Nữ</option></select></div></div>
+    <div class="grid2"><div class="field"><label for="pf_phone">Số điện thoại</label><input id="pf_phone" type="tel" inputmode="tel" placeholder="09xx xxx xxx" autocomplete="tel"></div>
+    <div class="field"><label for="pf_bhyt">Mã BHYT (nếu có)</label><input id="pf_bhyt" placeholder="Không bắt buộc"></div></div>
+    <div class="field"><label for="pf_addr">Địa chỉ</label><input id="pf_addr" placeholder="Số nhà, đường, phường/xã, tỉnh/thành" autocomplete="street-address"></div>
+    <div class="actions" style="margin-top:4px"><button class="btn ghost" data-act="cancelProfile">Hủy</button><button class="btn" data-act="saveProfile">Lưu hồ sơ</button></div></div>`;
+}
+function saveProfile(){
+  const v = id => $('#'+id).value.trim();
+  const p = {id:'p'+Date.now(), name:v('pf_name'), dob:v('pf_dob'), gender:v('pf_gender'), phone:v('pf_phone').replace(/\s/g,''), bhyt:v('pf_bhyt'), addr:v('pf_addr')};
+  if(p.name.length<4) return toast('Nhập họ và tên đầy đủ'), null;
+  if(!p.dob) return toast('Chọn ngày sinh'), null;
+  if(!p.gender) return toast('Chọn giới tính'), null;
+  if(!/^(0|\+84)\d{9,10}$/.test(p.phone)) return toast('Số điện thoại chưa đúng (VD: 0912345678)'), null;
+  profiles.push(p); saveAll(); state.addingProfile = false; return p;
+}
+const profCard = (p, sel, act='') => `<div class="card" style="display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+  <div style="display:flex;gap:12px;align-items:center"><div class="av" style="background:${colorOf(p.id)}">${initials(p.name)}</div>
+  <div><h3>${esc(p.name)}</h3><div class="meta">${p.gender} · ${fmtShort(p.dob)} · ${esc(p.phone)}${p.bhyt?' · BHYT '+esc(p.bhyt):''}</div><div class="meta">${esc(p.addr||'Chưa có địa chỉ')}</div></div></div>${act}</div>`;
+function renderProfiles(){
+  return `<div class="wrap page"><h1>Hồ sơ bệnh nhân</h1><p class="meta">Quản lý hồ sơ của bạn và người thân. Dữ liệu chỉ lưu trên trình duyệt này.</p>
+    <div style="margin:16px 0;display:flex;gap:10px">${state.addingProfile?'':'<button class="btn" data-act="addProfile">+ Thêm hồ sơ</button>'}</div>
+    ${state.addingProfile ? profileForm() : ''}
+    <div class="list" style="margin-top:14px">${profiles.length ? profiles.map(p=>profCard(p,false,`<button class="btn danger sm" data-act="delProfile" data-id="${p.id}">Xóa</button>`)).join('') : (state.addingProfile?'':'<div class="empty"><b>Chưa có hồ sơ nào</b>Thêm hồ sơ để đặt khám nhanh hơn.</div>')}</div></div>`;
+}
+
+/* --- appointments --- */
+function renderAppts(){
+  const tabs = [['upcoming','Sắp tới'],['done','Đã khám'],['cancelled','Đã hủy']];
+  const list = appts.filter(a => statusOf(a)===state.apptTab).sort((a,b)=> (b.date+b.slot).localeCompare(a.date+a.slot));
+  return `<div class="wrap page"><h1>Phiếu khám của tôi</h1>
+    <div class="tabs" role="tablist">${tabs.map(([k,t])=>`<button role="tab" aria-selected="${state.apptTab===k}" class="${state.apptTab===k?'on':''}" data-act="apptTab" data-t="${k}">${t} (${appts.filter(a=>statusOf(a)===k).length})</button>`).join('')}</div>
+    <div class="list">${list.length ? list.map(a=>{
+      const d = doc(a.doctor), h = hosp(a.hospital);
+      return `<div class="card apt"><div><h3>${esc(d.name)} · ${esc(spec(a.spec).name)}</h3>
+        <div class="meta">${fmtDate(a.date)} · ${esc(a.slot)} · STT ${a.stt}</div><div class="meta">${esc(h.name)} · BN: ${esc(a.profile.name)}</div></div>
+        <div style="display:flex;gap:8px"><button class="btn ghost sm" data-act="viewTicket" data-id="${a.id}">Xem phiếu</button>
+        ${a.status!=='cancelled' && statusOf(a)==='upcoming' ? `<button class="btn danger sm" data-act="cancelAppt" data-id="${a.id}">Hủy phiếu</button>`:''}</div></div>`;
+    }).join('') : `<div class="empty"><b>Chưa có phiếu khám nào</b>${state.apptTab==='upcoming'?'<button class="btn" style="margin-top:12px" data-act="go" data-view="book">Đặt khám ngay</button>':'Phiếu sẽ xuất hiện tại đây.'}</div>`}</div></div>`;
+}
+
+/* --- booking --- */
+const STEPS = ['Cơ sở y tế','Chuyên khoa','Bác sĩ','Ngày giờ','Hồ sơ','Xác nhận'];
+function stepOK(i){
+  const b = state.b;
+  if(i===1) return true;
+  if(i===2) return !!b.hospital;
+  if(i===3) return !!b.hospital && !!b.spec;
+  if(i===4) return stepOK(3) && !!b.doctor;
+  if(i===5) return stepOK(4) && !!b.date && !!b.slot;
+  if(i===6) return stepOK(5) && !!b.profile;
+}
+function sideSummary(){
+  const b = state.b, rows = [];
+  const row = (l, v, s) => rows.push(`<div class="sline"><span>${l}</span><b>${v||'<i class="meta" style="font-weight:500">Chưa chọn</i>'}</b>${v?`<button class="ed" data-act="step" data-s="${s}">Sửa</button>`:''}</div>`);
+  row('Cơ sở', b.hospital && esc(hosp(b.hospital).name), 1);
+  row('Chuyên khoa', b.spec && esc(spec(b.spec).name), 2);
+  row('Bác sĩ', b.doctor && esc(doc(b.doctor).name), 3);
+  row('Thời gian', b.date && b.slot && fmtShort(b.date)+'<br>'+esc(b.slot), 4);
+  const p = profiles.find(x=>x.id===b.profile); row('Bệnh nhân', p && esc(p.name), 5);
+  const fee = b.doctor ? doc(b.doctor).fee : 0;
+  return `<div class="panel side"><h3>Thông tin đặt khám</h3>${rows.join('')}<div class="total"><span>Tổng cộng</span><span>${money(fee)}</span></div><p class="meta" style="margin:8px 0 0">Phí đặt lịch 0đ</p></div>`;
+}
+function bookStep(){
+  const b = state.b, s = b.step;
+  if(s===1){
+    const list = HOSPITALS.filter(h => (state.city==='Tất cả' || h.city===state.city) && (!b.specFilter || h.specs.includes(b.specFilter)));
+    return `<h2>Chọn cơ sở y tế</h2><p class="sub">${b.specFilter ? 'Cơ sở có khám '+esc(spec(b.specFilter).name)+'.' : 'Chọn nơi bạn muốn đến khám.'}</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="cityChips">${cityChips()}</div>
+      <div class="list">${list.map(h=>`<button class="item ${b.hospital===h.id?'sel':''}" data-act="pickHospital" data-id="${h.id}">
+        <div class="logoh" style="background:${colorOf(h.id)}">${initials(h.name)}</div><div class="grow"><b>${esc(h.name)}</b><span class="meta">${esc(h.addr)} · ${esc(h.type)}</span></div>${stars(h.rating)}</button>`).join('')}</div>`;
+  }
+  if(s===2){
+    const h = hosp(b.hospital);
+    return `<h2>Chọn chuyên khoa</h2><p class="sub">Các chuyên khoa đang nhận đặt lịch tại ${esc(h.name)}.</p>
+      <div class="specgrid">${h.specs.map(id=>`<button class="spec ${b.spec===id?'sel':''}" style="${b.spec===id?'border:2px solid var(--brand);background:var(--brand-soft)':''}" data-act="pickSpec" data-id="${id}"><span style="font-size:22px">${spec(id).ic}</span>${esc(spec(id).name)}</button>`).join('')}</div>`;
+  }
+  if(s===3){
+    const list = DOCTORS.filter(d => d.h===b.hospital && d.spec===b.spec);
+    return `<h2>Chọn bác sĩ</h2><p class="sub">${esc(spec(b.spec).name)} · ${esc(hosp(b.hospital).name)}</p>
+      <div class="list">${list.map(d=>`<button class="item ${b.doctor===d.id?'sel':''}" data-act="pickDoctor" data-id="${d.id}">
+        <div class="av" style="background:${colorOf(d.id)}">${initials(d.name)}</div>
+        <div class="grow"><b>${esc(d.name)}</b><span class="meta">${d.years} năm kinh nghiệm · làm việc ${d.days.map(x=>DOW[x]).join(', ')}</span><span class="meta">${esc(d.bio)}</span></div>
+        <div style="text-align:right"><b>${money(d.fee)}</b><br>${stars(d.rating)}</div></button>`).join('')}</div>`;
+  }
+  if(s===4){
+    const d = doc(b.doctor), days = nextDays(14);
+    const sl = b.date ? slotsFor(d, b.date) : [];
+    let body = '';
+    if(!b.date) body = '<p class="meta">Chọn một ngày để xem khung giờ còn trống.</p>';
+    else if(!sl.length) body = '<div class="empty"><b>Bác sĩ không khám ngày này</b>Chọn ngày khác.</div>';
+    else body = ['Buổi sáng','Buổi chiều'].map(ss => `<div class="sess">${ss}</div><div class="slots">${sl.filter(x=>x.session===ss).map(x=>`<button class="slot ${b.slot===x.label?'sel':''}" ${x.ok?'':'disabled'} data-act="pickSlot" data-s="${esc(x.label)}">${esc(x.label)}</button>`).join('')}</div>`).join('');
+    return `<h2>Chọn ngày và giờ khám</h2><p class="sub">${esc(d.name)} · ${money(d.fee)}</p>
+      <div class="dates" role="listbox" aria-label="Ngày khám">${days.map(x=>{ const k=ymd(x), off=!d.days.includes(x.getDay()), allFull = !off && !slotsFor(d,k).some(s=>s.ok);
+        return `<button class="date ${b.date===k?'sel':''}" ${off||allFull?'disabled':''} data-act="pickDate" data-d="${k}" title="${off?'Nghỉ':allFull?'Hết chỗ':''}"><small>${DOW[x.getDay()]}</small><b>${x.getDate()}</b><small>Th${x.getMonth()+1}</small></button>`; }).join('')}</div>
+      <div id="slotBox">${body}</div>
+      <div class="actions"><button class="btn ghost" data-act="step" data-s="3">← Quay lại</button><button class="btn" data-act="step" data-s="5" ${b.slot?'':'disabled'}>Tiếp tục</button></div>`;
+  }
+  if(s===5){
+    return `<h2>Chọn hồ sơ bệnh nhân</h2><p class="sub">Ai sẽ đi khám lần này?</p>
+      <div class="list">${profiles.map(p=>`<button class="item ${b.profile===p.id?'sel':''}" data-act="pickProfile" data-id="${p.id}">
+        <div class="av" style="background:${colorOf(p.id)}">${initials(p.name)}</div><div class="grow"><b>${esc(p.name)}</b><span class="meta">${p.gender} · ${fmtShort(p.dob)} · ${esc(p.phone)}</span></div></button>`).join('')}</div>
+      ${state.addingProfile || !profiles.length ? profileForm() : `<button class="btn ghost" style="margin-top:12px" data-act="addProfile">+ Thêm hồ sơ mới</button>`}
+      <div class="actions"><button class="btn ghost" data-act="step" data-s="4">← Quay lại</button><button class="btn" data-act="step" data-s="6" ${b.profile?'':'disabled'}>Tiếp tục</button></div>`;
+  }
+  if(s===6){
+    const d = doc(b.doctor);
+    return `<h2>Xác nhận và thanh toán</h2><p class="sub">Kiểm tra lại thông tin ở khung bên cạnh trước khi xác nhận.</p>
+      <div class="field"><label for="reason">Lý do khám / triệu chứng (không bắt buộc)</label><textarea id="reason" rows="3" maxlength="300" placeholder="VD: Đau đầu, chóng mặt 3 ngày nay…">${esc(b.reason||'')}</textarea></div>
+      <div class="sess" style="margin:0 0 8px">Phương thức thanh toán</div>
+      <div class="pays">${PAYS.map(p=>`<button class="pay ${b.pay===p.id?'sel':''}" data-act="pickPay" data-id="${p.id}"><i>${p.ic}</i><b>${esc(p.name)}</b></button>`).join('')}</div>
+      <div class="notice">Giữ chỗ trong 15 phút. Bản minh họa: thanh toán online được giả lập, không trừ tiền thật.</div>
+      <div class="actions"><button class="btn ghost" data-act="step" data-s="5">← Quay lại</button><button class="btn" data-act="confirm" ${b.pay?'':'disabled'}>Xác nhận đặt khám · ${money(d.fee)}</button></div>`;
+  }
+}
+function renderBook(){
+  const b = state.b;
+  return `<div class="wrap page"><h1>Đặt lịch khám</h1>
+    <div class="stepper" role="tablist" aria-label="Các bước đặt khám">${STEPS.map((t,i)=>{ const n=i+1; return `<button role="tab" class="${b.step===n?'cur':n<b.step?'done':''}" ${stepOK(n)?'':'disabled'} data-act="step" data-s="${n}"><b>${n<b.step?'✓':n}</b>${t}</button>`; }).join('')}</div>
+    <div class="bk"><div class="panel" id="bookPanel">${bookStep()}</div>${sideSummary()}</div></div>`;
+}
+function renderSuccess(){
+  const a = state.last;
+  return `<div class="wrap page" style="max-width:520px"><div class="okbox"><div class="big">✓</div><h1>Đặt khám thành công</h1><p class="meta">Lưu lại mã phiếu và đến quầy tiếp đón trước giờ khám 15 phút.</p></div>
+    ${ticketHTML(a,{notch:'var(--bg)'})}
+    <div class="actions" style="justify-content:center;margin-top:20px"><button class="btn ghost" data-act="copy" data-code="${esc(a.code)}">Sao chép mã phiếu</button><button class="btn" data-act="go" data-view="appts">Xem phiếu khám</button></div></div>`;
+}
+
+/* ---------- render ---------- */
+function render(){
+  const v = state.view;
+  const map = {home:renderHome,hospitals:renderHospitals,doctors:renderDoctors,profiles:renderProfiles,appts:renderAppts,book:renderBook,success:renderSuccess};
+  $('#app').innerHTML = (map[v]||renderHome)();
+  renderChrome();
+}
+function go(v){ state.view = v; if(v==='book' && !state.b.step) state.b = {step:1}; window.scrollTo(0,0); render(); }
+function startBook(preset){
+  state.b = Object.assign({step:1}, preset);
+  state.b.step = preset.doctor ? 4 : (preset.spec && preset.hospital) ? 3 : preset.hospital ? 2 : 1;
+  state.city = 'Tất cả'; state.addingProfile = false; go('book');
+}
+function setStep(n){ if(!stepOK(n)) return; state.b.step = n; const r=$('#reason'); window.scrollTo(0,0); render(); }
+
+/* ---------- search (home) ---------- */
+function homeSearch(q){
+  const box = $('#homeResults'); q = q.trim().toLowerCase();
+  if(!q){ box.classList.remove('on'); box.innerHTML=''; return; }
+  const sp = SPECS.filter(s => s.name.toLowerCase().includes(q)).slice(0,4);
+  const hs = HOSPITALS.filter(h => (h.name+h.addr).toLowerCase().includes(q)).slice(0,4);
+  const ds = DOCTORS.filter(d => d.name.toLowerCase().includes(q)).slice(0,4);
+  let html = '';
+  if(sp.length) html += '<h4>Chuyên khoa</h4>' + sp.map(s=>`<button data-act="bookSpec" data-id="${s.id}"><span style="font-size:20px">${s.ic}</span><b>${esc(s.name)}</b></button>`).join('');
+  if(hs.length) html += '<h4>Cơ sở y tế</h4>' + hs.map(h=>`<button data-act="bookHospital" data-id="${h.id}"><span class="logoh" style="background:${colorOf(h.id)};width:34px;height:34px;font-size:13px">${initials(h.name)}</span><span><b>${esc(h.name)}</b><br><span class="meta">${esc(h.addr)}</span></span></button>`).join('');
+  if(ds.length) html += '<h4>Bác sĩ</h4>' + ds.map(d=>`<button data-act="bookDoctor" data-id="${d.id}"><span class="av" style="background:${colorOf(d.id)};width:34px;height:34px;font-size:13px">${initials(d.name)}</span><span><b>${esc(d.name)}</b><br><span class="meta">${esc(spec(d.spec).name)} · ${esc(hosp(d.h).name)}</span></span></button>`).join('');
+  box.innerHTML = html || '<div class="none">Không có kết quả phù hợp.</div>'; box.classList.add('on');
+}
+
+/* ---------- modals ---------- */
+function loginModal(){
+  openModal(`<button class="x" data-act="closeModal" aria-label="Đóng">×</button><h2>Đăng nhập</h2><p class="meta">Nhập số điện thoại để nhận mã xác thực (OTP).</p>
+    <div class="field" style="margin-top:14px"><label for="lg_phone">Số điện thoại</label><input id="lg_phone" type="tel" inputmode="tel" placeholder="09xx xxx xxx" autocomplete="tel"></div>
+    <div class="field" id="otpBox" style="display:none"><label for="lg_otp">Mã OTP (6 số)</label><input id="lg_otp" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code"></div>
+    <div class="notice" id="otpNote" style="display:none">Bản minh họa: nhập bất kỳ 6 chữ số nào để đăng nhập.</div>
+    <button class="btn" style="width:100%" data-act="loginStep" id="lgBtn">Nhận mã OTP</button>`);
+}
+function lookupModal(){
+  openModal(`<button class="x" data-act="closeModal" aria-label="Đóng">×</button><h2>Tra cứu phiếu khám</h2><p class="meta">Nhập mã phiếu (VD: HRC7K2Q9X).</p>
+    <div class="field" style="margin-top:14px"><input id="lk_code" aria-label="Mã phiếu" placeholder="Mã phiếu" style="text-transform:uppercase"></div>
+    <button class="btn" style="width:100%" data-act="lookup">Tra cứu</button><div id="lkOut" style="margin-top:14px"></div>`);
+}
+
+/* ---------- actions ---------- */
+const H = {
+  go:d => go(d.view),
+  theme(){ const r=document.documentElement, dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme:dark)').matches; r.dataset.theme = dark?'light':'dark'; },
+  svc(d){ ({book:()=>startBook({}),doctors:()=>go('doctors'),appts:()=>go('appts'),profiles:()=>go('profiles'),lookup:lookupModal,specs:()=>{ const e=$('#specs'); e&&e.scrollIntoView({behavior:'smooth'}); }})[d.v](); },
+  city(d){ state.city = d.c; if(state.view==='book'){ $('#bookPanel').innerHTML = bookStep(); } else { $('#cityChips').innerHTML = cityChips(); $('#hList').innerHTML = hospitalList(); } },
+  bookHospital:d => startBook({hospital:d.id}),
+  bookSpec(d){ startBook({specFilter:d.id}); },
+  bookDoctor(d){ const x = doc(d.id); startBook({hospital:x.h, spec:x.spec, doctor:x.id}); },
+  pickHospital(d){ const f = state.b.specFilter; state.b = {step:2, hospital:d.id}; if(f && hosp(d.id).specs.includes(f)){ state.b.spec = f; state.b.step = 3; } render(); window.scrollTo(0,0); },
+  pickSpec(d){ Object.assign(state.b,{spec:d.id,step:3,doctor:null,date:null,slot:null}); render(); window.scrollTo(0,0); },
+  pickDoctor(d){ Object.assign(state.b,{doctor:d.id,step:4,date:null,slot:null}); render(); window.scrollTo(0,0); },
+  pickDate(d){ state.b.date = d.d; state.b.slot = null; render(); },
+  pickSlot(d){ state.b.slot = d.s; render(); },
+  pickProfile(d){ state.b.profile = d.id; render(); },
+  pickPay(d){ const r=$('#reason'); if(r) state.b.reason = r.value; state.b.pay = d.id; render(); },
+  step(d){ const r=$('#reason'); if(r) state.b.reason = r.value; setStep(+d.s); },
+  addProfile(){ state.addingProfile = true; render(); },
+  cancelProfile(){ state.addingProfile = false; render(); },
+  saveProfile(){ const p = saveProfile(); if(!p) return; if(state.view==='book') state.b.profile = p.id; toast('Đã lưu hồ sơ'); render(); },
+  delProfile(d){ openModal(`<h2>Xóa hồ sơ?</h2><p class="meta">Hồ sơ sẽ bị xóa khỏi thiết bị này. Các phiếu khám đã đặt vẫn được giữ.</p><div class="actions"><button class="btn ghost" data-act="closeModal">Giữ lại</button><button class="btn danger" data-act="delProfileOk" data-id="${d.id}">Xóa hồ sơ</button></div>`); },
+  delProfileOk(d){ profiles = profiles.filter(p=>p.id!==d.id); saveAll(); closeModal(); toast('Đã xóa hồ sơ'); render(); },
+  confirm(){
+    const b = state.b, r = $('#reason'); if(r) b.reason = r.value;
+    const d = doc(b.doctor), p = profiles.find(x=>x.id===b.profile);
+    if(!slotsFor(d,b.date).find(s=>s.label===b.slot && s.ok)){ toast('Khung giờ vừa hết chỗ, vui lòng chọn giờ khác'); b.slot=null; b.step=4; return render(); }
+    const same = appts.filter(a=>a.doctor===d.id && a.date===b.date && a.status!=='cancelled').length;
+    const code = 'HRC' + Array.from({length:6},()=> 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*31)]).join('');
+    const a = {id:'a'+Date.now(), code, stt:1 + hash(d.id+b.date)%25 + same, room:'Phòng '+(100 + hash(d.id)%40), hospital:b.hospital, spec:b.spec, doctor:d.id, date:b.date, slot:b.slot, profile:{...p}, reason:b.reason||'', pay:b.pay, fee:d.fee, status:'upcoming', created:Date.now()};
+    appts.push(a); saveAll(); state.last = a; state.b = {step:1}; go('success');
+  },
+  copy(d){ try{ navigator.clipboard.writeText(d.code).then(()=>toast('Đã sao chép '+d.code), ()=>toast('Mã phiếu: '+d.code)); }catch(e){ toast('Mã phiếu: '+d.code); } },
+  apptTab(d){ state.apptTab = d.t; render(); },
+  viewTicket(d){ const a = appts.find(x=>x.id===d.id); openModal(`<div style="text-align:right"><button class="btn sm" style="background:var(--surface)!important;color:var(--ink)" data-act="closeModal">Đóng ×</button></div><div style="margin-top:8px">${ticketHTML(a,{notch:'rgba(5,20,35,.6)'})}</div>`,'wide'); },
+  cancelAppt(d){ openModal(`<h2>Hủy phiếu khám?</h2><p class="meta">Khung giờ sẽ được trả lại cho người bệnh khác. Bạn có thể đặt lại bất cứ lúc nào.</p><div class="actions"><button class="btn ghost" data-act="closeModal">Giữ phiếu</button><button class="btn danger" data-act="cancelOk" data-id="${d.id}">Hủy phiếu</button></div>`); },
+  cancelOk(d){ const a = appts.find(x=>x.id===d.id); if(a) a.status = 'cancelled'; saveAll(); closeModal(); toast('Đã hủy phiếu khám'); render(); },
+  login:loginModal,
+  loginStep(){
+    const otp = $('#otpBox');
+    if(otp.style.display==='none'){
+      const ph = $('#lg_phone').value.replace(/\s/g,'');
+      if(!/^(0|\+84)\d{9,10}$/.test(ph)) return toast('Số điện thoại chưa đúng (VD: 0912345678)');
+      otp.style.display = 'grid'; $('#otpNote').style.display = 'block'; $('#lgBtn').textContent = 'Xác nhận đăng nhập'; $('#lg_otp').focus();
+    } else {
+      if(!/^\d{6}$/.test($('#lg_otp').value)) return toast('Nhập đủ 6 chữ số');
+      state.user = {phone: $('#lg_phone').value.replace(/\s/g,'')}; saveAll(); closeModal(); toast('Đăng nhập thành công'); renderChrome();
+    }
+  },
+  account(){ openModal(`<button class="x" data-act="closeModal" aria-label="Đóng">×</button><h2>Tài khoản</h2><p class="meta">Số điện thoại: <b>${esc(state.user.phone)}</b></p><div class="actions"><button class="btn ghost" data-act="go" data-view="appts">Phiếu khám</button><button class="btn danger" data-act="logout">Đăng xuất</button></div>`); },
+  logout(){ state.user = null; saveAll(); closeModal(); toast('Đã đăng xuất'); renderChrome(); },
+  lookup(){
+    const c = $('#lk_code').value.trim().toUpperCase(), a = appts.find(x=>x.code===c), out = $('#lkOut');
+    out.innerHTML = a ? ticketHTML(a,{notch:'var(--surface)'}) : '<div class="notice">Không tìm thấy phiếu trên thiết bị này. Kiểm tra lại mã phiếu.</div>';
+  },
+  closeModal,
+  ovclose(d,el,e){ if(e.target===el) closeModal(); }
+};
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if(!el) return;
+  const fn = H[el.dataset.act]; if(fn) fn(el.dataset, el, e);
+  if(!e.target.closest('.searchbox')){ const r=$('#homeResults'); if(r) r.classList.remove('on'); }
+});
+document.addEventListener('click', e => { if(!e.target.closest('.searchbox')){ const r=$('#homeResults'); if(r) r.classList.remove('on'); } });
+document.addEventListener('input', e => {
+  const k = e.target.dataset && e.target.dataset.bind; if(!k) return;
+  if(k==='homeSearch') homeSearch(e.target.value);
+  if(k==='hq'){ state.hq = e.target.value; $('#hList').innerHTML = hospitalList(); }
+  if(k==='dq'){ state.dq = e.target.value; $('#dList').innerHTML = doctorList(); }
+});
+document.addEventListener('change', e => { if(e.target.dataset && e.target.dataset.bind==='dspec'){ state.dspec = e.target.value; $('#dList').innerHTML = doctorList(); } });
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); if(e.key==='Enter' && e.target.id==='lk_code') H.lookup(); });
+
+render();
+</script>
+</body>
+</html>
