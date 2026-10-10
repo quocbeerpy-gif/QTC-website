@@ -1,8 +1,10 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/", "destination": "/vuanghe", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/tuyensinh", "destination": "/tuyensinh.html" },
-    { "source": "/", "destination": "/index.html" },
     { "source": "/vuanghe", "destination": "/vuanghe.html" },
     { "source": "/duan", "destination": "/duan/index.html" },
     { "source": "/hrchealth", "destination": "/hrchealth/index.html" }
