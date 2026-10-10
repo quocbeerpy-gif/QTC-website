@@ -10,6 +10,12 @@ if exist "vuanghe.html" (
     copy /y "vuanghe.html" "index.html" >nul
 )
 
+:: Tu dong copy HRCHealth.html sang hrchealth/index.html
+if exist "HRCHealth.html" (
+    if not exist "hrchealth" mkdir "hrchealth"
+    copy /y "HRCHealth.html" "hrchealth\index.html" >nul
+)
+
 :: Check if git status has any changes
 git status --porcelain > "%temp%\git_status.txt"
 for %%A in ("%temp%\git_status.txt") do if %%~zA==0 (

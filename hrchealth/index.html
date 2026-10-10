@@ -337,13 +337,15 @@ const doc = id => DOCTORS.find(d => d.id===id);
 const spec = id => SPECS.find(s => s.id===id);
 
 /* ---------- state ---------- */
-let profiles = store.get('ml_profiles', []);
-let appts = store.get('ml_appts', []);
+let profiles = [], appts = [];   // dữ liệu theo từng tài khoản, nạp bởi loadData()
 const state = {
   view:'home', apptTab:'upcoming', user: store.get('ml_user', null),
   b:{step:1}, last:null, city:'Tất cả', hq:'', dq:'', dspec:'all', addingProfile:false
 };
-const saveAll = () => { store.set('ml_profiles', profiles); store.set('ml_appts', appts); store.set('ml_user', state.user); };
+const uKey = () => state.user ? state.user.phone.replace(/^\+84/,'0') : null;
+function loadData(){ const k = uKey(); profiles = k ? store.get('ml_profiles_'+k, []) : []; appts = k ? store.get('ml_appts_'+k, []) : []; }
+const saveAll = () => { const k = uKey(); if(k){ store.set('ml_profiles_'+k, profiles); store.set('ml_appts_'+k, appts); } store.set('ml_user', state.user); };
+loadData();
 
 function statusOf(a){
   if(a.status==='cancelled') return 'cancelled';
@@ -679,7 +681,9 @@ function render(){
   $('#app').innerHTML = (map[v]||renderHome)();
   renderChrome();
 }
-function go(v){ state.view = v; if(v==='book' && !state.b.step) state.b = {step:1}; window.scrollTo(0,0); render(); }
+function go(v){
+  if(!state.user && ['book','appts','profiles'].includes(v)){ state.pending = v; toast('Vui lòng đăng nhập để tiếp tục'); loginModal(); return; }
+  state.view = v; if(v==='book' && !state.b.step) state.b = {step:1}; window.scrollTo(0,0); render(); }
 function startBook(preset){
   state.b = Object.assign({step:1}, preset);
   state.b.step = preset.doctor ? 4 : (preset.spec && preset.hospital) ? 3 : preset.hospital ? 2 : 1;
@@ -772,12 +776,14 @@ const H = {
     if(name.length<4) return toast('Nhập họ và tên đầy đủ');
     if(!/^(0|\+84)\d{9,10}$/.test(ph)) return toast('Số điện thoại chưa đúng (VD: 0912345678)');
     if(!$('#lg_ok').checked) return toast('Vui lòng đồng ý Chính sách bảo mật để tiếp tục');
-    state.user = {name, phone: ph, consentAt: Date.now()}; saveAll(); closeModal(); toast('Đăng nhập thành công'); renderChrome();
+    state.user = {name, phone: ph, consentAt: Date.now()}; store.set('ml_user', state.user); loadData(); closeModal(); toast('Đăng nhập thành công');
+    const pv = state.pending; state.pending = null; if(pv) go(pv); else render();
   },
   policy(){ $('#loginBox').style.display='none'; $('#policyBox').style.display='block'; },
   policyBack(){ $('#policyBox').style.display='none'; $('#loginBox').style.display='block'; },
   account(){ openModal(`<button class="x" data-act="closeModal" aria-label="Đóng">×</button><h2>Tài khoản</h2><p class="meta">${state.user.name?'Họ tên: <b>'+esc(state.user.name)+'</b><br>':''}Số điện thoại: <b>${esc(state.user.phone)}</b></p><div class="actions"><button class="btn ghost" data-act="go" data-view="appts">Phiếu khám</button><button class="btn danger" data-act="logout">Đăng xuất</button></div>`); },
-  logout(){ state.user = null; saveAll(); closeModal(); toast('Đã đăng xuất'); renderChrome(); },
+  logout(){ state.user = null; store.set('ml_user', null); loadData(); state.b = {step:1}; state.last = null; state.addingProfile = false; closeModal(); toast('Đã đăng xuất');
+    if(['book','appts','profiles','success'].includes(state.view)) go('home'); else render(); },
   lookup(){
     const c = $('#lk_code').value.trim().toUpperCase(), a = appts.find(x=>x.code===c), out = $('#lkOut');
     out.innerHTML = a ? ticketHTML(a,{notch:'var(--surface)'}) : '<div class="notice">Không tìm thấy phiếu trên thiết bị này. Kiểm tra lại mã phiếu.</div>';
