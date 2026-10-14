@@ -105,6 +105,7 @@ input,select,.box input,.box select{font-size:16px}
 #ts{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 footer{display:none}}
 td a{color:var(--pr);text-decoration:none}.tb button:disabled{opacity:.4}
+.cd .t select.cc{flex:none;width:78px;margin:0;font-size:11px}
 </style>
 </head>
 <body>
@@ -177,8 +178,8 @@ leads(){
 },
 ctv(){
   return`<div class="pn"><h3>Thêm cộng tác viên</h3><div class="tb"><input id="cn" placeholder="Họ tên"><input id="cp" placeholder="Số điện thoại" inputmode="tel"><input id="ce" type="email" placeholder="Email đăng nhập của CTV"><button class="b" onclick="addCtv()">Thêm CTV</button></div></div>
-  <div class="pn"><div class="tw"><table><tr><th>Mã</th><th>Họ tên</th><th>SĐT</th><th>Hồ sơ</th><th>Nhập học</th><th>Hoa hồng</th><th>Còn phải chi</th><th></th></tr>
-  ${S.ctv.map(c=>{const m=cm(c.id);return`<tr><td>${c.code}</td><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td>${m.n}</td><td>${m.en}</td><td>${fmt(m.t)}</td><td>${fmt(m.r)}</td><td>${m.r>0?`<button class="b s" onclick="pay(${c.id})">Đã chi</button>`:""}</td></tr>`}).join("")}</table></div></div>`;
+  <div class="pn"><div class="tw"><table><tr><th>Mã</th><th>Họ tên</th><th>SĐT</th><th>Email</th><th>Hồ sơ</th><th>Nhập học</th><th>Hoa hồng</th><th>Còn phải chi</th><th></th></tr>
+  ${S.ctv.map(c=>{const m=cm(c.id);return`<tr><td>${c.code}</td><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td>${esc(c.email||"")}</td><td>${m.n}</td><td>${m.en}</td><td>${fmt(m.t)}</td><td>${fmt(m.r)}</td><td style="white-space:nowrap">${m.r>0?`<button class="b s" onclick="pay(${c.id})">Đã chi</button> `:""}<button class="b g s" onclick="ctvEdit(${c.id})">Sửa</button> <button class="b g s" onclick="ctvDel(${c.id})">Xoá</button></td></tr>`}).join("")}</table></div></div>`;
 },
 set(){
   return`<div class="pn"><h3>Mức hoa hồng</h3><p class="mu">Hoa hồng "nộp hồ sơ" tính khi hồ sơ đạt từ bước Đã nộp hồ sơ trở đi. Hoa hồng "nhập học" tính thêm khi thí sinh nhập học.</p>
@@ -205,7 +206,7 @@ my(){
 
 function card(l){
   const a=me.role=="admin";
-  return`<div class="cd" style="--c:${SC[l.st]}" ${a&&!mob.matches?`draggable="true" ondragstart="event.dataTransfer.setData('t',${l.id})"`:""}><div class="t"><b>${esc(l.name)}</b><span class="mu">${code(l.ctv)}</span></div>
+  return`<div class="cd" style="--c:${SC[l.st]}" ${a&&!mob.matches?`draggable="true" ondragstart="event.dataTransfer.setData('t',${l.id})"`:""}><div class="t"><b>${esc(l.name)}</b>${a?`<select class="cc" onchange="chCtv(${l.id},+this.value)" aria-label="CTV phụ trách">${S.ctv.map(c=>`<option value="${c.id}" ${c.id==l.ctv?"selected":""}>${c.code}</option>`).join("")}</select>`:`<span class="mu">${code(l.ctv)}</span>`}</div>
   <div class="mu">${esc(l.phone)} · ${esc(l.major)}${l.note?" · "+esc(l.note):""}</div>
   ${a?`<div class="t"><select onchange="mv(${l.id},+this.value)" aria-label="Trạng thái">${ST.map((s,i)=>`<option value="${i}" ${i==l.st?"selected":""}>${s}</option>`).join("")}</select><button class="x" onclick="del(${l.id})">Xoá</button></div>`:`<span class="tg">${ST[l.st]}</span>`}</div>`;
 }
@@ -241,6 +242,15 @@ function addCtv(){
 function pay(id){const c=S.ctv.find(x=>x.id==id);c.paid=cm(id).t;DB.setCtv(c).then(()=>toast("Đã ghi nhận chi hoa hồng")).catch(fail)}
 function saveFee(){S.fee={apply:+$("fa").value||0,enroll:+$("fe").value||0};DB.setCfg({fee:S.fee}).then(()=>toast("Đã lưu mức hoa hồng")).catch(fail)}
 window.ADMIN_EMAIL="admin@hrcgroup.app";
+function ctvEdit(id){const c=S.ctv.find(x=>x.id==id);if(!c)return;
+  $("md").innerHTML=`<div class="box"><h3>Sửa CTV ${c.code}</h3><input id="en" value="${esc(c.name)}" placeholder="Họ tên"><input id="ep" value="${esc(c.phone)}" placeholder="Số điện thoại" inputmode="tel"><input id="ee" type="email" value="${esc(c.email||"")}" placeholder="Email đăng nhập"><div class="row"><button class="g" onclick="cl()">Huỷ</button><button onclick="ctvSave(${id})">Lưu</button></div></div>`;$("md").className="on"}
+function ctvSave(id){const c=S.ctv.find(x=>x.id==id),n=$("en").value.trim(),e=$("ee").value.trim().toLowerCase();if(!n||!e)return toast("Nhập họ tên và email của CTV");
+  const u={...c,name:n,phone:$("ep").value.trim(),email:e};
+  const ps=[DB.setCtv(u),...(e!=c.email?S.leads.filter(l=>l.ctv==id).map(l=>DB.setLead({...l,ctvEmail:e})):[])];
+  Promise.all(ps).then(()=>{cl();toast("Đã cập nhật CTV")}).catch(fail)}
+function ctvDel(id){if(S.leads.some(l=>l.ctv==id))return toast("CTV này còn hồ sơ. Hãy chuyển hồ sơ sang CTV khác trước khi xoá");
+  if(dl!="c"+id){dl="c"+id;toast("Bấm Xoá lần nữa để xác nhận");return}dl=0;DB.delCtv(id).then(()=>toast("Đã xoá CTV")).catch(fail)}
+function chCtv(id,cid){const l=S.leads.find(x=>x.id==id),c=S.ctv.find(x=>x.id==cid);if(!l||!c)return;l.ctv=cid;l.ctvEmail=c.email||"";DB.setLead(l).then(()=>toast("Đã chuyển hồ sơ sang "+c.code)).catch(fail);R()}
 const allMJ=()=>[...new Set([...MJ,...S.students.map(s=>s.ng),...S.leads.map(l=>l.major)].filter(Boolean))];
 function saveMJ(){const a=$("mj").value.split("\n").map(x=>x.trim()).filter(Boolean);if(!a.length)return toast("Cần ít nhất một ngành");MJ=a;DB.setCfg({majors:a}).then(()=>toast("Đã lưu danh mục ngành")).catch(fail)}
 const TT=["Đã tốt nghiệp","Bình thường","Bảo lưu","Không đi học","Thôi học","Đình chỉ học","Chuyển trường"],GL=["Bảo lưu","Không đi học","Thôi học","Đình chỉ học","Đã tốt nghiệp"];
@@ -292,7 +302,7 @@ const [{initializeApp},{getAuth,onAuthStateChanged,signInWithEmailAndPassword,cr
 const app=initializeApp(cfg),auth=getAuth(app),db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()}),experimentalAutoDetectLongPolling:true}),subs=[];let note="";
 window.DB={auth:(n,e,p)=>(n?createUserWithEmailAndPassword:signInWithEmailAndPassword)(auth,e,p),logout:()=>signOut(auth),
  setLead:l=>setDoc(doc(db,"leads",l.phone),l),delLead:ph=>deleteDoc(doc(db,"leads",ph)),
- setCtv:c=>setDoc(doc(db,"ctv",String(c.id)),c),setCfg:o=>setDoc(doc(db,"settings","main"),o,{merge:true}),
+ setCtv:c=>setDoc(doc(db,"ctv",String(c.id)),c),delCtv:id=>deleteDoc(doc(db,"ctv",String(id))),setCfg:o=>setDoc(doc(db,"settings","main"),o,{merge:true}),
  setClass:(k,rows)=>setDoc(doc(db,"students",k),{rows})};
 onAuthStateChanged(auth,async u=>{
   subs.splice(0).forEach(f=>f());
