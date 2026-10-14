@@ -6,7 +6,6 @@
 <title>HRCGroup – CRM Tuyển sinh & CTV</title>
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
-<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js">
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js">
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js">
@@ -105,16 +104,17 @@ nav button.on{border-top-color:var(--ac)}
 input,select,.box input,.box select{font-size:16px}
 #ts{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 footer{display:none}}
+td a{color:var(--pr);text-decoration:none}.tb button:disabled{opacity:.4}
 </style>
 </head>
 <body>
 <header>
   <h1>HRCGroup<small>CRM Tuyển sinh & Cộng tác viên</small></h1>
-  <select id="who" onchange="login(this.value)" aria-label="Vai trò"></select>
+  <div id="who" style="display:flex;gap:8px;align-items:center;font-size:13px"></div>
 </header>
 <nav id="nav"></nav>
 <main id="main"></main>
-<footer>Bản demo: dữ liệu đồng bộ qua Firebase, chưa có đăng nhập thật. Không nhập dữ liệu thí sinh thật vào bản này.</footer>
+<footer>Dữ liệu được đồng bộ trực tiếp qua Firebase (Firestore) và phân quyền theo tài khoản đăng nhập.</footer>
 <div id="md"></div><div id="ts"></div>
 <script>
 const ST=["Mới","Đã liên hệ","Quan tâm","Đã nộp hồ sơ","Trúng tuyển","Nhập học","Từ chối"];
@@ -126,7 +126,7 @@ const ago=t=>{const d=Math.floor((Date.now()-t)/864e5);return d<1?"Hôm nay":d+"
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=n=>Number(n||0).toLocaleString("vi-VN")+"đ";
-let LOAD=true,got={},S={ctv:[],leads:[],fee:{apply:200000,enroll:1000000}},me={role:"admin"},tab="dash",Q="",dl=0;
+let LOAD=true,got={},S={ctv:[],leads:[],students:[],fee:{apply:200000,enroll:1000000}},me=null,tab="dash",Q="",dl=0;
 
 const fail=e=>toast("Không lưu được: "+(e.code||e.message));
 function toast(m){const t=$("ts");t.textContent=m;t.className="on";clearTimeout(toast.t);toast.t=setTimeout(()=>t.className="",2600)}
@@ -135,21 +135,24 @@ const vis=()=>me.role=="admin"?S.leads:S.leads.filter(l=>l.ctv==me.id);
 function cm(id){const L=S.leads.filter(l=>l.ctv==id),ap=L.filter(l=>l.st>=3&&l.st<=5).length,en=L.filter(l=>l.st==5).length,t=ap*S.fee.apply+en*S.fee.enroll,p=(S.ctv.find(c=>c.id==id)||{}).paid||0;return{n:L.length,ap,en,t,p,r:t-p}}
 
 window.App={
- data(k,v){got[k]=1;if(got.ctv&&got.leads)LOAD=false;if(k=="cfg")S.fee=v.fee||S.fee;else S[k]=v;if(me.role=="ctv"&&!S.ctv.some(c=>c.id==me.id))me={role:"admin"};const a=document.activeElement;if(!(a&&a.tagName=="INPUT"&&$("main").contains(a)))R()},
- err(m){$("main").innerHTML=`<div class="pn"><h3>Chưa kết nối được Firebase</h3><p class="mu">${esc(m)}</p></div>`}
+ user(m,msg){me=m;S={ctv:[],leads:[],students:[],fee:S.fee};LOAD=!!m;got={};if(m)tab=m.role=="admin"?"dash":"leads";R(msg)},
+ data(k,v){got[k]=1;if(got.ctv&&got.leads)LOAD=false;if(k=="cfg")S.fee=v.fee||S.fee;else S[k]=v;const a=document.activeElement;if(!(a&&a.tagName=="INPUT"&&$("main").contains(a)))R()}
 };
-function login(v){me=v=="admin"?{role:"admin"}:{role:"ctv",id:+v};tab=me.role=="admin"?"dash":"leads";R()}
-function R(){
-  $("who").innerHTML=`<option value="admin">Admin – Ban tuyển sinh</option>`+S.ctv.map(c=>`<option value="${c.id}">${esc(c.name)} (${c.code})</option>`).join("");
-  $("who").value=me.role=="admin"?"admin":me.id;
-  const T=me.role=="admin"?[["dash","Tổng quan"],["leads","Hồ sơ"],["ctv","Cộng tác viên"],["set","Cài đặt"]]:[["leads","Hồ sơ của tôi"],["my","Hoa hồng"]];
+function loginView(msg){return`<div class="pn" style="max-width:380px;margin:24px auto"><h3>Đăng nhập HRCGroup</h3><div class="box" style="padding:0;max-width:none"><input id="em" placeholder="Tên đăng nhập hoặc email" autocapitalize="none" autocomplete="username"><input id="pw" type="password" placeholder="Mật khẩu (từ 6 ký tự)"><div class="row"><button class="g" onclick="auth(1)">Tạo tài khoản</button><button onclick="auth(0)">Đăng nhập</button></div></div>${msg?`<p class="mu" style="color:var(--er)">${esc(msg)}</p>`:""}<p class="mu">Admin: nhập "Admin" và mật khẩu. CTV: dùng đúng email ban tuyển sinh đã đăng ký cho bạn, bấm "Tạo tài khoản" ở lần đầu.</p></div>`}
+function auth(n){let e=$("em").value.trim().toLowerCase();const p=$("pw").value;if(e&&!e.includes("@"))e+="@hrcgroup.app";if(!e||p.length<6)return toast("Nhập tên đăng nhập và mật khẩu từ 6 ký tự");if(n&&e==ADMIN_EMAIL)return toast("Tài khoản Admin do quản trị tạo sẵn trong Firebase Console");
+ DB.auth(n,e,p).catch(x=>toast(({"auth/invalid-credential":"Sai email hoặc mật khẩu","auth/email-already-in-use":"Email đã có tài khoản, hãy đăng nhập","auth/weak-password":"Mật khẩu quá yếu"})[x.code]||"Lỗi: "+x.code))}
+function R(msg){
+  if(!me){$("who").innerHTML="";$("nav").innerHTML="";$("main").innerHTML=loginView(msg);return}
+  $("who").innerHTML=`<span>${esc(me.role=="admin"?"Admin":me.email)}</span><button class="hb" onclick="DB.logout()">Đăng xuất</button>`;
+  const T=me.role=="admin"?[["dash","Tổng quan"],["leads","Hồ sơ"],["ctv","CTV"],["sv","Sinh viên"],["cs","Gọi lại"],["set","Cài đặt"]]:[["leads","Hồ sơ của tôi"],["my","Hoa hồng"]];
   $("nav").innerHTML=T.map(([k,n])=>`<button class="${k==tab?"on":""}" onclick="tab='${k}';R()">${n}</button>`).join("");
   $("main").innerHTML=LOAD?`<div class="pn mu">Đang tải dữ liệu từ Firebase…</div>`:V[tab]();
 }
 const kp=(a,b)=>`<div class="k"><span>${a}</span><b>${b}</b></div>`;
 
 const V={
-dash(){
+dash(){return this.dash0()+sdash()},
+dash0(){
   const L=S.leads,n=L.length,D=864e5,now=Date.now(),cnt=ST.map((_,i)=>L.filter(l=>l.st==i).length),pc=(a,b)=>b?Math.round(a/b*100)+"%":"0%";
   const ap=L.filter(l=>l.st>=3&&l.st<=5).length,en=cnt[5],w=L.filter(l=>now-l.ts<7*D).length,mx=Math.max(1,...cnt);
   const rk=S.ctv.map(c=>({c,...cm(c.id)})).sort((a,b)=>b.en-a.en||b.n-a.n),tot=rk.reduce((a,r)=>a+r.t,0),due=rk.reduce((a,r)=>a+r.r,0);
@@ -173,14 +176,25 @@ leads(){
   return`<div class="tb"><input placeholder="Tìm tên hoặc SĐT" value="${esc(Q)}" oninput="Q=this.value;$('bd').innerHTML=board()"><button class="b" onclick="addOpen()">+ Thêm hồ sơ</button></div><div id="bd">${board()}</div>`;
 },
 ctv(){
-  return`<div class="pn"><h3>Thêm cộng tác viên</h3><div class="tb"><input id="cn" placeholder="Họ tên"><input id="cp" placeholder="Số điện thoại" inputmode="tel"><input id="ce" type="email" placeholder="Email (không bắt buộc)"><button class="b" onclick="addCtv()">Thêm CTV</button></div></div>
+  return`<div class="pn"><h3>Thêm cộng tác viên</h3><div class="tb"><input id="cn" placeholder="Họ tên"><input id="cp" placeholder="Số điện thoại" inputmode="tel"><input id="ce" type="email" placeholder="Email đăng nhập của CTV"><button class="b" onclick="addCtv()">Thêm CTV</button></div></div>
   <div class="pn"><div class="tw"><table><tr><th>Mã</th><th>Họ tên</th><th>SĐT</th><th>Hồ sơ</th><th>Nhập học</th><th>Hoa hồng</th><th>Còn phải chi</th><th></th></tr>
   ${S.ctv.map(c=>{const m=cm(c.id);return`<tr><td>${c.code}</td><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td>${m.n}</td><td>${m.en}</td><td>${fmt(m.t)}</td><td>${fmt(m.r)}</td><td>${m.r>0?`<button class="b s" onclick="pay(${c.id})">Đã chi</button>`:""}</td></tr>`}).join("")}</table></div></div>`;
 },
 set(){
   return`<div class="pn"><h3>Mức hoa hồng</h3><p class="mu">Hoa hồng "nộp hồ sơ" tính khi hồ sơ đạt từ bước Đã nộp hồ sơ trở đi. Hoa hồng "nhập học" tính thêm khi thí sinh nhập học.</p>
   <div class="tb"><label>Nộp hồ sơ (đ)<br><input id="fa" type="number" value="${S.fee.apply}"></label><label>Nhập học (đ)<br><input id="fe" type="number" value="${S.fee.enroll}"></label></div><button class="b" onclick="saveFee()">Lưu mức hoa hồng</button></div>
-  <div class="pn"><h3>Dữ liệu demo</h3><div class="tb"><button class="b" onclick="seedDemo()">Nạp dữ liệu mẫu</button><button class="b g" onclick="wipe()">Xoá toàn bộ dữ liệu</button></div></div>`;
+  <div class="pn"><h3>Nhập danh sách sinh viên</h3><p class="mu">Chọn file students-clean.json (đã làm sạch từ DUOC.xlsx). Dữ liệu được ghi theo từng lớp khai giảng; nhập lại sẽ ghi đè các lớp trùng.</p><input type="file" accept=".json" onchange="impSV(this.files[0])"><p class="mu" id="im"></p></div>`;
+},
+sv(){
+  if(!S.students.length)return`<div class="pn"><h3>Chưa có dữ liệu sinh viên</h3><p class="mu">Vào Cài đặt, chọn file students-clean.json để nhập danh sách.</p></div>`;
+  const ys=[...new Set(S.students.map(yr))].filter(Boolean).sort(),sel=(k,a)=>`<select class="f" onchange="SQ.${k}=this.value;SQ.pg=0;svr()"><option value="">Tất cả</option>${a.map(x=>`<option ${x==SQ[k]?"selected":""}>${x}</option>`).join("")}</select>`;
+  return`<div class="tb"><input placeholder="Tìm tên, MSV, SĐT" value="${esc(SQ.q)}" oninput="SQ.q=this.value;SQ.pg=0;svr()">${sel("he",["Chính quy","Văn bằng thứ 2","Liên thông"])}${sel("tt",TT)}${sel("y",ys)}</div><div id="sv">${svt()}</div>`;
+},
+cs(){
+  const A=S.students;if(!A.length)return`<div class="pn"><h3>Chưa có dữ liệu sinh viên</h3><p class="mu">Vào Cài đặt để nhập danh sách sinh viên.</p></div>`;
+  const q=CQ.toLowerCase(),L=A.filter(s=>s.tt==CS&&(!q||(s.hv+s.sdt).toLowerCase().includes(q)));
+  return`<div class="ch">${GL.map(g=>`<button class="${g==CS?"on":""}" onclick="CS='${g}';R()">${g} ${A.filter(s=>s.tt==g).length}</button>`).join("")}</div>
+  <div class="tb"><input placeholder="Tìm trong nhóm này" value="${esc(CQ)}" oninput="CQ=this.value;$('cl').innerHTML=clr()"></div><div id="cl">${clr()}</div>`;
 },
 my(){
   const m=cm(me.id);
@@ -217,40 +231,82 @@ function addSave(){
   const d=S.leads.find(l=>l.phone==p);
   if(d)return toast(`Số này đã do ${code(d.ctv)} nhập ngày ${new Date(d.ts).toLocaleDateString("vi-VN")}`);
   const c=S.ctv.find(x=>x.id==ctv);if(!c)return toast("Chưa chọn được CTV");
-  DB.setLead({id:+p,name,phone:p,major:$("fm").value,ctv,ctvEmail:c.email||"",st:0,note:$("fo").value.trim(),ts:Date.now()})
+  DB.setLead({id:+p,name,phone:p,major:$("fm").value,ctv,ctvEmail:c.email,st:0,note:$("fo").value.trim(),ts:Date.now()})
    .then(()=>{cl();toast("Đã thêm hồ sơ")}).catch(e=>toast(e.code=="permission-denied"?"Số này đã có trong hệ thống hoặc bạn không có quyền":"Không lưu được: "+e.code));
 }
 function addCtv(){
-  const n=$("cn").value.trim(),p=$("cp").value.trim(),e=$("ce").value.trim().toLowerCase();if(!n)return toast("Nhập họ tên CTV");
+  const n=$("cn").value.trim(),p=$("cp").value.trim(),e=$("ce").value.trim().toLowerCase();if(!n||!e)return toast("Nhập họ tên và email của CTV");
   const id=Math.max(0,...S.ctv.map(c=>c.id))+1;DB.setCtv({id,name:n,phone:p,email:e,code:"CTV"+String(id).padStart(3,"0"),paid:0}).then(()=>toast("Đã thêm CTV")).catch(fail)}
 function pay(id){const c=S.ctv.find(x=>x.id==id);c.paid=cm(id).t;DB.setCtv(c).then(()=>toast("Đã ghi nhận chi hoa hồng")).catch(fail)}
 function saveFee(){S.fee={apply:+$("fa").value||0,enroll:+$("fe").value||0};DB.setCfg({fee:S.fee}).then(()=>toast("Đã lưu mức hoa hồng")).catch(fail)}
-function seedDemo(){
- const C=[[1,"Nguyễn Văn An","0901111111"],[2,"Trần Thị Bích","0902222222"],[3,"Lê Hoàng Cường","0903333333"]].map(([id,name,phone])=>({id,name,phone,email:"",code:"CTV00"+id,paid:0}));
- const N=["Phạm Minh Khôi","Nguyễn Thu Hà","Võ Quốc Bảo","Đặng Ngọc Anh","Lý Gia Huy","Hoàng Mai Linh","Bùi Tấn Phát","Trịnh Yến Nhi"],T=[1,1,2,2,3,3,1,2],X=[5,3,2,5,1,0,4,6];
- const L=N.map((name,i)=>{const phone="09110000"+String(i+1).padStart(2,"0");return{id:+phone,name,phone,major:MJ[i%MJ.length],ctv:T[i],ctvEmail:"",st:X[i],note:"",ts:Date.now()-i*864e5}});
- DB.seed(C,L,{apply:200000,enroll:1000000}).then(()=>toast("Đã nạp dữ liệu mẫu")).catch(fail)}
-function wipe(){if(dl!=-1){dl=-1;toast("Bấm lần nữa để xoá toàn bộ dữ liệu");return}dl=0;DB.wipe().then(()=>toast("Đã xoá toàn bộ dữ liệu")).catch(fail)}
+window.ADMIN_EMAIL="admin@hrcgroup.app";
+const TT=["Đã tốt nghiệp","Bình thường","Bảo lưu","Không đi học","Thôi học","Đình chỉ học","Chuyển trường"],GL=["Bảo lưu","Không đi học","Thôi học","Đình chỉ học","Đã tốt nghiệp"];
+const TC={"Đã tốt nghiệp":"#16a34a","Bình thường":"#3b82f6","Bảo lưu":"#f59e0b","Không đi học":"#ef4444","Thôi học":"#b91c1c","Đình chỉ học":"#a855f7","Chuyển trường":"#8a97a3"};
+const KQ=["Chưa gọi","Đã gọi - hẹn lại","Đồng ý quay lại","Không liên lạc được","Từ chối"];
+let SQ={q:"",he:"",tt:"",y:"",pg:0},CS="Bảo lưu",CQ="";
+const yr=s=>(s.nh||"").slice(0,4),tel=p=>p?`<a href="tel:${esc(p)}">${esc(p)}</a>`:"";
+function svt(){
+  const q=SQ.q.toLowerCase(),L=S.students.filter(s=>(!q||(s.hv+s.msv+s.sdt).toLowerCase().includes(q))&&(!SQ.he||s.he==SQ.he)&&(!SQ.tt||s.tt==SQ.tt)&&(!SQ.y||yr(s)==SQ.y));
+  const n=L.length,P=50,pm=Math.max(1,Math.ceil(n/P)),pg=Math.min(SQ.pg,pm-1);SQ.pg=pg;
+  return`<p class="mu">${n} sinh viên</p><div class="pn tw"><table><tr><th>MSV</th><th>Họ tên</th><th>Lớp</th><th>Hệ</th><th>Tình trạng</th><th>SĐT</th><th>Nhập học</th></tr>${L.slice(pg*P,pg*P+P).map(s=>`<tr><td>${esc(s.msv)}</td><td>${esc(s.hv)}${s.loi?` <b style="color:var(--er)" title="${esc(s.loi.join(", "))}">!</b>`:""}</td><td>${esc(s.lop)}</td><td>${esc(s.he)}</td><td><span class="tg" style="border-color:${TC[s.tt]||"var(--bd)"}">${esc(s.tt)}</span></td><td>${tel(s.sdt)}</td><td>${esc(s.nh)}</td></tr>`).join("")}</table></div>
+  <div class="tb"><button class="b g" ${pg?"":"disabled"} onclick="SQ.pg=${pg-1};svr()">‹ Trước</button><span class="mu">Trang ${pg+1}/${pm}</span><button class="b g" ${pg+1<pm?"":"disabled"} onclick="SQ.pg=${pg+1};svr()">Sau ›</button></div>`;
+}
+const svr=()=>$("sv").innerHTML=svt();
+function clr(){
+  const q=CQ.toLowerCase(),L=S.students.filter(s=>s.tt==CS&&(!q||(s.hv+s.sdt).toLowerCase().includes(q)));
+  return`<p class="mu">${L.length} người${L.length>60?" (hiện 60 đầu, dùng ô tìm kiếm để lọc)":""}</p><div class="gl">${L.slice(0,60).map(s=>`<div class="cd" style="--c:${TC[s.tt]}"><div class="t"><b>${esc(s.hv)}</b><span class="mu">${esc(s.lop)}</span></div><div class="mu">${tel(s.sdt)}${s.sdt2?" · "+tel(s.sdt2):""} · nhập học ${esc(yr(s))}</div>
+  <select onchange="csv('${s.msv}','kq',this.value)" aria-label="Kết quả gọi">${KQ.map(k=>`<option ${k==((s.cs||{}).kq||"Chưa gọi")?"selected":""}>${k}</option>`).join("")}</select>
+  <input style="width:100%;margin-top:4px;padding:4px 6px;font-size:12px" placeholder="Ghi chú cuộc gọi" value="${esc((s.cs||{}).note||"")}" onchange="csv('${s.msv}','note',this.value)"></div>`).join("")}</div>`;
+}
+function csv(msv,k,v){
+  const s=S.students.find(x=>x.msv==msv);if(!s)return;s.cs=s.cs||{};s.cs[k]=v;s.cs.ts=Date.now();
+  const lp=s.lop||"KHAC";DB.setClass(lp,S.students.filter(x=>(x.lop||"KHAC")==lp)).then(()=>toast("Đã lưu")).catch(fail)}
+async function impSV(f){
+  if(!f)return;try{const A=JSON.parse(await f.text()),G={};A.forEach(s=>(G[s.lop||"KHAC"]=G[s.lop||"KHAC"]||[]).push(s));
+  const K=Object.keys(G);let i=0;for(const k of K){await DB.setClass(k,G[k]);$("im").textContent=`Đang nhập ${++i}/${K.length} lớp…`}toast("Đã nhập "+A.length+" sinh viên")}catch(e){toast("Lỗi nhập file: "+(e.code||e.message))}}
+function sdash(){
+  const A=S.students,n=A.length;if(!n)return"";
+  const pc=(a,b)=>b?Math.round(a/b*100)+"%":"0%",c=t=>A.filter(s=>s.tt==t).length,gone=c("Không đi học")+c("Thôi học")+c("Đình chỉ học")+c("Chuyển trường"),back=c("Bảo lưu")+c("Không đi học")+c("Thôi học")+c("Đình chỉ học");
+  const ys=[...new Set(A.map(yr))].filter(Boolean).sort(),yc=ys.map(y=>A.filter(s=>yr(s)==y).length),ym=Math.max(1,...yc),h=x=>A.filter(s=>s.he==x).length;
+  let acc=0;const cg=TT.map(t=>{const a=acc/n*100;acc+=c(t);return`${TC[t]} ${a}% ${acc/n*100}%`}).join(",");
+  const k=(a,b,d,col)=>`<div class="k" style="--c:${col}"><span>${a}</span><b>${b}</b><small>${d}</small></div>`;
+  return`<div class="hd" style="margin-top:22px"><h2>Sinh viên (lịch sử nhập học)</h2><span class="mu">${n} sinh viên</span></div>
+  <div class="kp">${k("Tổng sinh viên",n,`Chính quy ${h("Chính quy")} · VB2 ${h("Văn bằng thứ 2")}`,"#3b82f6")}${k("Đang học",c("Bình thường"),pc(c("Bình thường"),n)+" tổng số","#14b8a6")}${k("Đã tốt nghiệp",c("Đã tốt nghiệp"),pc(c("Đã tốt nghiệp"),n)+" tổng số","#16a34a")}${k("Tỷ lệ rời đi",pc(gone,n),`${gone} SV nghỉ, thôi, đình chỉ`,"#ef4444")}${k("Cần gọi lại",back,"Bảo lưu, nghỉ, thôi, đình chỉ","#f59e0b")}</div>
+  <div class="g2"><div class="pn"><h3>Nhập học theo năm</h3><div class="tr">${ys.map((y,i)=>`<div title="${yc[i]}">${yc[i]}<i style="height:${yc[i]/ym*80}px"></i>${y}</div>`).join("")}</div></div>
+  <div class="pn"><h3>Cơ cấu tình trạng học</h3><div class="dn"><div class="ring" style="background:conic-gradient(${cg})"><b>${n}</b></div><div class="lg">${TT.map(t=>`<div><i style="background:${TC[t]}"></i>${t}: <b>${c(t)}</b> (${pc(c(t),n)})</div>`).join("")}</div></div></div></div>`;
+}
 $("md").addEventListener("click",e=>{if(e.target.id=="md")cl()});
 R();
 </script>
 <script type="module">
 const U="https://www.gstatic.com/firebasejs/10.14.1/";
 const cfg={apiKey:"AIzaSyD20NuXcT5fbU9gd7wolIslUVmHUW5_r5U",authDomain:"tuyesinh.firebaseapp.com",projectId:"tuyesinh",storageBucket:"tuyesinh.firebasestorage.app",messagingSenderId:"272736903727",appId:"1:272736903727:web:5960338ef6141caf81dcda"};
-if(location.protocol=="file:")App.err("Firebase không chạy khi mở file trực tiếp (file://). Hãy chạy bằng localhost hoặc đưa lên Firebase Hosting.");
+if(location.protocol=="file:")App.user(null,"Đăng nhập Firebase không chạy khi mở file trực tiếp. Hãy đưa file lên Firebase Hosting hoặc chạy bằng localhost.");
 else try{
-const [{initializeApp},{getAuth,signInAnonymously},{initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,getDocs,setDoc,deleteDoc,onSnapshot}]=await Promise.all([import(U+"firebase-app.js"),import(U+"firebase-auth.js"),import(U+"firebase-firestore.js")]);
-const app=initializeApp(cfg),auth=getAuth(app),db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()}),experimentalAutoDetectLongPolling:true});
-window.DB={setLead:l=>setDoc(doc(db,"leads",l.phone),l),delLead:ph=>deleteDoc(doc(db,"leads",ph)),
+const [{initializeApp},{getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut},{initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,getDocs,setDoc,deleteDoc,onSnapshot,query,where}]=await Promise.all([import(U+"firebase-app.js"),import(U+"firebase-auth.js"),import(U+"firebase-firestore.js")]);
+const app=initializeApp(cfg),auth=getAuth(app),db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()}),experimentalAutoDetectLongPolling:true}),subs=[];let note="";
+window.DB={auth:(n,e,p)=>(n?createUserWithEmailAndPassword:signInWithEmailAndPassword)(auth,e,p),logout:()=>signOut(auth),
+ setLead:l=>setDoc(doc(db,"leads",l.phone),l),delLead:ph=>deleteDoc(doc(db,"leads",ph)),
  setCtv:c=>setDoc(doc(db,"ctv",String(c.id)),c),setCfg:o=>setDoc(doc(db,"settings","main"),o,{merge:true}),
- seed:(C,L,fee)=>Promise.all([...C.map(c=>DB.setCtv(c)),...L.map(l=>DB.setLead(l)),DB.setCfg({fee})]),
- wipe:async()=>{for(const n of["leads","ctv"])await Promise.all((await getDocs(collection(db,n))).docs.map(d=>deleteDoc(d.ref)))}};
-await auth.authStateReady();if(!auth.currentUser)await signInAnonymously(auth);
-const er=e=>toast("Lỗi dữ liệu: "+e.code),all=s=>s.docs.map(d=>d.data());
-onSnapshot(collection(db,"ctv"),s=>App.data("ctv",all(s)),er);
-onSnapshot(collection(db,"leads"),s=>App.data("leads",all(s)),er);
-onSnapshot(doc(db,"settings","main"),s=>App.data("cfg",s.data()||{}),er);
-}catch(e){App.err(e.code=="auth/operation-not-allowed"?"Chưa bật đăng nhập ẩn danh (Anonymous) trong Firebase Authentication.":"Lỗi kết nối: "+(e.code||e.message))}
+ setClass:(k,rows)=>setDoc(doc(db,"students",k),{rows})};
+onAuthStateChanged(auth,async u=>{
+  subs.splice(0).forEach(f=>f());
+  if(!u){App.user(null,note);note="";return}
+  const mail=u.email.toLowerCase(),all=s=>s.docs.map(d=>d.data()),sub=(r,k,f)=>subs.push(onSnapshot(r,s=>App.data(k,f(s)),e=>toast("Lỗi dữ liệu: "+e.code)));
+  try{
+    const adm=mail===ADMIN_EMAIL;let m={role:"admin",email:mail};
+    if(!adm){
+      const c=(await getDocs(query(collection(db,"ctv"),where("email","==",mail)))).docs[0];
+      if(!c){note="Email này chưa được đăng ký là CTV. Hãy liên hệ ban tuyển sinh HRCGroup.";await signOut(auth);return}
+      m={role:"ctv",email:mail,id:c.data().id};
+    }
+    App.user(m);
+    if(adm){sub(collection(db,"ctv"),"ctv",all);sub(collection(db,"leads"),"leads",all);sub(collection(db,"students"),"students",s=>s.docs.flatMap(d=>d.data().rows||[]))}
+    else{sub(query(collection(db,"ctv"),where("email","==",mail)),"ctv",all);sub(query(collection(db,"leads"),where("ctvEmail","==",mail)),"leads",all)}
+    sub(doc(db,"settings","main"),"cfg",s=>s.data()||{});
+  }catch(e){note="Lỗi kết nối: "+(e.code||e.message);await signOut(auth)}
+});
+}catch(e){App.user(null,"Lỗi tải Firebase: "+(e.code||e.message))}
 </script>
 </body>
 </html>
