@@ -258,15 +258,15 @@ const svr=()=>$("sv").innerHTML=svt();
 function clr(){
   const q=CQ.toLowerCase(),L=S.students.filter(s=>s.tt==CS&&(!CN||s.ng==CN)&&(!q||(s.hv+s.sdt).toLowerCase().includes(q)));
   return`<p class="mu">${L.length} người${L.length>60?" (hiện 60 đầu, dùng ô tìm kiếm để lọc)":""}</p><div class="gl">${L.slice(0,60).map(s=>`<div class="cd" style="--c:${TC[s.tt]}"><div class="t"><b>${esc(s.hv)}</b><span class="mu">${esc(s.lop)}</span></div><div class="mu">${tel(s.sdt)}${s.sdt2?" · "+tel(s.sdt2):""} · ${esc(s.ng||"")} · nhập học ${esc(yr(s))}</div>
-  <select onchange="csv('${s.msv}','kq',this.value)" aria-label="Kết quả gọi">${KQ.map(k=>`<option ${k==((s.cs||{}).kq||"Chưa gọi")?"selected":""}>${k}</option>`).join("")}</select>
-  <input style="width:100%;margin-top:4px;padding:4px 6px;font-size:12px" placeholder="Ghi chú cuộc gọi" value="${esc((s.cs||{}).note||"")}" onchange="csv('${s.msv}','note',this.value)"></div>`).join("")}</div>`;
+  <select onchange="csv('${s.k||s.msv}','kq',this.value)" aria-label="Kết quả gọi">${KQ.map(k=>`<option ${k==((s.cs||{}).kq||"Chưa gọi")?"selected":""}>${k}</option>`).join("")}</select>
+  <input style="width:100%;margin-top:4px;padding:4px 6px;font-size:12px" placeholder="Ghi chú cuộc gọi" value="${esc((s.cs||{}).note||"")}" onchange="csv('${s.k||s.msv}','note',this.value)"></div>`).join("")}</div>`;
 }
 function csv(msv,k,v){
-  const s=S.students.find(x=>x.msv==msv);if(!s)return;s.cs=s.cs||{};s.cs[k]=v;s.cs.ts=Date.now();
+  const s=S.students.find(x=>(x.k||x.msv)==msv);if(!s)return;s.cs=s.cs||{};s.cs[k]=v;s.cs.ts=Date.now();
   const lp=s.lop||"KHAC";DB.setClass(lp,S.students.filter(x=>(x.lop||"KHAC")==lp)).then(()=>toast("Đã lưu")).catch(fail)}
 async function impSV(f){
-  if(!f)return;try{const A=JSON.parse(await f.text()),G={},old=Object.fromEntries(S.students.map(s=>[s.msv,s.cs]));A.forEach(s=>{if(old[s.msv])s.cs=old[s.msv];(G[s.lop||"KHAC"]=G[s.lop||"KHAC"]||[]).push(s)});
-  const K=Object.keys(G);let i=0;for(const k of K){await DB.setClass(k,G[k]);$("im").textContent=`Đang nhập ${++i}/${K.length} lớp…`}toast("Đã nhập "+A.length+" sinh viên")}catch(e){toast("Lỗi nhập file: "+(e.code||e.message))}}
+  if(!f)return;try{const A=JSON.parse(await f.text()),G={},old=Object.fromEntries(S.students.map(s=>[s.k||s.msv,s.cs]));A.forEach(s=>{const kk=s.k||s.msv;if(old[kk])s.cs=old[kk];(G[s.lop||"KHAC"]=G[s.lop||"KHAC"]||[]).push(s)});
+  const K=Object.keys(G);let i=0;for(let j=0;j<K.length;j+=8){await Promise.all(K.slice(j,j+8).map(k=>DB.setClass(k,G[k])));i=Math.min(K.length,j+8);$("im").textContent=`Đang nhập ${i}/${K.length} lớp…`}toast("Đã nhập "+A.length+" sinh viên")}catch(e){toast("Lỗi nhập file: "+(e.code||e.message))}}
 function sdash(){
   const A=S.students,n=A.length;if(!n)return"";
   const pc=(a,b)=>b?Math.round(a/b*100)+"%":"0%",c=t=>A.filter(s=>s.tt==t).length,gone=c("Không đi học")+c("Thôi học")+c("Đình chỉ học")+c("Chuyển trường"),back=c("Bảo lưu")+c("Không đi học")+c("Thôi học")+c("Đình chỉ học");
