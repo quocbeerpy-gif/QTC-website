@@ -135,6 +135,7 @@ input,select,textarea{transition:border-color .2s,box-shadow .2s}
 .rp{position:absolute;border-radius:50%;background:currentColor;opacity:.28;transform:scale(0);animation:rp .55s ease-out;pointer-events:none}
 @keyframes rp{to{transform:scale(1);opacity:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.tt{font:inherit;font-size:13px;color:var(--tx);border:2px solid var(--bd);border-radius:14px;padding:3px 8px;cursor:pointer;max-width:150px}
 </style>
 </head>
 <body>
@@ -271,6 +272,9 @@ function addCtv(){
 function pay(id){const c=S.ctv.find(x=>x.id==id);c.paid=cm(id).t;DB.setCtv(c).then(()=>toast("Đã ghi nhận chi hoa hồng")).catch(fail)}
 function saveFee(){S.fee={apply:+$("fa").value||0,enroll:+$("fe").value||0};DB.setCfg({fee:S.fee}).then(()=>toast("Đã lưu mức hoa hồng")).catch(fail)}
 window.ADMIN_EMAIL="admin@hrcgroup.app";
+const ttSel=s=>{const o=TT.includes(s.tt)?TT:[s.tt||"",...TT],c=TC[s.tt]||"var(--bd)";return`<select class="tt" style="border-color:${c};background:color-mix(in srgb,${c} 12%,var(--cd))" title="${s.tcd?"Cập nhật "+s.tcd:""}" onchange="setTT('${s.k||s.msv}',this.value)" aria-label="Tình trạng học">${o.map(t=>`<option value="${esc(t)}" ${t==s.tt?"selected":""}>${t||"—"}</option>`).join("")}</select>`};
+function setTT(key,v){const s=S.students.find(x=>(x.k||x.msv)==key);if(!s||s.tt==v)return;const old=s.tt,od=s.tcd;s.tt=v;s.tcd=new Date().toISOString().slice(0,10);const lp=s.lop||"KHAC";
+  DB.setClass(lp,S.students.filter(x=>(x.lop||"KHAC")==lp)).then(()=>toast(`${s.hv}: ${old||"—"} → ${v}`)).catch(e=>{s.tt=old;s.tcd=od;fail(e);if($("sv"))svr()});if($("sv"))svr()}
 function ctvEdit(id){const c=S.ctv.find(x=>x.id==id);if(!c)return;
   $("md").innerHTML=`<div class="box"><h3>Sửa CTV ${c.code}</h3><input id="en" value="${esc(c.name)}" placeholder="Họ tên"><input id="ep" value="${esc(c.phone)}" placeholder="Số điện thoại" inputmode="tel"><input id="ee" type="email" value="${esc(c.email||"")}" placeholder="Email đăng nhập"><div class="row"><button class="g" onclick="cl()">Huỷ</button><button onclick="ctvSave(${id})">Lưu</button></div></div>`;$("md").className="on"}
 function ctvSave(id){const c=S.ctv.find(x=>x.id==id),n=$("en").value.trim(),e=$("ee").value.trim().toLowerCase();if(!n||!e)return toast("Nhập họ tên và email của CTV");
@@ -290,7 +294,7 @@ const yr=s=>(s.nh||"").slice(0,4),tel=p=>p?`<a href="tel:${esc(p)}">${esc(p)}</a
 function svt(){
   const q=SQ.q.toLowerCase(),L=S.students.filter(s=>(!q||(s.hv+s.msv+s.sdt).toLowerCase().includes(q))&&(!SQ.he||s.he==SQ.he)&&(!SQ.ng||s.ng==SQ.ng)&&(!SQ.tt||s.tt==SQ.tt)&&(!SQ.y||yr(s)==SQ.y));
   const n=L.length,P=50,pm=Math.max(1,Math.ceil(n/P)),pg=Math.min(SQ.pg,pm-1);SQ.pg=pg;
-  return`<p class="mu">${n} sinh viên</p><div class="pn tw"><table><tr><th>MSV</th><th>Họ tên</th><th>Ngành</th><th>Lớp</th><th>Hệ</th><th>Tình trạng</th><th>SĐT</th><th>Nhập học</th></tr>${L.slice(pg*P,pg*P+P).map(s=>`<tr><td>${esc(s.msv)}</td><td>${esc(s.hv)}${s.loi?` <b style="color:var(--er)" title="${esc(s.loi.join(", "))}">!</b>`:""}</td><td>${esc(s.ng)}</td><td>${esc(s.lop)}</td><td>${esc(s.he)}</td><td><span class="tg" style="border-color:${TC[s.tt]||"var(--bd)"}">${esc(s.tt)}</span></td><td>${tel(s.sdt)}</td><td>${esc(s.nh)}</td></tr>`).join("")}</table></div>
+  return`<p class="mu">${n} sinh viên</p><div class="pn tw"><table><tr><th>MSV</th><th>Họ tên</th><th>Ngành</th><th>Lớp</th><th>Hệ</th><th>Tình trạng</th><th>SĐT</th><th>Nhập học</th></tr>${L.slice(pg*P,pg*P+P).map(s=>`<tr><td>${esc(s.msv)}</td><td>${esc(s.hv)}${s.loi?` <b style="color:var(--er)" title="${esc(s.loi.join(", "))}">!</b>`:""}</td><td>${esc(s.ng)}</td><td>${esc(s.lop)}</td><td>${esc(s.he)}</td><td>${ttSel(s)}</td><td>${tel(s.sdt)}</td><td>${esc(s.nh)}</td></tr>`).join("")}</table></div>
   <div class="tb"><button class="b g" ${pg?"":"disabled"} onclick="SQ.pg=${pg-1};svr()">‹ Trước</button><span class="mu">Trang ${pg+1}/${pm}</span><button class="b g" ${pg+1<pm?"":"disabled"} onclick="SQ.pg=${pg+1};svr()">Sau ›</button></div>`;
 }
 const svr=()=>$("sv").innerHTML=svt();
