@@ -106,6 +106,35 @@ input,select,.box input,.box select{font-size:16px}
 footer{display:none}}
 td a{color:var(--pr);text-decoration:none}.tb button:disabled{opacity:.4}
 .cd .t select.cc{flex:none;width:78px;margin:0;font-size:11px}
+
+/* ===== Nút bấm hiện đại ===== */
+button{position:relative;overflow:hidden;cursor:pointer;transition:transform .15s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease,color .2s ease,opacity .2s}
+button.b,.box button:not(.g){border-radius:9px;padding:9px 16px;font-weight:600;letter-spacing:.1px;color:var(--pt);border:0;
+ background:linear-gradient(180deg,color-mix(in srgb,var(--pr) 86%,#fff),var(--pr));
+ box-shadow:0 1px 2px rgba(0,0,0,.18),0 6px 14px -6px color-mix(in srgb,var(--pr) 70%,transparent)}
+button.b::before,.box button:not(.g)::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.38) 50%,transparent 70%);transform:translateX(-130%);transition:transform .6s ease;pointer-events:none}
+button.g{border-radius:9px;font-weight:500;box-shadow:none}
+button.s{padding:5px 11px;font-size:13px;border-radius:7px}
+button.g:hover{border-color:var(--pr)!important;background:color-mix(in srgb,var(--pr) 10%,transparent)!important;color:var(--pr)!important}
+.hb{border-radius:8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.42);backdrop-filter:blur(6px)}
+.hb:hover{background:rgba(255,255,255,.28)}
+.x{border-radius:5px;transition:background .2s}.cd .x:hover{background:color-mix(in srgb,var(--er) 14%,transparent);text-decoration:none}
+nav button{border-radius:10px 10px 0 0}nav button:hover{background:var(--sf);color:var(--tx)}
+nav button.on{background:color-mix(in srgb,var(--pr) 9%,transparent)}
+.ch button{box-shadow:0 1px 2px rgba(0,0,0,.06)}.ch button:hover{border-color:var(--pr);color:var(--pr)}
+.ch button.on{background:linear-gradient(180deg,color-mix(in srgb,var(--pr) 86%,#fff),var(--pr));color:var(--pt);box-shadow:0 4px 12px -4px color-mix(in srgb,var(--pr) 75%,transparent)}
+@media (hover:hover){
+ button.b:hover,.box button:not(.g):hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(0,0,0,.18),0 10px 20px -8px color-mix(in srgb,var(--pr) 80%,transparent)}
+ button.b:hover::before,.box button:not(.g):hover::before{transform:translateX(130%)}
+ .ch button:hover{transform:translateY(-1px)}}
+button:active:not(:disabled){transform:translateY(0) scale(.96)}
+button:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+input:focus,select:focus,textarea:focus{border-color:var(--pr);box-shadow:0 0 0 3px color-mix(in srgb,var(--pr) 22%,transparent)}
+input,select,textarea{transition:border-color .2s,box-shadow .2s}
+.rp{position:absolute;border-radius:50%;background:currentColor;opacity:.28;transform:scale(0);animation:rp .55s ease-out;pointer-events:none}
+@keyframes rp{to{transform:scale(1);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
@@ -290,6 +319,7 @@ function sdash(){
   <div class="pn"><h3>Cơ cấu tình trạng học</h3><div class="dn"><div class="ring" style="background:conic-gradient(${cg})"><b>${n}</b></div><div class="lg">${TT.map(t=>`<div><i style="background:${TC[t]}"></i>${t}: <b>${c(t)}</b> (${pc(c(t),n)})</div>`).join("")}</div></div></div></div>
   <div class="pn"><h3>Theo ngành học</h3><div class="tw"><table><tr><th>Ngành</th><th>Tổng</th><th>Đang học</th><th>Tốt nghiệp</th><th>Bảo lưu</th><th>Rời đi</th><th>Tỷ lệ rời đi</th></tr>${nr}</table></div></div>`;
 }
+document.addEventListener("pointerdown",e=>{const b=e.target.closest&&e.target.closest("button");if(!b||b.disabled)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height)*2,p=document.createElement("span");p.className="rp";p.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(p);setTimeout(()=>p.remove(),600)});
 $("md").addEventListener("click",e=>{if(e.target.id=="md")cl()});
 R();
 </script>
