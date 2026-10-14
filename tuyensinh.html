@@ -118,7 +118,7 @@ td a{color:var(--pr);text-decoration:none}.tb button:disabled{opacity:.4}
 <div id="md"></div><div id="ts"></div>
 <script>
 const ST=["Mới","Đã liên hệ","Quan tâm","Đã nộp hồ sơ","Trúng tuyển","Nhập học","Từ chối"];
-const MJ=["Quản trị kinh doanh","Công nghệ thông tin","Kế toán","Ngôn ngữ Anh","Điều dưỡng","Marketing"];
+let MJ=["Cao đẳng Dược"];
 const SC=["#8a97a3","#3b82f6","#a855f7","#f59e0b","#14b8a6","#16a34a","#ef4444"];
 const mob=matchMedia("(max-width:999px)");mob.addEventListener("change",()=>R());
 let F=-1;
@@ -136,7 +136,7 @@ function cm(id){const L=S.leads.filter(l=>l.ctv==id),ap=L.filter(l=>l.st>=3&&l.s
 
 window.App={
  user(m,msg){me=m;S={ctv:[],leads:[],students:[],fee:S.fee};LOAD=!!m;got={};if(m)tab=m.role=="admin"?"dash":"leads";R(msg)},
- data(k,v){got[k]=1;if(got.ctv&&got.leads)LOAD=false;if(k=="cfg")S.fee=v.fee||S.fee;else S[k]=v;const a=document.activeElement;if(!(a&&a.tagName=="INPUT"&&$("main").contains(a)))R()}
+ data(k,v){got[k]=1;if(got.ctv&&got.leads)LOAD=false;if(k=="cfg"){S.fee=v.fee||S.fee;if(v.majors&&v.majors.length)MJ=v.majors}else S[k]=v;const a=document.activeElement;if(!(a&&a.tagName=="INPUT"&&$("main").contains(a)))R()}
 };
 function loginView(msg){return`<div class="pn" style="max-width:380px;margin:24px auto"><h3>Đăng nhập HRCGroup</h3><div class="box" style="padding:0;max-width:none"><input id="em" placeholder="Tên đăng nhập hoặc email" autocapitalize="none" autocomplete="username"><input id="pw" type="password" placeholder="Mật khẩu (từ 6 ký tự)"><div class="row"><button class="g" onclick="auth(1)">Tạo tài khoản</button><button onclick="auth(0)">Đăng nhập</button></div></div>${msg?`<p class="mu" style="color:var(--er)">${esc(msg)}</p>`:""}<p class="mu">Admin: nhập "Admin" và mật khẩu. CTV: dùng đúng email ban tuyển sinh đã đăng ký cho bạn, bấm "Tạo tài khoản" ở lần đầu.</p></div>`}
 function auth(n){let e=$("em").value.trim().toLowerCase();const p=$("pw").value;if(e&&!e.includes("@"))e+="@hrcgroup.app";if(!e||p.length<6)return toast("Nhập tên đăng nhập và mật khẩu từ 6 ký tự");if(n&&e==ADMIN_EMAIL)return toast("Tài khoản Admin do quản trị tạo sẵn trong Firebase Console");
@@ -159,7 +159,7 @@ dash0(){
   const k2=(a,b,c,col)=>`<div class="k" style="--c:${col}"><span>${a}</span><b>${b}</b><small>${c}</small></div>`;
   let acc=0;const cg=n?ST.map((_,i)=>{const a=acc/n*100;acc+=cnt[i];return`${SC[i]} ${a}% ${acc/n*100}%`}).join(","):"var(--bd) 0 100%";
   const tr=[...Array(14)].map((_,i)=>{const d=new Date(now-(13-i)*D),k=d.toDateString();return{d:d.getDate(),v:L.filter(l=>new Date(l.ts).toDateString()==k).length}}),tm=Math.max(1,...tr.map(x=>x.v));
-  const mj=MJ.map(m=>({m,n:L.filter(l=>l.major==m).length,e:L.filter(l=>l.major==m&&l.st==5).length})).sort((a,b)=>b.n-a.n),mm=Math.max(1,mj[0].n);
+  const mj=allMJ().map(m=>({m,n:L.filter(l=>l.major==m).length,e:L.filter(l=>l.major==m&&l.st==5).length})).sort((a,b)=>b.n-a.n),mm=Math.max(1,mj[0].n);
   const rc=[...L].sort((a,b)=>b.ts-a.ts).slice(0,6);
   return`<div class="hd"><h2>Tổng quan tuyển sinh</h2><span class="mu">${new Date().toLocaleDateString("vi-VN",{weekday:"long",day:"numeric",month:"numeric",year:"numeric"})}</span></div>
   ${n?"":`<div class="pn mu">Chưa có hồ sơ nào. Thêm hồ sơ đầu tiên ở tab Hồ sơ.</div>`}
@@ -183,18 +183,19 @@ ctv(){
 set(){
   return`<div class="pn"><h3>Mức hoa hồng</h3><p class="mu">Hoa hồng "nộp hồ sơ" tính khi hồ sơ đạt từ bước Đã nộp hồ sơ trở đi. Hoa hồng "nhập học" tính thêm khi thí sinh nhập học.</p>
   <div class="tb"><label>Nộp hồ sơ (đ)<br><input id="fa" type="number" value="${S.fee.apply}"></label><label>Nhập học (đ)<br><input id="fe" type="number" value="${S.fee.enroll}"></label></div><button class="b" onclick="saveFee()">Lưu mức hoa hồng</button></div>
+  <div class="pn"><h3>Danh mục ngành học</h3><p class="mu">Mỗi ngành một dòng. Dùng cho form thêm hồ sơ và thống kê. Ngành có trong dữ liệu sinh viên tự được đưa vào thống kê.</p><textarea id="mj" rows="5" style="width:100%;font:inherit;color:var(--tx);background:var(--cd);border:1px solid var(--bd);border-radius:6px;padding:8px">${esc(MJ.join("\n"))}</textarea><div style="height:10px"></div><button class="b" onclick="saveMJ()">Lưu danh mục ngành</button></div>
   <div class="pn"><h3>Nhập danh sách sinh viên</h3><p class="mu">Chọn file students-clean.json (đã làm sạch từ DUOC.xlsx). Dữ liệu được ghi theo từng lớp khai giảng; nhập lại sẽ ghi đè các lớp trùng.</p><input type="file" accept=".json" onchange="impSV(this.files[0])"><p class="mu" id="im"></p></div>`;
 },
 sv(){
   if(!S.students.length)return`<div class="pn"><h3>Chưa có dữ liệu sinh viên</h3><p class="mu">Vào Cài đặt, chọn file students-clean.json để nhập danh sách.</p></div>`;
-  const ys=[...new Set(S.students.map(yr))].filter(Boolean).sort(),sel=(k,a)=>`<select class="f" onchange="SQ.${k}=this.value;SQ.pg=0;svr()"><option value="">Tất cả</option>${a.map(x=>`<option ${x==SQ[k]?"selected":""}>${x}</option>`).join("")}</select>`;
-  return`<div class="tb"><input placeholder="Tìm tên, MSV, SĐT" value="${esc(SQ.q)}" oninput="SQ.q=this.value;SQ.pg=0;svr()">${sel("he",["Chính quy","Văn bằng thứ 2","Liên thông"])}${sel("tt",TT)}${sel("y",ys)}</div><div id="sv">${svt()}</div>`;
+  const ng=[...new Set(S.students.map(s=>s.ng))].filter(Boolean).sort(),ys=[...new Set(S.students.map(yr))].filter(Boolean).sort(),sel=(k,a)=>`<select class="f" onchange="SQ.${k}=this.value;SQ.pg=0;svr()"><option value="">Tất cả</option>${a.map(x=>`<option ${x==SQ[k]?"selected":""}>${x}</option>`).join("")}</select>`;
+  return`<div class="tb"><input placeholder="Tìm tên, MSV, SĐT" value="${esc(SQ.q)}" oninput="SQ.q=this.value;SQ.pg=0;svr()">${sel("ng",ng)}${sel("he",["Chính quy","Văn bằng thứ 2","Liên thông"])}${sel("tt",TT)}${sel("y",ys)}</div><div id="sv">${svt()}</div>`;
 },
 cs(){
   const A=S.students;if(!A.length)return`<div class="pn"><h3>Chưa có dữ liệu sinh viên</h3><p class="mu">Vào Cài đặt để nhập danh sách sinh viên.</p></div>`;
-  const q=CQ.toLowerCase(),L=A.filter(s=>s.tt==CS&&(!q||(s.hv+s.sdt).toLowerCase().includes(q)));
+  const q=CQ.toLowerCase(),L=A.filter(s=>s.tt==CS&&(!CN||s.ng==CN)&&(!q||(s.hv+s.sdt).toLowerCase().includes(q)));
   return`<div class="ch">${GL.map(g=>`<button class="${g==CS?"on":""}" onclick="CS='${g}';R()">${g} ${A.filter(s=>s.tt==g).length}</button>`).join("")}</div>
-  <div class="tb"><input placeholder="Tìm trong nhóm này" value="${esc(CQ)}" oninput="CQ=this.value;$('cl').innerHTML=clr()"></div><div id="cl">${clr()}</div>`;
+  <div class="tb"><select class="f" onchange="CN=this.value;$('cl').innerHTML=clr()"><option value="">Tất cả ngành</option>${[...new Set(A.map(s=>s.ng))].filter(Boolean).sort().map(x=>`<option ${x==CN?"selected":""}>${x}</option>`).join("")}</select><input placeholder="Tìm trong nhóm này" value="${esc(CQ)}" oninput="CQ=this.value;$('cl').innerHTML=clr()"></div><div id="cl">${clr()}</div>`;
 },
 my(){
   const m=cm(me.id);
@@ -220,7 +221,7 @@ function del(id){if(dl!=id){dl=id;toast("Bấm Xoá lần nữa để xác nhậ
 function cl(){$("md").className=""}
 function addOpen(){
   $("md").innerHTML=`<div class="box"><h3>Thêm hồ sơ</h3><input id="fn" placeholder="Họ tên thí sinh *"><input id="fp" placeholder="Số điện thoại *" inputmode="tel">
-  <select id="fm">${MJ.map(m=>`<option>${m}</option>`).join("")}</select>
+  <select id="fm">${allMJ().map(m=>`<option>${m}</option>`).join("")}</select>
   ${me.role=="admin"?`<select id="fc">${S.ctv.map(c=>`<option value="${c.id}">${esc(c.name)} (${c.code})</option>`).join("")}</select>`:""}
   <input id="fo" placeholder="Ghi chú"><div class="row"><button class="g" onclick="cl()">Huỷ</button><button onclick="addSave()">Lưu hồ sơ</button></div></div>`;
   $("md").className="on";$("fn").focus();
@@ -240,21 +241,23 @@ function addCtv(){
 function pay(id){const c=S.ctv.find(x=>x.id==id);c.paid=cm(id).t;DB.setCtv(c).then(()=>toast("Đã ghi nhận chi hoa hồng")).catch(fail)}
 function saveFee(){S.fee={apply:+$("fa").value||0,enroll:+$("fe").value||0};DB.setCfg({fee:S.fee}).then(()=>toast("Đã lưu mức hoa hồng")).catch(fail)}
 window.ADMIN_EMAIL="admin@hrcgroup.app";
+const allMJ=()=>[...new Set([...MJ,...S.students.map(s=>s.ng),...S.leads.map(l=>l.major)].filter(Boolean))];
+function saveMJ(){const a=$("mj").value.split("\n").map(x=>x.trim()).filter(Boolean);if(!a.length)return toast("Cần ít nhất một ngành");MJ=a;DB.setCfg({majors:a}).then(()=>toast("Đã lưu danh mục ngành")).catch(fail)}
 const TT=["Đã tốt nghiệp","Bình thường","Bảo lưu","Không đi học","Thôi học","Đình chỉ học","Chuyển trường"],GL=["Bảo lưu","Không đi học","Thôi học","Đình chỉ học","Đã tốt nghiệp"];
 const TC={"Đã tốt nghiệp":"#16a34a","Bình thường":"#3b82f6","Bảo lưu":"#f59e0b","Không đi học":"#ef4444","Thôi học":"#b91c1c","Đình chỉ học":"#a855f7","Chuyển trường":"#8a97a3"};
 const KQ=["Chưa gọi","Đã gọi - hẹn lại","Đồng ý quay lại","Không liên lạc được","Từ chối"];
-let SQ={q:"",he:"",tt:"",y:"",pg:0},CS="Bảo lưu",CQ="";
+let SQ={q:"",he:"",ng:"",tt:"",y:"",pg:0},CS="Bảo lưu",CQ="",CN="";
 const yr=s=>(s.nh||"").slice(0,4),tel=p=>p?`<a href="tel:${esc(p)}">${esc(p)}</a>`:"";
 function svt(){
-  const q=SQ.q.toLowerCase(),L=S.students.filter(s=>(!q||(s.hv+s.msv+s.sdt).toLowerCase().includes(q))&&(!SQ.he||s.he==SQ.he)&&(!SQ.tt||s.tt==SQ.tt)&&(!SQ.y||yr(s)==SQ.y));
+  const q=SQ.q.toLowerCase(),L=S.students.filter(s=>(!q||(s.hv+s.msv+s.sdt).toLowerCase().includes(q))&&(!SQ.he||s.he==SQ.he)&&(!SQ.ng||s.ng==SQ.ng)&&(!SQ.tt||s.tt==SQ.tt)&&(!SQ.y||yr(s)==SQ.y));
   const n=L.length,P=50,pm=Math.max(1,Math.ceil(n/P)),pg=Math.min(SQ.pg,pm-1);SQ.pg=pg;
-  return`<p class="mu">${n} sinh viên</p><div class="pn tw"><table><tr><th>MSV</th><th>Họ tên</th><th>Lớp</th><th>Hệ</th><th>Tình trạng</th><th>SĐT</th><th>Nhập học</th></tr>${L.slice(pg*P,pg*P+P).map(s=>`<tr><td>${esc(s.msv)}</td><td>${esc(s.hv)}${s.loi?` <b style="color:var(--er)" title="${esc(s.loi.join(", "))}">!</b>`:""}</td><td>${esc(s.lop)}</td><td>${esc(s.he)}</td><td><span class="tg" style="border-color:${TC[s.tt]||"var(--bd)"}">${esc(s.tt)}</span></td><td>${tel(s.sdt)}</td><td>${esc(s.nh)}</td></tr>`).join("")}</table></div>
+  return`<p class="mu">${n} sinh viên</p><div class="pn tw"><table><tr><th>MSV</th><th>Họ tên</th><th>Ngành</th><th>Lớp</th><th>Hệ</th><th>Tình trạng</th><th>SĐT</th><th>Nhập học</th></tr>${L.slice(pg*P,pg*P+P).map(s=>`<tr><td>${esc(s.msv)}</td><td>${esc(s.hv)}${s.loi?` <b style="color:var(--er)" title="${esc(s.loi.join(", "))}">!</b>`:""}</td><td>${esc(s.ng)}</td><td>${esc(s.lop)}</td><td>${esc(s.he)}</td><td><span class="tg" style="border-color:${TC[s.tt]||"var(--bd)"}">${esc(s.tt)}</span></td><td>${tel(s.sdt)}</td><td>${esc(s.nh)}</td></tr>`).join("")}</table></div>
   <div class="tb"><button class="b g" ${pg?"":"disabled"} onclick="SQ.pg=${pg-1};svr()">‹ Trước</button><span class="mu">Trang ${pg+1}/${pm}</span><button class="b g" ${pg+1<pm?"":"disabled"} onclick="SQ.pg=${pg+1};svr()">Sau ›</button></div>`;
 }
 const svr=()=>$("sv").innerHTML=svt();
 function clr(){
-  const q=CQ.toLowerCase(),L=S.students.filter(s=>s.tt==CS&&(!q||(s.hv+s.sdt).toLowerCase().includes(q)));
-  return`<p class="mu">${L.length} người${L.length>60?" (hiện 60 đầu, dùng ô tìm kiếm để lọc)":""}</p><div class="gl">${L.slice(0,60).map(s=>`<div class="cd" style="--c:${TC[s.tt]}"><div class="t"><b>${esc(s.hv)}</b><span class="mu">${esc(s.lop)}</span></div><div class="mu">${tel(s.sdt)}${s.sdt2?" · "+tel(s.sdt2):""} · nhập học ${esc(yr(s))}</div>
+  const q=CQ.toLowerCase(),L=S.students.filter(s=>s.tt==CS&&(!CN||s.ng==CN)&&(!q||(s.hv+s.sdt).toLowerCase().includes(q)));
+  return`<p class="mu">${L.length} người${L.length>60?" (hiện 60 đầu, dùng ô tìm kiếm để lọc)":""}</p><div class="gl">${L.slice(0,60).map(s=>`<div class="cd" style="--c:${TC[s.tt]}"><div class="t"><b>${esc(s.hv)}</b><span class="mu">${esc(s.lop)}</span></div><div class="mu">${tel(s.sdt)}${s.sdt2?" · "+tel(s.sdt2):""} · ${esc(s.ng||"")} · nhập học ${esc(yr(s))}</div>
   <select onchange="csv('${s.msv}','kq',this.value)" aria-label="Kết quả gọi">${KQ.map(k=>`<option ${k==((s.cs||{}).kq||"Chưa gọi")?"selected":""}>${k}</option>`).join("")}</select>
   <input style="width:100%;margin-top:4px;padding:4px 6px;font-size:12px" placeholder="Ghi chú cuộc gọi" value="${esc((s.cs||{}).note||"")}" onchange="csv('${s.msv}','note',this.value)"></div>`).join("")}</div>`;
 }
@@ -262,18 +265,20 @@ function csv(msv,k,v){
   const s=S.students.find(x=>x.msv==msv);if(!s)return;s.cs=s.cs||{};s.cs[k]=v;s.cs.ts=Date.now();
   const lp=s.lop||"KHAC";DB.setClass(lp,S.students.filter(x=>(x.lop||"KHAC")==lp)).then(()=>toast("Đã lưu")).catch(fail)}
 async function impSV(f){
-  if(!f)return;try{const A=JSON.parse(await f.text()),G={};A.forEach(s=>(G[s.lop||"KHAC"]=G[s.lop||"KHAC"]||[]).push(s));
+  if(!f)return;try{const A=JSON.parse(await f.text()),G={},old=Object.fromEntries(S.students.map(s=>[s.msv,s.cs]));A.forEach(s=>{if(old[s.msv])s.cs=old[s.msv];(G[s.lop||"KHAC"]=G[s.lop||"KHAC"]||[]).push(s)});
   const K=Object.keys(G);let i=0;for(const k of K){await DB.setClass(k,G[k]);$("im").textContent=`Đang nhập ${++i}/${K.length} lớp…`}toast("Đã nhập "+A.length+" sinh viên")}catch(e){toast("Lỗi nhập file: "+(e.code||e.message))}}
 function sdash(){
   const A=S.students,n=A.length;if(!n)return"";
   const pc=(a,b)=>b?Math.round(a/b*100)+"%":"0%",c=t=>A.filter(s=>s.tt==t).length,gone=c("Không đi học")+c("Thôi học")+c("Đình chỉ học")+c("Chuyển trường"),back=c("Bảo lưu")+c("Không đi học")+c("Thôi học")+c("Đình chỉ học");
   const ys=[...new Set(A.map(yr))].filter(Boolean).sort(),yc=ys.map(y=>A.filter(s=>yr(s)==y).length),ym=Math.max(1,...yc),h=x=>A.filter(s=>s.he==x).length;
+  const NG=[...new Set(A.map(s=>s.ng||"Chưa rõ"))].sort(),nr=NG.map(g=>{const X=A.filter(s=>(s.ng||"Chưa rõ")==g),z=t=>X.filter(s=>s.tt==t).length,go=z("Không đi học")+z("Thôi học")+z("Đình chỉ học")+z("Chuyển trường");return`<tr><td>${esc(g)}</td><td>${X.length}</td><td>${z("Bình thường")}</td><td>${z("Đã tốt nghiệp")}</td><td>${z("Bảo lưu")}</td><td>${go}</td><td>${pc(go,X.length)}</td></tr>`}).join("");
   let acc=0;const cg=TT.map(t=>{const a=acc/n*100;acc+=c(t);return`${TC[t]} ${a}% ${acc/n*100}%`}).join(",");
   const k=(a,b,d,col)=>`<div class="k" style="--c:${col}"><span>${a}</span><b>${b}</b><small>${d}</small></div>`;
   return`<div class="hd" style="margin-top:22px"><h2>Sinh viên (lịch sử nhập học)</h2><span class="mu">${n} sinh viên</span></div>
   <div class="kp">${k("Tổng sinh viên",n,`Chính quy ${h("Chính quy")} · VB2 ${h("Văn bằng thứ 2")}`,"#3b82f6")}${k("Đang học",c("Bình thường"),pc(c("Bình thường"),n)+" tổng số","#14b8a6")}${k("Đã tốt nghiệp",c("Đã tốt nghiệp"),pc(c("Đã tốt nghiệp"),n)+" tổng số","#16a34a")}${k("Tỷ lệ rời đi",pc(gone,n),`${gone} SV nghỉ, thôi, đình chỉ`,"#ef4444")}${k("Cần gọi lại",back,"Bảo lưu, nghỉ, thôi, đình chỉ","#f59e0b")}</div>
   <div class="g2"><div class="pn"><h3>Nhập học theo năm</h3><div class="tr">${ys.map((y,i)=>`<div title="${yc[i]}">${yc[i]}<i style="height:${yc[i]/ym*80}px"></i>${y}</div>`).join("")}</div></div>
-  <div class="pn"><h3>Cơ cấu tình trạng học</h3><div class="dn"><div class="ring" style="background:conic-gradient(${cg})"><b>${n}</b></div><div class="lg">${TT.map(t=>`<div><i style="background:${TC[t]}"></i>${t}: <b>${c(t)}</b> (${pc(c(t),n)})</div>`).join("")}</div></div></div></div>`;
+  <div class="pn"><h3>Cơ cấu tình trạng học</h3><div class="dn"><div class="ring" style="background:conic-gradient(${cg})"><b>${n}</b></div><div class="lg">${TT.map(t=>`<div><i style="background:${TC[t]}"></i>${t}: <b>${c(t)}</b> (${pc(c(t),n)})</div>`).join("")}</div></div></div></div>
+  <div class="pn"><h3>Theo ngành học</h3><div class="tw"><table><tr><th>Ngành</th><th>Tổng</th><th>Đang học</th><th>Tốt nghiệp</th><th>Bảo lưu</th><th>Rời đi</th><th>Tỷ lệ rời đi</th></tr>${nr}</table></div></div>`;
 }
 $("md").addEventListener("click",e=>{if(e.target.id=="md")cl()});
 R();
