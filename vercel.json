@@ -1,5 +1,18 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": ".*hrcgroup.*"
+        }
+      ],
+      "destination": "/vuanghe",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     { "source": "/tuyensinh", "destination": "/tuyensinh.html" },
     { "source": "/", "destination": "/index.html" },
