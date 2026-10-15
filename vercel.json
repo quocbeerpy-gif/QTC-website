@@ -7,5 +7,6 @@
     { "source": "/duan", "destination": "/duan/index.html" },
     { "source": "/hrchealth", "destination": "/hrchealth/index.html" },
     { "source": "/qtcaimathgame", "destination": "/qtcaimathgame.html" }
+    { "source": "https://hrcgroup.vercel.app/", "destination": "/vuanghe.html" }
   ]
 }
