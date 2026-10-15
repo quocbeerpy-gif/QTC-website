@@ -8,7 +8,7 @@ echo ========================================================
 cd /d "%~dp0"
 
 :: Tu dong copy cac file can thiet (neu co)
-if exist "vuanghe.html" copy /y "vuanghe.html" "index.html" >nul
+if exist "QTC AI.html" copy /y "QTC AI.html" "index.html" >nul
 if exist "HRCHealth.html" (
     if not exist "hrchealth" mkdir "hrchealth"
     copy /y "HRCHealth.html" "hrchealth\index.html" >nul
