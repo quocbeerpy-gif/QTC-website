@@ -3,46 +3,47 @@ chcp 65001 >nul
 echo ========================================================
 echo   [QTC AI] DANG TIEN HANH DONG BO VA PUSH WEB LEN GITHUB
 echo ========================================================
-cd /d "C:\Users\Thien Phu\.openclaw\workspace\web_public"
 
-:: Tu dong copy vuanghe.html sang index.html de trang chu luon la Vua Nghe
-if exist "vuanghe.html" (
-    copy /y "vuanghe.html" "index.html" >nul
-)
+:: Chuyen vao dung thu muc chua script
+cd /d "%~dp0"
 
-:: Tu dong copy HRCHealth.html sang hrchealth/index.html
+:: Tu dong copy cac file can thiet (neu co)
+if exist "vuanghe.html" copy /y "vuanghe.html" "index.html" >nul
 if exist "HRCHealth.html" (
     if not exist "hrchealth" mkdir "hrchealth"
     copy /y "HRCHealth.html" "hrchealth\index.html" >nul
 )
 
-:: Check if git status has any changes
+echo Dang kiem tra trang thai Git...
+:: Luon luon Pull ve truoc de tranh loi "rejected"
+git pull --rebase origin main
+
+:: Kiem tra xem co gi thay doi khong
+git add .
 git status --porcelain > "%temp%\git_status.txt"
-for %%A in ("%temp%\git_status.txt") do if %%~zA==0 (
+
+:: Kiem tra file co du lieu hay khong bang cach check size
+for /f %%i in ("%temp%\git_status.txt") do set size=%%~zi
+if %size% equ 0 (
     del "%temp%\git_status.txt"
-    echo.
-    echo [THONG BAO] Khong co file nao thay doi moi! Tat ca da duoc dong bo len GitHub roi anh nhe.
-    echo.
-    ping -n 4 127.0.0.1 >nul
+    echo [THONG BAO] Khong co gi thay doi moi de push.
+    timeout /t 3 >nul
     exit /b 0
 )
 del "%temp%\git_status.txt"
 
-echo Dang them file va tao ban commit...
-git add .
-git commit -m "Auto update web QTC AI - %date% %time%"
+echo Dang tao ban commit...
+git commit -m "Auto update web - %date% %time%"
+echo Dang day code len GitHub...
 git push origin main
 
 if %errorlevel% neq 0 (
     echo.
-    echo [LOI] Push khong thanh cong! Vui long kiem tra lai ket noi hoac quyen truy cap GitHub.
-    echo.
+    echo [LOI] Push khong thanh cong! Vui long kiem tra lai ket noi hoac quyen GitHub.
     pause
 ) else (
-    echo.
     echo ========================================================
-    echo   [THANH CONG] DA PUSH CODE MOI LEN GITHUB THANH CONG!
+    echo   [THANH CONG] DA CAP NHAT WEB XONG ROI ANH NHE!
     echo ========================================================
-    echo.
-    ping -n 4 127.0.0.1 >nul
+    timeout /t 3 >nul
 )

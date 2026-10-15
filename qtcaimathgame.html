@@ -103,6 +103,13 @@ button{font-family:inherit}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}60%{transform:translateX(7px)}}
 @keyframes cf{to{transform:translate(var(--dx),var(--dy)) rotate(220deg);opacity:0}}
 @media(prefers-reduced-motion:reduce){.vis .e,.mc,.cf{animation:none!important}}
+.lvg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:16px}
+.lv{display:flex;flex-direction:column;gap:2px;align-items:center;padding:14px 8px;border-radius:14px;border:2px solid var(--line);background:#071a58;color:var(--tx);font-size:14px;cursor:pointer}
+.lv b{font-size:20px}.lv span{color:var(--mut)}.lv i{font-style:normal;font-weight:700;margin-top:4px}
+.lv.done{border-color:var(--ok)}.lv.done i{color:var(--ok)}
+.lv.cur{border-color:var(--gold);box-shadow:0 0 18px #ffc83d88}.lv.cur i{color:var(--gold)}
+.lv.lock{opacity:.45;cursor:not-allowed}
+.lv:not(:disabled):hover{transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -138,9 +145,15 @@ button{font-family:inherit}
 
 <div id="ov">
  <div class="pn" id="s-menu" hidden>
-  <h2 id="hello"></h2><p class="sub">Chọn chủ đề (10 câu, mỗi câu 20 giây)</p>
+  <h2 id="hello"></h2><p class="sub">Chọn chủ đề (mỗi câu 20 giây)</p>
   <div class="topics" id="topics"></div>
   <div class="row"><button class="btn g" id="close1" type="button">Quay lại</button></div>
+ </div>
+ <div class="pn" id="s-lv" hidden>
+  <h2>CHỌN LEVEL</h2><p class="sub" id="lvt" style="color:var(--cy);font-weight:700"></p>
+  <p class="sub">Trả lời đúng tất cả câu hỏi để mở khóa level tiếp theo</p>
+  <div class="lvg" id="lvg"></div>
+  <div class="row"><button class="btn g" id="lvback" type="button">Quay lại</button></div>
  </div>
  <div class="pn" id="s-play" hidden>
   <div class="bar"><span id="mc" class="mc">🦉</span><span id="pi"></span><span id="pt"></span><span id="ps"></span><button class="btn g" id="quit" type="button" style="padding:4px 14px;font-size:14px">Thoát</button></div>
@@ -148,8 +161,8 @@ button{font-family:inherit}
   <div class="vis" id="pv"></div><div class="q" id="pq"></div><div class="opts" id="po"></div><p class="fb2" id="pf"></p>
  </div>
  <div class="pn" id="s-res" hidden>
-  <h2>KẾT QUẢ</h2><div class="rst" id="rst"></div><div class="big" id="rs"></div><p class="sub" id="rt"></p><p class="sub" id="rn" style="color:#ffb86b"></p>
-  <div class="row"><button class="btn" id="again" type="button">Chơi lại</button><button class="btn g" id="home" type="button">Về trang chủ</button></div>
+  <h2>KẾT QUẢ</h2><div class="rst" id="rst"></div><div class="big" id="rs"></div><p class="sub" id="rt"></p><p class="sub" id="rl" style="font-weight:800;font-size:18px"></p><p class="sub" id="rn" style="color:#ffb86b"></p>
+  <div class="row"><button class="btn" id="nextlv" type="button" hidden>Level tiếp theo ▶</button><button class="btn" id="again" type="button">Chơi lại</button><button class="btn g" id="lvs" type="button">Chọn level</button><button class="btn g" id="home" type="button">Về trang chủ</button></div>
  </div>
 </div>
 
@@ -171,7 +184,7 @@ const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 const pick=a=>a[R(0,a.length-1)];
 const NAMES=["Lan","Nam","Minh","Hoa","Bình","An"];
 const SEED=[["Nguyễn Minh Anh",4,3850],["Trần Gia Huy",4,3420],["Lê Phương Thảo",3,3210],["Hoàng Đức Minh",4,2980],["Phạm Bảo Ngọc",3,2760],["Đỗ Minh Quân",4,2540],["Nguyễn Thảo Vy",3,2310],["Lê Quang Anh",4,2180],["Vũ Hoàng Long",3,1980],["Phan Nhật Minh",4,1760]];
-let grade=0,player="",qs=[],idx=0,score=0,right=0,streak=0,tmr=null,left=20,showAll=false,locked=false,lastKey="",lastErr="",topic="",db=null,online=false,cache=null;
+let grade=0,player="",qs=[],idx=0,score=0,right=0,streak=0,tmr=null,left=20,showAll=false,locked=false,level=1,lastKey="",lastErr="",topic="",db=null,online=false,cache=null;
 
 function loadLB(){return online&&cache?cache.slice():localLoad()}
 function localLoad(){try{const s=localStorage.getItem("qtc-lb");if(s)return JSON.parse(s)}catch(e){}return SEED.map(x=>({n:x[0],g:x[1],s:x[2]}))}
@@ -302,7 +315,7 @@ function burst(){
   x.style.left=(r.left+r.width/2)+"px";x.style.top=(r.top+r.height/2)+"px";x.style.setProperty("--dx",R(-170,170)+"px");x.style.setProperty("--dy",R(-210,-40)+"px");
   document.body.appendChild(x);setTimeout(()=>x.remove(),1000)}
 }
-function showS(id){["menu","play","res"].forEach(x=>$("s-"+x).hidden=x!==id);$("ov").classList.add("on");$("ov").scrollTop=0}
+function showS(id){["menu","lv","play","res"].forEach(x=>$("s-"+x).hidden=x!==id);$("ov").classList.add("on");$("ov").scrollTop=0}
 function closeOv(){clearInterval(tmr);$("ov").classList.remove("on");renderLB()}
 function setErr(t){$("err").textContent=t}
 document.querySelectorAll(".cb").forEach(b=>b.onclick=()=>{grade=+b.dataset.g;document.querySelectorAll(".cb").forEach(x=>x.classList.toggle("on",x===b));setErr("")});
@@ -312,29 +325,42 @@ function tryStart(topic){
  if(!grade){setErr("Hãy chọn Lớp 2, 3 hoặc 4");return}
  if(!n){setErr("Hãy nhập tên của bạn");$("name").focus();return}
  setErr("");player=n;
- if(topic)return begin(topic);
- $("hello").textContent=`Chào ${n}! (Lớp ${grade})`;
- $("topics").innerHTML=TOPICS.map(t=>`<button type="button" data-t="${t[0]}"><i>${t[1]}</i>${t[2]}</button>`).join("");
- document.querySelectorAll("#topics button").forEach(b=>b.onclick=()=>begin(b.dataset.t));
+ if(topic)return openLevels(topic);
+ openMenu();
+}
+function pkey(t){return player.toLowerCase()+"|"+grade+"|"+t}
+function getProg(t){try{return JSON.parse(localStorage.getItem("qtc-prog")||"{}")[pkey(t)]||1}catch(e){return 1}}
+function setProg(t,lv){try{const o=JSON.parse(localStorage.getItem("qtc-prog")||"{}");o[pkey(t)]=Math.max(o[pkey(t)]||1,lv);localStorage.setItem("qtc-prog",JSON.stringify(o))}catch(e){}}
+function openMenu(){
+ $("hello").textContent=`Chào ${player}! (Lớp ${grade})`;
+ $("topics").innerHTML=TOPICS.map(t=>{const p=getProg(t[0]);return `<button type="button" data-t="${t[0]}"><i>${t[1]}</i>${t[2]}<br><small style="color:var(--gold)">${p>5?"🏆 Hoàn thành":"Level "+p+"/5"}</small></button>`}).join("");
+ document.querySelectorAll("#topics button").forEach(b=>b.onclick=()=>openLevels(b.dataset.t));
  showS("menu");
+}
+function openLevels(t){
+ topic=t;const p=getProg(t);
+ $("lvt").textContent=(TOPICS.find(x=>x[0]===t)||[0,"",t])[2]+" · Lớp "+grade;
+ $("lvg").innerHTML=[1,2,3,4,5].map(n=>{const st=n<p?"done":n===p?"cur":"lock";return `<button type="button" class="lv ${st}" data-l="${n}"${st==="lock"?" disabled":""}><b>Level ${n}</b><span>${n*10} câu</span><i>${st==="done"?"⭐ Đã qua":st==="cur"?"▶ Chơi ngay":"🔒 Khóa"}</i></button>`}).join("");
+ document.querySelectorAll("#lvg .lv").forEach(b=>b.onclick=()=>begin(topic,+b.dataset.l));
+ showS("lv");
 }
 $("go").onclick=()=>tryStart();
 $("name").addEventListener("keydown",e=>{if(e.key==="Enter")tryStart()});
 document.querySelectorAll(".fb").forEach(b=>b.onclick=()=>tryStart(b.dataset.t));
 $("close1").onclick=closeOv;$("quit").onclick=closeOv;$("home").onclick=closeOv;
-$("again").onclick=()=>tryStart();
+$("again").onclick=()=>begin(topic,level);$("nextlv").onclick=()=>begin(topic,level+1);$("lvs").onclick=()=>openLevels(topic);$("lvback").onclick=openMenu;
 
-function begin(t){
- topic=t;qs=[];const keys=["calc","unknown","units","word"];
- for(let i=0;i<10;i++){const k=t==="mix"?keys[i%4]:t;qs.push((grade==2?G2:G)[k](grade))}
+function begin(t,lv){
+ topic=t;level=lv||1;qs=[];const keys=["calc","unknown","units","word"];
+ for(let i=0;i<level*10;i++){const k=t==="mix"?keys[i%4]:t;qs.push((grade==2?G2:G)[k](grade))}
  idx=0;score=0;right=0;streak=0;showS("play");next();
 }
 function next(){
  clearInterval(tmr);locked=false;
  if(idx>=qs.length)return finish();
  const q=qs[idx];left=20;
- $("pi").textContent=`Câu ${idx+1}/10`;$("ps").textContent=`⭐ ${score}`;$("pt").textContent=`⏱ ${left}s`;
- $("pb").style.width=(idx/10*100)+"%";$("pq").textContent=q.q;{const h=visualize(q);$("pv").className="vis"+(h.length>1800?" sm":"");$("pv").innerHTML=h}mood("🦉","");$("pf").textContent="";
+ $("pi").textContent=`Lv${level} · Câu ${idx+1}/${qs.length} · ✅${right}`;$("ps").textContent=`⭐ ${score}`;$("pt").textContent=`⏱ ${left}s`;
+ $("pb").style.width=(idx/qs.length*100)+"%";$("pq").textContent=q.q;{const h=visualize(q);$("pv").className="vis"+(h.length>1800?" sm":"");$("pv").innerHTML=h}mood("🦉","");$("pf").textContent="";
  $("po").innerHTML=q.o.map(v=>`<button type="button" data-v="${v}">${v.toLocaleString("vi-VN")}</button>`).join("");
  document.querySelectorAll("#po button").forEach(b=>b.onclick=()=>answer(+b.dataset.v,b));
  tmr=setInterval(()=>{left--;$("pt").textContent=`⏱ ${left}s`;if(left<=0)answer(null)},1000);
@@ -359,14 +385,19 @@ function finish(){
  lastKey=player+grade+score;$("rn").textContent="";
  const localSave=()=>{const l=localLoad();l.push({n:player,g:grade,s:score});l.sort((x,y)=>y.s-x.s);saveLB(l.slice(0,20))};
  if(db){
-  db.collection("scores").add({name:player,grade:grade,score:score,correct:right,topic:topic,createdAt:firebase.firestore.FieldValue.serverTimestamp()})
+  db.collection("scores").add({name:player,grade:grade,score:score,correct:right,topic:topic,level:level,createdAt:firebase.firestore.FieldValue.serverTimestamp()})
    .catch(e=>{lastErr=e.code||String(e.message||e);console.error("Firebase:",e);localSave();setSt();$("rn").textContent=errNote(lastErr)});
  }else{
   localSave();
   if(FIREBASE_CONFIG.apiKey)$("rn").textContent=errNote("sdk");
  }
- $("rs").textContent=score.toLocaleString("en-US");{const st=right>=9?3:right>=6?2:right>=3?1:0;$("rst").textContent="⭐".repeat(st)+"☆".repeat(3-st)+" "+["💪","👍","🥳","🏆"][st]}
- $("rt").textContent=`${player} trả lời đúng ${right}/10 câu. `+(rank<=20?`Hạng ${rank} trên bảng xếp hạng.`:"Cố gắng thêm để vào Top 20 nhé!");
+ $("rs").textContent=score.toLocaleString("en-US");{const st=right>=qs.length*.9?3:right>=qs.length*.6?2:right>=qs.length*.3?1:0;$("rst").textContent="⭐".repeat(st)+"☆".repeat(3-st)+" "+["💪","👍","🥳","🏆"][st]}
+ $("rt").textContent=`${player} trả lời đúng ${right}/${qs.length} câu. `+(rank<=20?`Hạng ${rank} trên bảng xếp hạng.`:"Cố gắng thêm để vào Top 20 nhé!");
+ const N=qs.length,passed=right===N;
+ if(passed)setProg(topic,level+1);
+ $("rl").textContent=passed?(level>=5?"🏆 Hoàn thành Level 5 - Em đã chinh phục tất cả!":`🎉 Hoàn thành Level ${level}! Đã mở khóa Level ${level+1} (${(level+1)*10} câu)`):`Cần trả lời đúng cả ${N}/${N} câu để qua Level ${level}. Cố lên nào! 💪`;
+ $("rl").style.color=passed?"#2be28a":"#ffd479";
+ $("nextlv").hidden=!(passed&&level<5);
  showS("res");
 }
 function setSt(){const e=$("st");e.textContent=online?"● Online":(lastErr?"● Lỗi Firebase":"● Lưu trên máy");e.style.color=online?"#2be28a":(lastErr?"#ff8da1":"#8fa8d8");e.title=lastErr||""}
