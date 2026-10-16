@@ -136,6 +136,7 @@ input,select,textarea{transition:border-color .2s,box-shadow .2s}
 @keyframes rp{to{transform:scale(1);opacity:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .tt{font:inherit;font-size:13px;color:var(--tx);border:2px solid var(--bd);border-radius:14px;padding:3px 8px;cursor:pointer;max-width:150px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 </style>
 </head>
 <body>
@@ -238,7 +239,7 @@ function card(l){
   const a=me.role=="admin";
   return`<div class="cd" style="--c:${SC[l.st]}" ${a&&!mob.matches?`draggable="true" ondragstart="event.dataTransfer.setData('t',${l.id})"`:""}><div class="t"><b>${esc(l.name)}</b>${a?`<select class="cc" onchange="chCtv(${l.id},+this.value)" aria-label="CTV phụ trách">${S.ctv.map(c=>`<option value="${c.id}" ${c.id==l.ctv?"selected":""}>${c.code}</option>`).join("")}</select>`:`<span class="mu">${code(l.ctv)}</span>`}</div>
   <div class="mu">${esc(l.phone)} · ${esc(l.major)}${l.note?" · "+esc(l.note):""}</div>
-  ${a?`<div class="t"><select onchange="mv(${l.id},+this.value)" aria-label="Trạng thái">${ST.map((s,i)=>`<option value="${i}" ${i==l.st?"selected":""}>${s}</option>`).join("")}</select><button class="x" onclick="del(${l.id})">Xoá</button></div>`:`<span class="tg">${ST[l.st]}</span>`}</div>`;
+  ${a?`<div class="t"><select onchange="mv(${l.id},+this.value)" aria-label="Trạng thái">${ST.map((s,i)=>`<option value="${i}" ${i==l.st?"selected":""}>${s}</option>`).join("")}</select><button class="x" onclick="del(${l.id})">Xoá</button></div>${l.st==5?(l.sv?`<span class="tg" title="MSV ${esc(l.sv)}">Đã vào DS sinh viên</span>`:`<button class="b s" style="width:100%;margin-top:6px" onclick="enrollOpen(${l.id})">Nhập hồ sơ sinh viên</button>`):""}`:`<span class="tg">${ST[l.st]}</span>`}</div>`;
 }
 function board(){
   const q=Q.toLowerCase(),L=vis().filter(l=>!q||l.name.toLowerCase().includes(q)||l.phone.includes(q));
@@ -247,7 +248,7 @@ function board(){
   const M=F<0?L:L.filter(l=>l.st==F);
   return`<div class="ch">${[["Tất cả",-1],...ST.map((s,i)=>[s,i])].map(([s,i])=>`<button class="${F==i?"on":""}" onclick="F=${i};$('bd').innerHTML=board()">${s} ${i<0?L.length:L.filter(l=>l.st==i).length}</button>`).join("")}</div><div class="gl">${M.map(card).join("")||'<p class="mu">Không có hồ sơ ở trạng thái này.</p>'}</div>`;
 }
-function mv(id,i){const l=S.leads.find(x=>x.id==id);if(l){l.st=i;DB.setLead(l).catch(fail);R()}}
+function mv(id,i){const l=S.leads.find(x=>x.id==id);if(l){l.st=i;DB.setLead(l).catch(fail);R();if(i==5&&!l.sv&&me.role=="admin")enrollOpen(id)}}
 function del(id){if(dl!=id){dl=id;toast("Bấm Xoá lần nữa để xác nhận");return}DB.delLead(S.leads.find(l=>l.id==id).phone).catch(fail);dl=0;toast("Đã xoá hồ sơ")}
 function cl(){$("md").className=""}
 function addOpen(){
@@ -272,6 +273,28 @@ function addCtv(){
 function pay(id){const c=S.ctv.find(x=>x.id==id);c.paid=cm(id).t;DB.setCtv(c).then(()=>toast("Đã ghi nhận chi hoa hồng")).catch(fail)}
 function saveFee(){S.fee={apply:+$("fa").value||0,enroll:+$("fe").value||0};DB.setCfg({fee:S.fee}).then(()=>toast("Đã lưu mức hoa hồng")).catch(fail)}
 window.ADMIN_EMAIL="admin@hrcgroup.app";
+function enrollOpen(id){
+  const l=S.leads.find(x=>x.id==id);if(!l)return;
+  const L=[...new Set(S.students.map(s=>s.lop))].filter(Boolean).sort(),fl=(a,h)=>`<label class="mu" style="display:grid;gap:3px">${a}${h}</label>`,
+  op=(a,v)=>a.map(x=>`<option ${x==v?"selected":""}>${esc(x)}</option>`).join("");
+  $("md").innerHTML=`<div class="box" style="max-width:460px;max-height:92vh;overflow:auto"><h3>Nhập hồ sơ sinh viên</h3><p class="mu" style="margin:0">Hồ sơ của ${esc(l.name)} sẽ được thêm vào danh sách sinh viên để theo dõi.</p>
+  ${fl("Mã sinh viên (MSV) *",`<input id="e_m">`)}${fl("Họ và tên *",`<input id="e_h" value="${esc(l.name)}">`)}
+  <div class="f2">${fl("Ngày sinh",`<input id="e_n" type="date">`)}${fl("Ngày nhập học",`<input id="e_d" type="date" value="${new Date().toISOString().slice(0,10)}">`)}</div>
+  <div class="f2">${fl("Điện thoại *",`<input id="e_p" value="${esc(l.phone)}" inputmode="tel">`)}${fl("Điện thoại khác",`<input id="e_q" inputmode="tel">`)}</div>
+  ${fl("Ngành học",`<select id="e_g">${op(allMJ(),l.major)}</select>`)}
+  <div class="f2">${fl("Hệ",`<select id="e_e">${op(["Chính quy","Văn bằng thứ 2","Liên thông"],"Chính quy")}</select>`)}${fl("Lớp khai giảng *",`<input id="e_l" list="e_ll"><datalist id="e_ll">${L.map(x=>`<option value="${esc(x)}">`).join("")}</datalist>`)}</div>
+  ${fl("Tình trạng học",`<select id="e_t">${op(TT,"Bình thường")}</select>`)}
+  <div class="row"><button class="g" onclick="cl()">Để sau</button><button onclick="enrollSave(${id})">Lưu vào danh sách sinh viên</button></div></div>`;
+  $("md").className="on";$("e_m").focus()}
+function enrollSave(id){
+  const l=S.leads.find(x=>x.id==id),v=k=>$(k).value.trim(),ph=x=>{const d=x.replace(/\D/g,"").replace(/^84/,"0");return d.length==9?"0"+d:d};
+  const msv=v("e_m"),hv=v("e_h"),sdt=ph(v("e_p")),lop=v("e_l").replace(/\//g,"-");
+  if(!l||!msv||!hv||sdt.length<9||!lop)return toast("Nhập đủ MSV, họ tên, điện thoại và lớp khai giảng");
+  if(S.students.some(s=>s.msv==msv))return toast("MSV này đã có trong danh sách sinh viên");
+  const r={msv,hv,ns:v("e_n"),sdt,sdt2:ph(v("e_q")),he:v("e_e"),ng:v("e_g"),tt:v("e_t"),lop,nh:v("e_d"),ctv:l.ctv},o={};
+  Object.keys(r).forEach(k=>{if(r[k]!==""&&r[k]!=null)o[k]=r[k]});
+  l.sv=msv;
+  Promise.all([DB.setClass(lop,[...S.students.filter(s=>(s.lop||"KHAC")==lop),o]),DB.setLead(l)]).then(()=>{cl();R();toast("Đã thêm "+hv+" vào danh sách sinh viên")}).catch(e=>{delete l.sv;fail(e)})}
 const ttSel=s=>{const o=TT.includes(s.tt)?TT:[s.tt||"",...TT],c=TC[s.tt]||"var(--bd)";return`<select class="tt" style="border-color:${c};background:color-mix(in srgb,${c} 12%,var(--cd))" title="${s.tcd?"Cập nhật "+s.tcd:""}" onchange="setTT('${s.k||s.msv}',this.value)" aria-label="Tình trạng học">${o.map(t=>`<option value="${esc(t)}" ${t==s.tt?"selected":""}>${t||"—"}</option>`).join("")}</select>`};
 function setTT(key,v){const s=S.students.find(x=>(x.k||x.msv)==key);if(!s||s.tt==v)return;const old=s.tt,od=s.tcd;s.tt=v;s.tcd=new Date().toISOString().slice(0,10);const lp=s.lop||"KHAC";
   DB.setClass(lp,S.students.filter(x=>(x.lop||"KHAC")==lp)).then(()=>toast(`${s.hv}: ${old||"—"} → ${v}`)).catch(e=>{s.tt=old;s.tcd=od;fail(e);if($("sv"))svr()});if($("sv"))svr()}
