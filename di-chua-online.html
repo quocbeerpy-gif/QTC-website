@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Đi Chùa Online</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Noto+Serif+Display:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* Layout: masthead led by today's lunar date (oversized numeral) beside a live incense altar; calm full-width bands below, each one practice or one fact set. */
+:root{
+  --bg:#eef0ea; --surface:#f8f9f5; --surface2:#e2e7de; --fg:#1b2420; --muted:#56635b; --line:#cbd3c7;
+  --accent:#9a6407; --on-accent:#ffffff; --accent-soft:#efe1bd; --lotus:#b8415a; --wood:#5b4030;
+  --altar-bg:#dfe5db; --smoke-rgb:70,82,76; --ok:#2f6b43;
+  --f-display:"Noto Serif Display","Noto Serif",Georgia,"Times New Roman",serif;
+  --f-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --gut-l:max(16px,env(safe-area-inset-left,0px)); --gut-r:max(16px,env(safe-area-inset-right,0px));
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1311; --surface:#151d1a; --surface2:#1d2824; --fg:#e8ece6; --muted:#98a69d; --line:#2a3731;
+  --accent:#e6b04a; --on-accent:#1a1204; --accent-soft:#3a2d12; --lotus:#e0728a; --wood:#3a2a20;
+  --altar-bg:#090e0c; --smoke-rgb:226,230,226; --ok:#74c08d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1311; --surface:#151d1a; --surface2:#1d2824; --fg:#e8ece6; --muted:#98a69d; --line:#2a3731;
+  --accent:#e6b04a; --on-accent:#1a1204; --accent-soft:#3a2d12; --lotus:#e0728a; --wood:#3a2a20;
+  --altar-bg:#090e0c; --smoke-rgb:226,230,226; --ok:#74c08d; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.65 var(--f-body);-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;line-height:1.15;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.in{max-width:1120px;margin:0 auto;padding-left:var(--gut-l);padding-right:var(--gut-r)}
+.band{padding-block:56px}
+.band.alt{background:var(--surface2)}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.sec-head{display:grid;gap:10px;max-width:60ch;margin-bottom:28px}
+.sec-head h2{font-size:clamp(1.7rem,4vw,2.4rem)}
+.sec-head p{color:var(--muted)}
+.ico{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.mini{font-size:.85rem;color:var(--muted)}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:16px;min-height:56px}
+.brand{font-family:var(--f-display);font-size:1.15rem;text-decoration:none;white-space:nowrap}
+.nav{display:flex;gap:4px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{padding:6px 12px;border-radius:99px;text-decoration:none;font-size:.88rem;color:var(--muted);white-space:nowrap}
+.nav a:hover{background:var(--surface2);color:var(--fg)}
+.tools{display:flex;gap:6px}
+.icon-btn{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);cursor:pointer}
+.icon-btn:hover{border-color:var(--accent)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:99px;border:1px solid var(--line);background:var(--surface);text-decoration:none;cursor:pointer;font-weight:500;font-size:.95rem;min-height:44px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.btn.small{min-height:36px;padding:6px 14px;font-size:.85rem}
+.btn.hit .ico,.hit{animation:hit .4s ease}
+@keyframes hit{40%{transform:scale(1.12)}}
+
+/* hero */
+.hero{padding-block:40px 56px}
+.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center}
+.hero-copy{display:grid;gap:18px;min-width:0}
+.lunar{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.lunar-day{font-family:var(--f-display);font-size:clamp(5.5rem,17vw,9.5rem);line-height:.82;color:var(--accent);font-variant-numeric:lining-nums}
+.lunar-meta{display:grid;padding-bottom:6px;font-size:1.05rem}
+.lunar-meta b{font-weight:500}
+.lunar-meta span{color:var(--muted);font-size:.92rem}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem)}
+.lede{max-width:46ch;color:var(--muted)}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.next{font-size:.92rem;padding-left:14px;border-left:2px solid var(--accent)}
+.altar-card{background:var(--altar-bg);border:1px solid var(--line);border-radius:22px;padding:14px;display:grid;gap:12px;min-width:0}
+#altar{width:100%;aspect-ratio:1/1;display:block;border-radius:14px}
+.altar-tools{display:flex;gap:8px;flex-wrap:wrap}
+.altar-card .mini{text-align:center}
+
+/* two-up panels */
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;display:grid;gap:16px;align-content:start;min-width:0}
+.panel h3{font-size:1.4rem;display:flex;align-items:center;gap:10px}
+.panel h3 .ico{color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.big-count{font-family:var(--f-display);font-size:3rem;line-height:1;font-variant-numeric:tabular-nums}
+.bar-track{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.bar-fill{height:100%;width:0;background:var(--accent);transition:width .2s}
+.moc-btn{width:132px;height:132px;border-radius:50%;border:1px solid var(--line);background:radial-gradient(circle at 35% 30%,var(--accent-soft),var(--surface2));cursor:pointer;display:grid;place-items:center;color:var(--accent)}
+.moc-btn .ico{width:56px;height:56px}
+.moc-btn:hover{border-color:var(--accent)}
+label{font-size:.85rem;color:var(--muted);display:grid;gap:6px}
+input[type=text],select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;width:100%;min-height:44px}
+textarea{resize:vertical;min-height:84px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+
+/* so cau an */
+.write{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.form{display:grid;gap:14px}
+.preview{white-space:pre-wrap;font-family:var(--f-display);font-size:1.05rem;line-height:1.7;background:var(--bg);border:1px dashed var(--line);border-radius:14px;padding:16px;min-height:140px;width:100%}
+.book{display:grid;gap:10px;margin-top:20px;list-style:none;padding:0}
+.entry{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:4px;grid-template-columns:1fr auto;align-items:start}
+.entry .meta{font-size:.8rem;color:var(--muted);grid-column:1}
+.entry p{grid-column:1;font-family:var(--f-display)}
+.entry button{grid-column:2;grid-row:1/3;border:0;background:none;color:var(--muted);cursor:pointer;padding:6px;border-radius:8px}
+.entry button:hover{color:var(--lotus)}
+.empty{color:var(--muted);font-size:.92rem;padding:14px 16px;border:1px dashed var(--line);border-radius:14px}
+
+/* mala */
+.mala-wrap{display:grid;grid-template-columns:minmax(0,360px) 1fr;gap:40px;align-items:center}
+.mala{position:relative;width:100%;max-width:360px;aspect-ratio:1/1}
+.mala svg{width:100%;height:100%;display:block}
+.bead{fill:var(--line);transition:fill .15s}
+.bead.on{fill:var(--accent)}
+.mala-btn{position:absolute;inset:22%;border-radius:50%;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center;text-align:center;padding:8px}
+.mala-btn:hover{border-color:var(--accent)}
+.mala-btn b{font-family:var(--f-display);font-size:2.6rem;font-weight:400;line-height:1;font-variant-numeric:tabular-nums}
+.mala-btn span{font-size:.78rem;color:var(--muted)}
+.mantra{font-family:var(--f-display);font-size:clamp(1.5rem,3.4vw,2.1rem);font-style:italic}
+.stats{display:flex;gap:28px;flex-wrap:wrap}
+.stats div{display:grid}
+.stats b{font-family:var(--f-display);font-weight:400;font-size:2rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.stats span{font-size:.8rem;color:var(--muted)}
+
+/* breathing */
+.breath{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.orb-box{display:grid;place-items:center;min-height:300px;border-radius:22px;background:var(--altar-bg);border:1px solid var(--line);padding:20px}
+.orb{width:min(58vw,230px);aspect-ratio:1/1;border-radius:50%;display:grid;place-items:center;text-align:center;background:radial-gradient(circle at 40% 35%,var(--accent-soft),var(--accent));color:var(--on-accent);transform:scale(.62);transition:transform 4s ease-in-out}
+.orb b{font-family:var(--f-display);font-weight:400;font-size:1.5rem}
+.orb span{font-size:.85rem;display:block;font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:8px 16px;border-radius:99px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:.9rem;min-height:40px}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+
+/* pagodas */
+.filters{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.filters input{max-width:280px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;min-width:0}
+.plate{background:var(--surface2);color:var(--accent);height:92px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px 0 16px}
+.plate svg{height:76px;width:auto}
+.plate .tag{align-self:flex-start;margin-top:12px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.card-body{padding:16px;display:grid;gap:8px;align-content:start}
+.card h3{font-size:1.2rem}
+.card .where{font-size:.85rem;color:var(--muted)}
+.card .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+
+/* calendar */
+.events{display:grid;gap:8px;list-style:none;padding:0;margin:0}
+.ev{display:grid;grid-template-columns:76px 1fr auto;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.ev .dd{font-family:var(--f-display);font-size:1.7rem;line-height:1;text-align:center;font-variant-numeric:tabular-nums}
+.ev .dd small{display:block;font-family:var(--f-body);font-size:.72rem;color:var(--muted);letter-spacing:.06em}
+.ev h3{font-size:1.05rem;font-family:var(--f-body);font-weight:500}
+.ev p{font-size:.85rem;color:var(--muted)}
+.ev .left{font-size:.8rem;padding:4px 12px;border-radius:99px;background:var(--surface2);white-space:nowrap}
+.ev.big{border-color:var(--accent)}
+.ev.big .left{background:var(--accent);color:var(--on-accent)}
+
+/* trend */
+.trend-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:36px}
+.timeline{list-style:none;margin:0;padding:0 0 0 22px;border-left:1px solid var(--line);display:grid;gap:24px}
+.timeline li{position:relative;display:grid;gap:4px}
+.timeline li::before{content:"";position:absolute;left:-28px;top:7px;width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--bg)}
+.band.alt .timeline li::before{box-shadow:0 0 0 4px var(--surface2)}
+.timeline time{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.timeline h3{font-size:1.15rem;font-family:var(--f-body);font-weight:600}
+.timeline p{color:var(--muted);font-size:.95rem}
+.src{font-size:.78rem;color:var(--muted)}
+.stack{display:grid;gap:14px}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:6px}
+.note h3{font-family:var(--f-body);font-weight:600;font-size:1rem}
+.note p{font-size:.92rem;color:var(--muted)}
+.feat{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.feat span{font-size:.82rem;padding:5px 12px;border-radius:99px;background:var(--accent-soft);color:var(--fg)}
+.sources{margin-top:36px;font-size:.88rem;color:var(--muted)}
+.sources ul{margin:8px 0 0;padding-left:18px;display:grid;gap:4px}
+.sources a{text-decoration-color:var(--accent);text-underline-offset:3px}
+
+/* safety */
+.safe{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;list-style:none;padding:0;margin:0}
+.safe li{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:8px;align-content:start}
+.safe .ico{color:var(--ok);width:24px;height:24px}
+.safe h3{font-family:var(--f-body);font-weight:600;font-size:1rem}
+.safe p{font-size:.92rem;color:var(--muted)}
+footer{padding-block:36px 48px;border-top:1px solid var(--line);font-size:.88rem;color:var(--muted)}
+footer .in{display:grid;gap:8px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--fg);color:var(--bg);padding:10px 20px;border-radius:99px;font-size:.9rem;opacity:0;pointer-events:none;transition:.25s;z-index:40;max-width:calc(100vw - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:860px){
+  .hero-grid,.pair,.write,.mala-wrap,.breath,.trend-grid{grid-template-columns:1fr;gap:28px}
+  .band{padding-block:44px}
+  .mala{margin:0 auto}
+  .ev{grid-template-columns:60px 1fr}
+  .ev .left{grid-column:2;justify-self:start}
+}
+@media (max-width:520px){
+  .brand{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.2 2-4.2 0 2 1 3 2 3 0-3-1-6 1-8.800z"/></symbol>
+  <symbol id="i-lotus" viewBox="0 0 24 24"><path d="M12 20c-4 0-7-3-8-7 3 0 5 1 6 3 0-4 0-8 2-11 2 3 2 7 2 11 1-2 3-3 6-3-1 4-4 7-8 7z"/></symbol>
+  <symbol id="i-incense" viewBox="0 0 24 24"><path d="M9 21V9M12 21V6M15 21V9M5 21h14M9 6c-1-1.500 1-2 0-3.500M12 3c-1-1.500 1-2 0-3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 17h12l-1.500-2V10a4.500 4.500 0 0 0-9 0v5L6 17zM10 20a2 2 0 0 0 4 0M12 3v2"/></symbol>
+  <symbol id="i-wood" viewBox="0 0 24 24"><path d="M3.500 13a8.500 7 0 0 1 17 0 8.500 5 0 0 1-17 0zM8 13.500h8"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4zM14 7l3 3"/></symbol>
+  <symbol id="i-beads" viewBox="0 0 24 24"><circle cx="12" cy="4.500" r="2"/><circle cx="18.500" cy="9" r="2"/><circle cx="16.500" cy="17" r="2"/><circle cx="7.500" cy="17" r="2"/><circle cx="5.500" cy="9" r="2"/></symbol>
+  <symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 9h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3M3 19h7"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.500 8-8 9-4.500-1-8-4-8-9V6l8-3zM9 12l2 2 4-4"/></symbol>
+  <symbol id="i-theme" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.500"/><path d="M12 3.500v17A8.500 8.500 0 0 0 12 3.500z" fill="currentColor"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zM16.500 9a4 4 0 0 1 0 6M19 6.500a8 8 0 0 1 0 11"/></symbol>
+  <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zM17 9.500l5 5M22 9.500l-5 5"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M6 4h12v17l-6-4-6 4V4z"/></symbol>
+  <symbol id="p-thap" viewBox="0 0 80 60"><path fill="currentColor" d="M40 4l4 6h-8zM34 10h12v6H34zM30 16h20v7H30zM26 23h28v8H26zM22 31h36v9H22zM16 40h48v6H16z" opacity=".85"/></symbol>
+  <symbol id="p-mai" viewBox="0 0 80 60"><path fill="currentColor" d="M4 30Q40 2 76 30l-5 4Q40 14 9 34zM14 36h52v16H14z" opacity=".85"/><path fill="var(--surface2)" d="M34 52V42h12v10z"/></symbol>
+  <symbol id="p-tuong" viewBox="0 0 80 60"><path fill="currentColor" d="M40 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zM29 24q11-9 22 0l7 22H22zM14 46h52v8H14z" opacity=".85"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="in bar">
+    <a class="brand" href="#top">Đi Chùa Online</a>
+    <nav class="nav" aria-label="Mục lục">
+      <a href="#top">Điện thờ</a>
+      <a href="#chuong-mo">Chuông và mõ</a>
+      <a href="#cau-an">Cầu an</a>
+      <a href="#niem-phat">Niệm Phật</a>
+      <a href="#tinh-tam">Tĩnh tâm</a>
+      <a href="#hanh-huong">Hành hương</a>
+      <a href="#lich-le">Lịch lễ</a>
+      <a href="#xu-huong">Xu hướng</a>
+      <a href="#an-toan">Lưu ý</a>
+    </nav>
+    <div class="tools">
+      <button class="icon-btn" id="muteBtn" type="button" aria-label="Tắt âm thanh" aria-pressed="false"><svg class="ico"><use href="#i-sound"/></svg></button>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Đổi giao diện sáng tối"><svg class="ico"><use href="#i-theme"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<section class="band hero">
+  <div class="in hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Hôm nay · <span id="solarToday"></span></p>
+      <div class="lunar" aria-label="Ngày âm lịch hôm nay">
+        <span class="lunar-day" id="lunarDay">--</span>
+        <span class="lunar-meta"><b id="lunarMonth">Âm lịch</b><span id="lunarYear"></span></span>
+      </div>
+      <h1>Đi chùa online</h1>
+      <p class="lede">Thắp nén hương, rung chuông, viết lời cầu an rồi ngồi yên vài phút. Mọi thứ chạy ngay trên trình duyệt, không cần cài đặt và không thu tiền.</p>
+      <div class="cta">
+        <button class="btn primary" id="ctaLight" type="button"><svg class="ico"><use href="#i-incense"/></svg>Thắp 3 nén hương</button>
+        <a class="btn" href="#cau-an"><svg class="ico"><use href="#i-pen"/></svg>Viết lời cầu an</a>
+      </div>
+      <p class="next" id="nextEvent"></p>
+    </div>
+    <div class="altar-card">
+      <canvas id="altar" role="img" aria-label="Bàn thờ có lư hương, hai đĩa đèn và hai bình hoa sen. Khói hương bay lên khi thắp hương."></canvas>
+      <div class="altar-tools">
+        <button class="btn small" id="btnIncense" type="button"><svg class="ico"><use href="#i-incense"/></svg>Thêm nén hương</button>
+        <button class="btn small" id="btnLamp" type="button" aria-pressed="false"><svg class="ico"><use href="#i-flame"/></svg>Thắp đèn</button>
+        <button class="btn small" id="btnLotus" type="button" aria-pressed="false"><svg class="ico"><use href="#i-lotus"/></svg>Dâng hoa sen</button>
+        <button class="btn small" id="btnClear" type="button">Dọn bàn thờ</button>
+      </div>
+      <p class="mini" id="incenseCount"></p>
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="chuong-mo">
+  <div class="in">
+    <div class="sec-head">
+      <p class="eyebrow">Âm thanh</p>
+      <h2>Chuông và mõ</h2>
+      <p>Tiếng chuông mở đầu thời khóa, tiếng mõ giữ nhịp khi niệm. Âm thanh được tạo ngay trong trình duyệt, bật loa để nghe.</p>
+    </div>
+    <div class="pair">
+      <div class="panel">
+        <h3><svg class="ico"><use href="#i-bell"/></svg>Rung chuông</h3>
+        <p class="mini">Chuông thường được thỉnh khi bắt đầu và kết thúc thời tụng niệm.</p>
+        <div class="row">
+          <button class="btn primary" id="bellBtn" type="button">Một tiếng</button>
+          <button class="btn" id="bell3Btn" type="button">Ba tiếng</button>
+        </div>
+        <p class="mini" id="bellCount"></p>
+      </div>
+      <div class="panel">
+        <h3><svg class="ico"><use href="#i-wood"/></svg>Gõ mõ</h3>
+        <div class="row" style="gap:20px">
+          <button class="moc-btn" id="mocBtn" type="button" aria-label="Gõ mõ một tiếng"><svg class="ico"><use href="#i-wood"/></svg></button>
+          <div style="display:grid;gap:8px;min-width:0;flex:1">
+            <div class="big-count" id="mocCount">0</div>
+            <p class="mini">tiếng hôm nay · mục tiêu 108</p>
+            <div class="bar-track"><div class="bar-fill" id="mocBar"></div></div>
+          </div>
+        </div>
+        <label for="bpm">Nhịp tự động: <span id="bpmVal">60</span> tiếng mỗi phút
+          <input id="bpm" type="range" min="30" max="120" step="5" value="60">
+        </label>
+        <div class="row">
+          <button class="btn" id="mocAuto" type="button" aria-pressed="false">Gõ tự động</button>
+          <button class="btn small" id="mocReset" type="button">Đặt lại</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="cau-an">
+  <div class="in">
+    <div class="sec-head">
+      <p class="eyebrow">Sổ cầu an</p>
+      <h2>Viết lời nguyện</h2>
+      <p>Điền vài dòng, trang sẽ soạn lời khấn theo ngày âm lịch hôm nay. Lời nguyện được lưu trong trình duyệt của bạn, không gửi đi đâu.</p>
+    </div>
+    <div class="write">
+      <form class="form" id="prayForm" autocomplete="off">
+        <label for="pName">Họ tên
+          <input type="text" id="pName" placeholder="Ví dụ: Nguyễn Thị An" maxlength="60">
+        </label>
+        <label for="pIntent">Điều cầu nguyện
+          <select id="pIntent">
+            <option value="binhan">Bình an cho gia đình</option>
+            <option value="suckhoe">Sức khỏe cho người thân</option>
+            <option value="hoctap">Học hành, thi cử thuận lợi</option>
+            <option value="congviec">Công việc, làm ăn hanh thông</option>
+            <option value="giadao">Gia đạo hòa thuận</option>
+            <option value="hoihuong">Hồi hướng cho người đã khuất</option>
+          </select>
+        </label>
+        <label for="pNote">Lời nhắn riêng (không bắt buộc)
+          <textarea id="pNote" maxlength="240" placeholder="Một điều bạn muốn nói thêm"></textarea>
+        </label>
+        <div class="row">
+          <button class="btn primary" type="submit"><svg class="ico"><use href="#i-pen"/></svg>Dâng lời nguyện</button>
+        </div>
+      </form>
+      <div class="stack" style="min-width:0">
+        <p class="eyebrow">Lời khấn mẫu</p>
+        <div class="preview" id="pPreview" aria-live="polite"></div>
+        <div class="row">
+          <button class="btn small" id="pCopy" type="button"><svg class="ico"><use href="#i-copy"/></svg>Sao chép lời khấn</button>
+        </div>
+      </div>
+    </div>
+    <ul class="book" id="book" aria-label="Sổ cầu an đã dâng"></ul>
+  </div>
+</section>
+
+<section class="band alt" id="niem-phat">
+  <div class="in mala-wrap">
+    <div class="mala">
+      <svg viewBox="0 0 300 300" id="malaSvg" aria-hidden="true"></svg>
+      <button class="mala-btn" id="malaBtn" type="button" aria-label="Niệm một câu, tính một hạt">
+        <div><b id="malaNum">0</b><span>trên 108 hạt</span></div>
+      </button>
+    </div>
+    <div class="stack">
+      <div class="sec-head" style="margin:0">
+        <p class="eyebrow">Chuỗi 108 hạt</p>
+        <h2>Niệm Phật</h2>
+        <p>Mỗi lần chạm là một câu niệm và một hạt. Đủ 108 hạt thì chuông vang và chuỗi chuyển sang vòng mới.</p>
+      </div>
+      <p class="mantra">Nam mô A Di Đà Phật</p>
+      <div class="stats">
+        <div><b id="malaRounds">0</b><span>vòng đã đủ</span></div>
+        <div><b id="malaTotal">0</b><span>câu tổng cộng</span></div>
+      </div>
+      <div class="row"><button class="btn small" id="malaReset" type="button">Bắt đầu lại</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="tinh-tam">
+  <div class="in breath">
+    <div class="orb-box"><div class="orb" id="orb" aria-live="polite"><div><b id="orbText">Sẵn sàng</b><span id="orbTime">00:00</span></div></div></div>
+    <div class="stack">
+      <div class="sec-head" style="margin:0">
+        <p class="eyebrow">Thiền thở</p>
+        <h2>Ngồi yên vài phút</h2>
+        <p>Hít vào 4 nhịp, thở ra 6 nhịp, theo vòng tròn nở và thu. Chọn thời lượng rồi bắt đầu. Chuông sẽ vang khi hết giờ.</p>
+      </div>
+      <div class="chips" role="group" aria-label="Thời lượng">
+        <button class="chip" type="button" data-min="1" aria-pressed="false">1 phút</button>
+        <button class="chip" type="button" data-min="3" aria-pressed="true">3 phút</button>
+        <button class="chip" type="button" data-min="5" aria-pressed="false">5 phút</button>
+        <button class="chip" type="button" data-min="10" aria-pressed="false">10 phút</button>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="breathBtn" type="button"><svg class="ico"><use href="#i-wind"/></svg>Bắt đầu</button>
+      </div>
+      <p class="mini" id="breathLog"></p>
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="hanh-huong">
+  <div class="in">
+    <div class="sec-head">
+      <p class="eyebrow">Hành hương</p>
+      <h2>Những ngôi chùa nên đến một lần</h2>
+      <p>Đi chùa online giúp giữ nếp sinh hoạt hằng ngày, còn đến tận nơi vẫn là trải nghiệm khác. Đánh dấu chùa bạn muốn đến, bấm Bản đồ để xem đường đi. Giờ mở cửa và lễ hội nên kiểm tra lại trước khi đi.</p>
+    </div>
+    <div class="filters">
+      <label for="pgSearch" style="flex:1;min-width:200px;max-width:300px">Tìm chùa
+        <input type="text" id="pgSearch" placeholder="Tên chùa hoặc nơi ở">
+      </label>
+      <div class="chips" id="pgRegion" role="group" aria-label="Vùng miền">
+        <button class="chip" type="button" data-r="all" aria-pressed="true">Cả nước</button>
+        <button class="chip" type="button" data-r="Bắc" aria-pressed="false">Miền Bắc</button>
+        <button class="chip" type="button" data-r="Trung" aria-pressed="false">Miền Trung</button>
+        <button class="chip" type="button" data-r="Nam" aria-pressed="false">Miền Nam</button>
+        <button class="chip" type="button" data-r="saved" aria-pressed="false">Đã đánh dấu</button>
+      </div>
+    </div>
+    <div class="cards" id="pgCards"></div>
+    <p class="mini" id="pgEmpty" hidden style="margin-top:16px">Không có chùa nào khớp. Thử bỏ bớt từ khóa hoặc đổi vùng miền.</p>
+  </div>
+</section>
+
+<section class="band" id="lich-le">
+  <div class="in">
+    <div class="sec-head">
+      <p class="eyebrow">Lịch âm</p>
+      <h2>Mùng 1, ngày rằm và các ngày vía sắp tới</h2>
+      <p>Ngày được tính theo âm lịch Việt Nam (múi giờ GMT+7) từ ngày hôm nay.</p>
+    </div>
+    <div class="chips" id="evFilter" role="group" aria-label="Lọc ngày" style="margin-bottom:18px">
+      <button class="chip" type="button" data-f="all" aria-pressed="true">Tất cả</button>
+      <button class="chip" type="button" data-f="le" aria-pressed="false">Lễ lớn và ngày vía</button>
+      <button class="chip" type="button" data-f="moc" aria-pressed="false">Mùng 1 và rằm</button>
+    </div>
+    <ol class="events" id="events"></ol>
+  </div>
+</section>
+
+<section class="band alt" id="xu-huong">
+  <div class="in">
+    <div class="sec-head">
+      <p class="eyebrow">Tìm hiểu xu hướng</p>
+      <h2>Vì sao nhiều người đi chùa online</h2>
+      <p>Tóm tắt từ báo chí và trang ứng dụng, viết lại bằng lời của mình. Nội dung đầy đủ nằm ở nguồn đã ghi bên dưới.</p>
+    </div>
+    <div class="trend-grid">
+      <ol class="timeline">
+        <li><time>2020</time><h3>Các chùa mở khóa lễ trực tuyến</h3><p>Trong thời gian dịch bệnh, nhiều cơ sở tự viện tổ chức lễ, tụng kinh qua mạng theo định hướng của Giáo hội Phật giáo Việt Nam, và khuyến khích dùng các kênh chính thống của Giáo hội.</p><span class="src">Báo Sài Gòn Giải Phóng</span></li>
+        <li><time>Đầu 2021</time><h3>Trang "Chùa online" gây chú ý</h3><p>Một website mô phỏng việc đi chùa xuất hiện và được bàn tán vì độ chân thực. Cùng dịp xuân Tân Sửu, Giáo hội thử nghiệm cầu an, công đức trực tuyến tại 12 chùa.</p><span class="src">Báo Đại Đoàn Kết · VOV</span></li>
+        <li><time>Mùa Vu Lan 2021</time><h3>Thuyết pháp và nghi lễ qua mạng thành nếp</h3><p>Nhiều chùa chủ động tìm hình thức sinh hoạt trực tuyến cho Phật tử. Báo chí gọi đây là xu hướng gắn với chuyển đổi số quốc gia.</p><span class="src">Tạp chí Thị trường Tài chính Tiền tệ</span></li>
+        <li><time>Những năm gần đây</time><h3>Cúng giỗ, thắp hương hộ qua dịch vụ</h3><p>Người ở xa nhờ nhân viên dịch vụ dọn mộ, thắp hương rồi chụp ảnh gửi lại. Nhu cầu tăng vào Vu Lan, cuối năm và dịp thanh minh, giá gói khoảng 300 nghìn đến 2 triệu đồng.</p><span class="src">Báo Znews</span></li>
+        <li><time>2025 – 2026</time><h3>Ứng dụng di động chuyên cho việc đi chùa</h3><p>Các ứng dụng như Chùa Tâm An gộp thắp hương cầu an, tụng kinh, sám hối, nghe pháp thoại và lịch Phật vào một chỗ.</p><span class="src">App Store</span></li>
+      </ol>
+      <div class="stack">
+        <div class="note">
+          <h3>Người dùng thường tìm gì</h3>
+          <p>Các ứng dụng đi chùa online thường có chung một nhóm tính năng. Trang này làm theo đúng nhóm đó.</p>
+          <div class="feat"><span>Thắp hương cầu an</span><span>Tụng kinh, niệm Phật</span><span>Chuông, mõ</span><span>Lịch Phật, ngày vía</span><span>Tham quan chùa</span></div>
+        </div>
+        <div class="note">
+          <h3>Trung Quốc: mõ điện tử và hương ảo</h3>
+          <p>Một số ứng dụng cho thắp hương điện tử và gõ mõ số, tự động hoặc bằng tay. Giới trẻ dùng nhiều quanh dịp Tết.</p>
+          <span class="src">VTV, đăng lại trên Báo Lào Cai</span>
+        </div>
+        <div class="note">
+          <h3>Thái Lan và Singapore</h3>
+          <p>Thái Lan có nhiều đường dẫn tụng kinh trực tuyến đêm giao thừa 2026 cho người không đi lại được. Singapore có nghiên cứu về việc cầu nguyện trước màn hình.</p>
+          <span class="src">Thairath · NUS</span>
+        </div>
+        <div class="note">
+          <h3>Ý kiến từ phía Giáo hội</h3>
+          <p>Một vị thượng tọa cho rằng đến chùa vẫn là nhu cầu của người dân. Nghi lễ trực tuyến được rút gọn nhưng vẫn truyền được thông điệp chính.</p>
+          <span class="src">Báo Pháp luật</span>
+        </div>
+      </div>
+    </div>
+    <div class="sources">
+      <b>Nguồn tham khảo</b>
+      <ul>
+        <li><a href="https://www.sggp.org.vn/le-chua-truc-tuyen-714792.html" target="_blank" rel="noopener">Lễ chùa trực tuyến, Báo Sài Gòn Giải Phóng</a></li>
+        <li><a href="https://daidoanket.vn/bien-tuong-le-chua-online-bai-2-khi-van-hoa-tam-linh-cung-ao-10216401.html" target="_blank" rel="noopener">Biến tướng lễ chùa online, Báo Đại Đoàn Kết</a></li>
+        <li><a href="https://vov.vn/xa-hoi/giao-hoi-phat-giao-viet-nam-noi-ve-cung-duong-online-838971.vov" target="_blank" rel="noopener">Giáo hội Phật giáo Việt Nam nói về cúng dường online, VOV</a></li>
+        <li><a href="https://baophapluat.vn/xu-the-cung-duong-online-cau-an-truc-tuyen-post382965.html" target="_blank" rel="noopener">Xu thế cúng dường online, cầu an trực tuyến, Báo Pháp luật</a></li>
+        <li><a href="https://thitruongtaichinhtiente.vn/mua-vu-lan-trong-boi-canh-dai-dich-covid-19-thuc-hien-nghi-thuc-truc-tuyen-36718.html" target="_blank" rel="noopener">Mùa Vu Lan và nghi thức trực tuyến, Tạp chí Thị trường Tài chính Tiền tệ</a></li>
+        <li><a href="https://znews.vn/no-ro-dich-vu-cung-online-post1582692.html" target="_blank" rel="noopener">Nở rộ dịch vụ cúng online, Znews</a></li>
+        <li><a href="https://baolaocai.vn/xu-huong-le-phat-truc-tuyen-no-ro-trong-gioi-tre-trung-quoc-post894158.html" target="_blank" rel="noopener">Xu hướng lễ Phật trực tuyến trong giới trẻ Trung Quốc, Báo Lào Cai</a></li>
+        <li><a href="https://en.thairath.co.th/lifestyle/life/2905125" target="_blank" rel="noopener">Online New Year's Eve chanting 2026, Thairath Online</a></li>
+        <li><a href="https://apps.apple.com/us/app/-/id6747811325" target="_blank" rel="noopener">Đi Chùa Online, Chùa Tâm An, App Store</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="an-toan">
+  <div class="in">
+    <div class="sec-head">
+      <p class="eyebrow">Lưu ý</p>
+      <h2>Đi chùa online an toàn</h2>
+      <p>Báo chí từng ghi nhận các trang mạng xã hội giả mạo chùa để kêu gọi cúng dường qua ví điện tử. Trang này không nhận tiền. Nếu muốn cúng dường, hãy làm theo các bước dưới đây.</p>
+    </div>
+    <ul class="safe">
+      <li><svg class="ico"><use href="#i-shield"/></svg><h3>Xác minh kênh của chùa</h3><p>Gọi hoặc hỏi trực tiếp ban trị sự chùa, hoặc dùng kênh chính thức do Giáo hội công bố, trước khi chuyển bất kỳ khoản nào.</p></li>
+      <li><svg class="ico"><use href="#i-shield"/></svg><h3>Đọc kỹ tên người nhận</h3><p>Tên tài khoản hoặc ví phải đúng tên chùa hay ban quản trị. Tên cá nhân lạ là dấu hiệu cần dừng lại.</p></li>
+      <li><svg class="ico"><use href="#i-shield"/></svg><h3>Không chia sẻ mã OTP</h3><p>Không nhập mật khẩu, mã OTP hay thông tin thẻ vào trang nào tự xưng là của chùa.</p></li>
+      <li><svg class="ico"><use href="#i-shield"/></svg><h3>Không hối thúc</h3><p>Lời kêu gọi "chỉ hôm nay", "để tránh vận xấu" là chiêu thường gặp. Việc cúng dường luôn có thể chờ đến khi bạn đã kiểm tra.</p></li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="in">
+    <p><b>Đi Chùa Online</b> là trang để thực hành tĩnh tâm tại nhà. Trang không thu tiền, không thu thập thông tin cá nhân và không thay thế việc đến chùa.</p>
+    <p>Lịch âm tính theo thuật toán của Hồ Ngọc Đức. Thông tin các ngôi chùa chỉ mang tính tham khảo.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('dco.' + k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('dco.' + k, JSON.stringify(v)); }catch(e){} }
+};
+const pad = n => String(n).padStart(2, '0');
+function todayKey(){ const d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function dayCount(name){ const o = store.get(name, null); return o && o.date === todayKey() ? o.n : 0; }
+function setDayCount(name, n){ store.set(name, { date: todayKey(), n: n }); }
+let toastTimer;
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2400); }
+function pulse(el){ if(!el) return; el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); }
+
+/*LUNAR-START*/
+function INT(d){ return Math.floor(d); }
+function jdFromDate(dd, mm, yy){
+  const a = INT((14 - mm) / 12), y = yy + 4800 - a, m = mm + 12 * a - 3;
+  return dd + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - INT(y / 100) + INT(y / 400) - 32045;
+}
+function getNewMoonDay(k, tz){
+  const T = k / 1236.85, T2 = T * T, T3 = T2 * T, dr = Math.PI / 180;
+  let Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+  Jd1 = Jd1 + 0.00033 * Math.sin((166.56 + 132.87 * T - 0.009173 * T2) * dr);
+  const M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;
+  const Mpr = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;
+  const F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;
+  let C1 = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M);
+  C1 = C1 - 0.4068 * Math.sin(Mpr * dr) + 0.0161 * Math.sin(dr * 2 * Mpr);
+  C1 = C1 - 0.0004 * Math.sin(dr * 3 * Mpr);
+  C1 = C1 + 0.0104 * Math.sin(dr * 2 * F) - 0.0051 * Math.sin(dr * (M + Mpr));
+  C1 = C1 - 0.0074 * Math.sin(dr * (M - Mpr)) + 0.0004 * Math.sin(dr * (2 * F + M));
+  C1 = C1 - 0.0004 * Math.sin(dr * (2 * F - M)) - 0.0006 * Math.sin(dr * (2 * F + Mpr));
+  C1 = C1 + 0.0010 * Math.sin(dr * (2 * F - Mpr)) + 0.0005 * Math.sin(dr * (2 * Mpr + M));
+  let deltat;
+  if (T < -11) deltat = 0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3 - 0.000000081 * T * T3;
+  else deltat = -0.000278 + 0.000265 * T + 0.000262 * T2;
+  return INT(Jd1 + C1 - deltat + 0.5 + tz / 24);
+}
+function getSunLongitude(jdn, tz){
+  const T = (jdn - 2451545.5 - tz / 24) / 36525, T2 = T * T, dr = Math.PI / 180;
+  const M = 357.52910 + 35999.05030 * T - 0.0001559 * T2 - 0.00000048 * T * T2;
+  const L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;
+  let DL = (1.914600 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M);
+  DL = DL + (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) + 0.000290 * Math.sin(dr * 3 * M);
+  let L = (L0 + DL) * dr;
+  L = L - Math.PI * 2 * INT(L / (Math.PI * 2));
+  return INT(L / Math.PI * 6);
+}
+function getLunarMonth11(yy, tz){
+  const off = jdFromDate(31, 12, yy) - 2415021;
+  const k = INT(off / 29.530588853);
+  let nm = getNewMoonDay(k, tz);
+  if (getSunLongitude(nm, tz) >= 9) nm = getNewMoonDay(k - 1, tz);
+  return nm;
+}
+function getLeapMonthOffset(a11, tz){
+  const k = INT((a11 - 2415021.076998695) / 29.530588853 + 0.5);
+  let last = 0, i = 1, arc = getSunLongitude(getNewMoonDay(k + i, tz), tz);
+  do { last = arc; i++; arc = getSunLongitude(getNewMoonDay(k + i, tz), tz); } while (arc != last && i < 14);
+  return i - 1;
+}
+function convertSolar2Lunar(dd, mm, yy, tz){
+  const dayNumber = jdFromDate(dd, mm, yy);
+  const k = INT((dayNumber - 2415021.076998695) / 29.530588853);
+  let monthStart = getNewMoonDay(k + 1, tz);
+  if (monthStart > dayNumber) monthStart = getNewMoonDay(k, tz);
+  let a11 = getLunarMonth11(yy, tz), b11 = a11, lunarYear;
+  if (a11 >= monthStart){ lunarYear = yy; a11 = getLunarMonth11(yy - 1, tz); }
+  else { lunarYear = yy + 1; b11 = getLunarMonth11(yy + 1, tz); }
+  const lunarDay = dayNumber - monthStart + 1;
+  const diff = INT((monthStart - a11) / 29);
+  let lunarLeap = 0, lunarMonth = diff + 11;
+  if (b11 - a11 > 365){
+    const leapMonthDiff = getLeapMonthOffset(a11, tz);
+    if (diff >= leapMonthDiff){ lunarMonth = diff + 10; if (diff == leapMonthDiff) lunarLeap = 1; }
+  }
+  if (lunarMonth > 12) lunarMonth -= 12;
+  if (lunarMonth >= 11 && diff < 4) lunarYear -= 1;
+  return [lunarDay, lunarMonth, lunarYear, lunarLeap];
+}
+/*LUNAR-END*/
+
+const CAN = ['Canh','Tân','Nhâm','Quý','Giáp','Ất','Bính','Đinh','Mậu','Kỷ'];
+const CHI = ['Thân','Dậu','Tuất','Hợi','Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi'];
+const canChi = y => CAN[y % 10] + ' ' + CHI[y % 12];
+const monthName = m => m === 1 ? 'Giêng' : m === 12 ? 'Chạp' : String(m);
+const WD = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+const fmtDate = d => pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear();
+function lunarOf(d){ return convertSolar2Lunar(d.getDate(), d.getMonth() + 1, d.getFullYear(), 7); }
+function lunarText(d){ const [ld, lm, ly, lp] = lunarOf(d); return 'ngày ' + ld + ' tháng ' + monthName(lm) + (lp ? ' nhuận' : '') + ' năm ' + canChi(ly); }
+
+/* ---------- header, date ---------- */
+const NOW = new Date();
+{
+  const [ld, lm, ly, lp] = lunarOf(NOW);
+  $('solarToday').textContent = WD[NOW.getDay()] + ', ' + fmtDate(NOW);
+  $('lunarDay').textContent = ld;
+  $('lunarMonth').textContent = 'Tháng ' + monthName(lm) + (lp ? ' nhuận' : '') + ' âm lịch';
+  $('lunarYear').textContent = 'Năm ' + canChi(ly);
+}
+
+/* ---------- theme, mute ---------- */
+const rootEl = document.documentElement;
+const darkMQ = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
+function isDark(){ const t = rootEl.getAttribute('data-theme'); return t ? t === 'dark' : !!(darkMQ && darkMQ.matches); }
+{ const saved = store.get('theme', null); if (saved) rootEl.setAttribute('data-theme', saved); }
+$('themeBtn').addEventListener('click', () => { const next = isDark() ? 'light' : 'dark'; rootEl.setAttribute('data-theme', next); store.set('theme', next); readPal(); });
+let muted = store.get('muted', false);
+function paintMute(){ $('muteBtn').setAttribute('aria-pressed', String(muted)); $('muteBtn').setAttribute('aria-label', muted ? 'Bật âm thanh' : 'Tắt âm thanh'); $('muteBtn').firstElementChild.firstElementChild.setAttribute('href', muted ? '#i-mute' : '#i-sound'); }
+paintMute();
+$('muteBtn').addEventListener('click', () => { muted = !muted; store.set('muted', muted); paintMute(); toast(muted ? 'Đã tắt âm thanh' : 'Đã bật âm thanh'); });
+
+/* ---------- audio ---------- */
+let AC = null;
+function audio(){
+  if (muted) return null;
+  try{
+    if (!AC){ const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; AC = new C(); }
+    if (AC.state === 'suspended') AC.resume();
+    return AC;
+  }catch(e){ return null; }
+}
+function bell(strength){
+  const a = audio(); if (!a) return;
+  const t = a.currentTime, base = 174.6, master = a.createGain();
+  master.gain.value = 0.5 * (strength || 1); master.connect(a.destination);
+  [[1, .55, 7], [2, .22, 5], [2.76, .2, 4], [4.1, .1, 3], [5.4, .07, 2.2]].forEach(p => {
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine'; o.frequency.value = base * p[0] * (1 + (Math.random() - .5) * .002);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(p[1], t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + p[2]);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + p[2] + .05);
+  });
+}
+function moc(vol){
+  const a = audio(); if (!a) return;
+  const t = a.currentTime, v = vol || 1;
+  // thân gỗ rỗng: ba tần số ngắn, tắt nhanh để nghe "cốc"
+  [[820, .75, .09], [1250, .3, .06], [410, .45, .14]].forEach(p => {
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(p[0] * 1.08, t); o.frequency.exponentialRampToValueAtTime(p[0], t + .02);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(p[1] * v, t + .002); g.gain.exponentialRampToValueAtTime(.0001, t + p[2]);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + p[2] + .02);
+  });
+  // tiếng dùi gõ vào gỗ
+  const len = Math.floor(a.sampleRate * .03), buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+  const n = a.createBufferSource(); n.buffer = buf;
+  const bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1800; bp.Q.value = 1.2;
+  const ng = a.createGain(); ng.gain.value = .6 * v;
+  n.connect(bp); bp.connect(ng); ng.connect(a.destination); n.start(t);
+}
+
+/* ---------- altar canvas ---------- */
+const cv = $('altar'), g = cv.getContext('2d');
+let W = 300, H = 300, S = 1, pal = {};
+function readPal(){
+  const cs = getComputedStyle(rootEl);
+  pal = { wood: cs.getPropertyValue('--wood').trim(), lotus: cs.getPropertyValue('--lotus').trim(), accent: cs.getPropertyValue('--accent').trim(), smoke: cs.getPropertyValue('--smoke-rgb').trim() || '70,82,76', dark: isDark() };
+}
+function resize(){
+  const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+  W = Math.max(200, r.width); H = W; S = W / 420;
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+let sticks = [], smoke = [], lampOn = false, lotusOn = false;
+const BURN = 200;
+function sticksPos(){
+  const n = sticks.length, sp = Math.min(0.036, 0.26 / Math.max(1, n - 1)) * W;
+  return sticks.map((s, i) => ({ s, x: W * .5 + (i - (n - 1) / 2) * sp, lean: (i - (n - 1) / 2) * 0.012 }));
+}
+function lightIncense(n){
+  const room = 9 - sticks.length;
+  if (room < n) sticks = sticks.slice(n - room);
+  const now = performance.now() / 1000;
+  for (let i = 0; i < n; i++) sticks.push({ born: now + i * .05, seed: Math.random() });
+  setDayCount('incense', dayCount('incense') + n);
+  paintIncenseCount(); bell(.6);
+}
+function paintIncenseCount(){
+  const c = dayCount('incense');
+  $('incenseCount').textContent = c ? 'Hôm nay bạn đã thắp ' + c + ' nén hương.' : 'Bấm "Thắp 3 nén hương" để bắt đầu. Hương cháy khoảng ba phút.';
+}
+function roundRectPath(x, y, w, h, r){ g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+function drawLamp(cx, t, seed){
+  const y = H * .84;
+  g.fillStyle = '#9c6a2e'; g.beginPath(); g.moveTo(cx - 20 * S, y - 20 * S); g.quadraticCurveTo(cx, y - 3 * S, cx + 20 * S, y - 20 * S); g.closePath(); g.fill();
+  g.fillStyle = '#7a5022'; g.fillRect(cx - 3 * S, y - 10 * S, 6 * S, 10 * S); g.fillRect(cx - 14 * S, y - 3 * S, 28 * S, 3 * S);
+  if (!lampOn) return;
+  const fl = 1 + (reduce ? 0 : .12 * Math.sin(t * 9 + seed) + .06 * Math.sin(t * 23 + seed * 3));
+  const fy = y - 22 * S;
+  const gl = g.createRadialGradient(cx, fy, 0, cx, fy, 80 * S);
+  gl.addColorStop(0, 'rgba(255,190,80,.38)'); gl.addColorStop(1, 'rgba(255,190,80,0)');
+  g.fillStyle = gl; g.fillRect(cx - 90 * S, fy - 90 * S, 180 * S, 180 * S);
+  g.save(); g.translate(cx, fy); g.scale(1, fl);
+  g.fillStyle = '#ffb43a'; g.beginPath(); g.moveTo(0, -26 * S); g.quadraticCurveTo(11 * S, -8 * S, 6 * S, 0); g.quadraticCurveTo(0, 5 * S, -6 * S, 0); g.quadraticCurveTo(-11 * S, -8 * S, 0, -26 * S); g.fill();
+  g.fillStyle = '#fff2c0'; g.beginPath(); g.moveTo(0, -14 * S); g.quadraticCurveTo(5 * S, -5 * S, 3 * S, 0); g.quadraticCurveTo(0, 2 * S, -3 * S, 0); g.quadraticCurveTo(-5 * S, -5 * S, 0, -14 * S); g.fill();
+  g.restore();
+}
+function drawLotus(cx){
+  const y = H * .84;
+  g.fillStyle = '#b9a07a'; g.beginPath(); g.moveTo(cx - 12 * S, y - 28 * S); g.lineTo(cx + 12 * S, y - 28 * S); g.lineTo(cx + 9 * S, y); g.lineTo(cx - 9 * S, y); g.closePath(); g.fill();
+  if (!lotusOn) return;
+  g.strokeStyle = '#4f7a50'; g.lineWidth = 3 * S; g.lineCap = 'round';
+  g.beginPath(); g.moveTo(cx, y - 28 * S); g.lineTo(cx, y - 70 * S); g.stroke();
+  const by = y - 78 * S;
+  [-52, -26, 0, 26, 52].forEach((a, i) => {
+    g.save(); g.translate(cx, by + 8 * S); g.rotate(a * Math.PI / 180);
+    g.fillStyle = i === 2 ? pal.lotus : pal.lotus; g.globalAlpha = i === 2 ? 1 : .82;
+    g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(11 * S, -16 * S, 0, -34 * S); g.quadraticCurveTo(-11 * S, -16 * S, 0, 0); g.fill();
+    g.restore();
+  });
+  g.globalAlpha = 1; g.fillStyle = '#ffd36b'; g.beginPath(); g.arc(cx, by + 4 * S, 3.500 * S, 0, 7); g.fill();
+}
+let last = performance.now() / 1000, palTick = 0;
+function frame(){
+  requestAnimationFrame(frame);
+  const t = performance.now() / 1000, dt = Math.min(.05, t - last); last = t;
+  if (++palTick % 40 === 0) readPal();
+  g.clearRect(0, 0, W, H);
+  if (lampOn){ const gl = g.createRadialGradient(W / 2, H * .6, 0, W / 2, H * .6, W * .65); gl.addColorStop(0, 'rgba(255,170,70,.14)'); gl.addColorStop(1, 'rgba(255,170,70,0)'); g.fillStyle = gl; g.fillRect(0, 0, W, H); }
+  // table
+  g.fillStyle = pal.wood; roundRectPath(W * .03, H * .84, W * .94, H * .045, 6 * S); g.fill();
+  g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(W * .05, H * .885, W * .9, 3 * S);
+  drawLamp(W * .10, t, 1); drawLamp(W * .90, t, 4); drawLotus(W * .25); drawLotus(W * .75);
+  // censer
+  const cx = W / 2, rimY = H * .70;
+  g.fillStyle = '#6e4a22';
+  g.beginPath(); g.moveTo(cx - W * .17, rimY); g.bezierCurveTo(cx - W * .19, rimY + H * .09, cx - W * .12, rimY + H * .13, cx - W * .09, rimY + H * .135); g.lineTo(cx + W * .09, rimY + H * .135); g.bezierCurveTo(cx + W * .12, rimY + H * .13, cx + W * .19, rimY + H * .09, cx + W * .17, rimY); g.closePath(); g.fill();
+  g.fillRect(cx - W * .11, rimY + H * .13, 10 * S, 8 * S); g.fillRect(cx + W * .11 - 10 * S, rimY + H * .13, 10 * S, 8 * S);
+  const br = g.createLinearGradient(cx - W * .17, 0, cx + W * .17, 0);
+  br.addColorStop(0, 'rgba(255,220,150,0)'); br.addColorStop(.35, 'rgba(255,220,150,.28)'); br.addColorStop(1, 'rgba(0,0,0,.25)');
+  g.fillStyle = br; g.fillRect(cx - W * .19, rimY, W * .38, H * .14);
+  g.fillStyle = '#a87a3c'; g.beginPath(); g.ellipse(cx, rimY, W * .17, H * .03, 0, 0, 7); g.fill();
+  g.fillStyle = '#6b6258'; g.beginPath(); g.ellipse(cx, rimY, W * .15, H * .022, 0, 0, 7); g.fill();
+  // sticks
+  const nowS = performance.now() / 1000;
+  sticks = sticks.filter(s => nowS - s.born < BURN);
+  const pos = sticksPos(), L0 = H * .34;
+  pos.forEach(({ s, x, lean }) => {
+    const age = Math.max(0, nowS - s.born), burn = age / BURN, len = L0 * (1 - burn * .92);
+    const bx = x, by = rimY - 2 * S, tx = bx + Math.sin(lean) * len, ty = by - Math.cos(lean) * len;
+    g.strokeStyle = '#8b3a22'; g.lineWidth = 2.200 * S; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(bx, by); g.lineTo(tx, ty); g.stroke();
+    g.strokeStyle = '#4a4540'; g.lineWidth = 2.300 * S;
+    g.beginPath(); g.moveTo(tx, ty); g.lineTo(tx - Math.sin(lean) * 5 * S, ty + Math.cos(lean) * 5 * S); g.stroke();
+    const em = g.createRadialGradient(tx, ty, 0, tx, ty, 9 * S);
+    em.addColorStop(0, 'rgba(255,140,40,.85)'); em.addColorStop(1, 'rgba(255,90,20,0)');
+    g.fillStyle = em; g.beginPath(); g.arc(tx, ty, 9 * S, 0, 7); g.fill();
+    g.fillStyle = '#ffd7a0'; g.beginPath(); g.arc(tx, ty, 1.500 * S, 0, 7); g.fill();
+    s.acc = (s.acc || 0) + dt * (reduce ? 3 : 9);
+    while (s.acc >= 1 && smoke.length < 520){ s.acc -= 1; smoke.push({ x: tx, y: ty, age: 0, life: 6 + Math.random() * 2.500, seed: Math.random(), px: tx }); }
+    if (s.acc > 1) s.acc = 0;
+  });
+  // smoke
+  const sr = pal.smoke || '70,82,76';
+  smoke = smoke.filter(p => p.age < p.life);
+  smoke.forEach(p => {
+    p.age += dt;
+    p.y -= (30 + p.seed * 12) * S * dt;
+    p.x += (Math.sin(p.age * 1.5 + p.seed * 6.280) * 9 + Math.sin(p.age * .6) * 4) * S * dt;
+    const k = p.age / p.life, a = .2 * Math.pow(1 - k, 1.5) * Math.min(1, p.age * 3);
+    g.fillStyle = 'rgba(' + sr + ',' + a.toFixed(3) + ')';
+    g.beginPath(); g.arc(p.x, p.y, (2 + p.age * 4.200) * S, 0, 7); g.fill();
+  });
+}
+$('ctaLight').addEventListener('click', () => { lightIncense(3); setLamp(true); $('altar').scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' }); });
+$('btnIncense').addEventListener('click', () => lightIncense(1));
+function setLamp(v){ lampOn = v; $('btnLamp').setAttribute('aria-pressed', String(v)); }
+function setLotus(v){ lotusOn = v; $('btnLotus').setAttribute('aria-pressed', String(v)); }
+$('btnLamp').addEventListener('click', () => setLamp(!lampOn));
+$('btnLotus').addEventListener('click', () => setLotus(!lotusOn));
+$('btnClear').addEventListener('click', () => { sticks = []; smoke = []; setLamp(false); setLotus(false); });
+sticks = [];
+readPal(); resize(); paintIncenseCount();
+if (window.ResizeObserver) new ResizeObserver(resize).observe(cv); else window.addEventListener('resize', resize);
+requestAnimationFrame(frame);
+setLamp(true); setLotus(true);
+
+/* ---------- bell & moc ---------- */
+let bells = dayCount('bells');
+function paintBell(){ $('bellCount').textContent = bells ? 'Hôm nay đã thỉnh ' + bells + ' tiếng chuông.' : ''; }
+function ring(n){ for (let i = 0; i < n; i++){ setTimeout(() => { bell(1); bells++; setDayCount('bells', bells); paintBell(); pulse($('bellBtn')); }, i * 2600); } }
+$('bellBtn').addEventListener('click', () => ring(1));
+$('bell3Btn').addEventListener('click', () => ring(3));
+paintBell();
+let mocN = dayCount('moc');
+function paintMoc(){ $('mocCount').textContent = mocN; $('mocBar').style.width = Math.min(100, mocN / 108 * 100) + '%'; }
+function hitMoc(){ moc(1); mocN++; setDayCount('moc', mocN); paintMoc(); pulse($('mocBtn')); if (mocN === 108) toast('Đủ 108 tiếng mõ hôm nay'); }
+$('mocBtn').addEventListener('click', hitMoc);
+$('mocReset').addEventListener('click', () => { mocN = 0; setDayCount('moc', 0); paintMoc(); });
+let mocTimer = null;
+function restartAuto(){ clearInterval(mocTimer); mocTimer = null; if ($('mocAuto').getAttribute('aria-pressed') === 'true') mocTimer = setInterval(hitMoc, 60000 / Number($('bpm').value)); }
+$('mocAuto').addEventListener('click', () => { const on = $('mocAuto').getAttribute('aria-pressed') !== 'true'; $('mocAuto').setAttribute('aria-pressed', String(on)); $('mocAuto').textContent = on ? 'Dừng gõ' : 'Gõ tự động'; restartAuto(); });
+$('bpm').addEventListener('input', () => { $('bpmVal').textContent = $('bpm').value; restartAuto(); });
+paintMoc();
+
+/* ---------- cau an ---------- */
+const INTENT = {
+  binhan: ['Bình an cho gia đình', 'cho bản thân và gia đình được bình an'],
+  suckhoe: ['Sức khỏe cho người thân', 'cho người thân được mạnh khỏe'],
+  hoctap: ['Học hành, thi cử', 'cho việc học hành, thi cử được thuận lợi'],
+  congviec: ['Công việc, làm ăn', 'cho công việc, làm ăn được hanh thông'],
+  giadao: ['Gia đạo hòa thuận', 'cho gia đạo được hòa thuận, êm ấm'],
+  hoihuong: ['Hồi hướng', 'hồi hướng công đức đến ông bà, cha mẹ và những người đã khuất']
+};
+function prayText(){
+  const name = $('pName').value.trim() || '(họ tên của bạn)', it = INTENT[$('pIntent').value], note = $('pNote').value.trim();
+  return 'Nam mô A Di Đà Phật.\nHôm nay là ' + lunarText(new Date()) + ' (dương lịch ' + fmtDate(new Date()) + ').\nCon tên là ' + name + ', thành tâm dâng nén hương trước Tam Bảo, nguyện ' + it[1] + '.' + (note ? '\n' + note : '') + '\nCúi xin Tam Bảo từ bi gia hộ.\nNam mô A Di Đà Phật.';
+}
+function paintPreview(){ $('pPreview').textContent = prayText(); }
+['pName', 'pIntent', 'pNote'].forEach(id => $(id).addEventListener('input', paintPreview));
+let book = store.get('book', []);
+function paintBook(){
+  const ul = $('book'); ul.textContent = '';
+  if (!book.length){ const li = document.createElement('li'); li.className = 'empty'; li.textContent = 'Sổ còn trống. Lời nguyện bạn dâng sẽ hiện ở đây.'; ul.appendChild(li); return; }
+  book.forEach((e, i) => {
+    const li = document.createElement('li'); li.className = 'entry';
+    const m = document.createElement('div'); m.className = 'meta'; m.textContent = e.date + ' · ' + e.lunar + ' · ' + INTENT[e.intent][0];
+    const p = document.createElement('p'); p.textContent = (e.name ? e.name + ': ' : '') + (e.note || 'Xin bình an.');
+    const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Xóa lời nguyện này'); b.innerHTML = '<svg class="ico"><use href="#i-x"/></svg>';
+    b.addEventListener('click', () => { book.splice(i, 1); store.set('book', book); paintBook(); });
+    li.append(m, p, b); ul.appendChild(li);
+  });
+}
+$('prayForm').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const d = new Date();
+  book.unshift({ name: $('pName').value.trim(), intent: $('pIntent').value, note: $('pNote').value.trim(), date: fmtDate(d), lunar: lunarText(d) });
+  book = book.slice(0, 40); store.set('book', book); paintBook();
+  if (!sticks.length) lightIncense(3); else bell(.7);
+  $('pNote').value = ''; paintPreview();
+  toast('Đã dâng lời nguyện vào sổ');
+});
+$('pCopy').addEventListener('click', () => {
+  const txt = prayText(), fallback = () => { const r = document.createRange(); r.selectNodeContents($('pPreview')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Đã chọn văn bản, hãy chép thủ công'); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(() => toast('Đã sao chép lời khấn'), fallback); else fallback();
+});
+paintPreview(); paintBook();
+
+/* ---------- mala ---------- */
+{
+  const svg = $('malaSvg'), NS = 'http://www.w3.org/2000/svg';
+  for (let i = 0; i < 108; i++){
+    const a = (-90 + i * 360 / 108) * Math.PI / 180, c = document.createElementNS(NS, 'circle');
+    c.setAttribute('cx', (150 + 128 * Math.cos(a)).toFixed(2)); c.setAttribute('cy', (150 + 128 * Math.sin(a)).toFixed(2)); c.setAttribute('r', i === 0 ? 6 : 3.600); c.setAttribute('class', 'bead');
+    svg.appendChild(c);
+  }
+}
+let mala = store.get('mala', { beads: 0, rounds: 0, total: 0 });
+function paintMala(){
+  const beads = svgBeads();
+  beads.forEach((c, i) => c.classList.toggle('on', i < mala.beads));
+  $('malaNum').textContent = mala.beads; $('malaRounds').textContent = mala.rounds; $('malaTotal').textContent = mala.total;
+}
+function svgBeads(){ return $('malaSvg').querySelectorAll('circle'); }
+$('malaBtn').addEventListener('click', () => {
+  if (mala.beads >= 108) mala.beads = 0;
+  mala.beads++; mala.total++; moc(.5);
+  if (mala.beads === 108){ mala.rounds++; bell(.8); toast('Đủ một vòng 108 hạt'); }
+  store.set('mala', mala); paintMala(); pulse($('malaNum'));
+});
+$('malaReset').addEventListener('click', () => { mala = { beads: 0, rounds: 0, total: 0 }; store.set('mala', mala); paintMala(); });
+paintMala();
+
+/* ---------- breathing ---------- */
+{
+  let minutes = 3, timer = null, endAt = 0, phaseTimer = null, running = false;
+  const orb = $('orb');
+  const fmt = s => pad(Math.floor(s / 60)) + ':' + pad(Math.floor(s % 60));
+  document.querySelectorAll('[data-min]').forEach(b => b.addEventListener('click', () => {
+    if (running) return;
+    minutes = Number(b.dataset.min);
+    document.querySelectorAll('[data-min]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    $('orbTime').textContent = fmt(minutes * 60);
+  }));
+  $('orbTime').textContent = fmt(minutes * 60);
+  function phase(inhale){
+    if (!running) return;
+    const d = inhale ? 4 : 6;
+    orb.style.transition = reduce ? 'none' : 'transform ' + d + 's ease-in-out';
+    orb.style.transform = 'scale(' + (inhale ? 1 : .62) + ')';
+    $('orbText').textContent = inhale ? 'Hít vào' : 'Thở ra';
+    phaseTimer = setTimeout(() => phase(!inhale), d * 1000);
+  }
+  function stop(done){
+    running = false; clearInterval(timer); clearTimeout(phaseTimer);
+    orb.style.transform = 'scale(.62)'; $('orbText').textContent = done ? 'Hoàn thành' : 'Sẵn sàng'; $('orbTime').textContent = fmt(minutes * 60);
+    $('breathBtn').lastChild.textContent = 'Bắt đầu';
+    if (done){ bell(1); const n = store.get('sitMin', { date: todayKey(), n: 0 }); const total = (n.date === todayKey() ? n.n : 0) + minutes; store.set('sitMin', { date: todayKey(), n: total }); $('breathLog').textContent = 'Hôm nay bạn đã ngồi ' + total + ' phút.'; }
+  }
+  $('breathBtn').addEventListener('click', () => {
+    if (running){ stop(false); return; }
+    running = true; endAt = Date.now() + minutes * 60000; $('breathBtn').lastChild.textContent = 'Dừng lại'; bell(.7);
+    phase(true);
+    timer = setInterval(() => { const left = Math.max(0, Math.round((endAt - Date.now()) / 1000)); $('orbTime').textContent = fmt(left); if (left <= 0) stop(true); }, 250);
+  });
+  const sm = store.get('sitMin', null); if (sm && sm.date === todayKey()) $('breathLog').textContent = 'Hôm nay bạn đã ngồi ' + sm.n + ' phút.';
+}
+
+/* ---------- pagodas ---------- */
+const PAGODAS = [
+  { n: 'Chùa Bái Đính', p: 'Ninh Bình', r: 'Bắc', t: 'thap', d: 'Quần thể chùa lớn bậc nhất Đông Nam Á. Nổi tiếng với tượng Phật Thích Ca bằng đồng và hành lang 500 vị La Hán. Hay đi kèm một chuyến thuyền Tràng An.', m: 'Chùa Bái Đính Ninh Bình' },
+  { n: 'Chùa Hương', p: 'Mỹ Đức, Hà Nội', r: 'Bắc', t: 'mai', d: 'Đi thuyền trên suối Yến rồi vào động Hương Tích. Lễ hội mùa xuân kéo dài từ đầu tháng Giêng đến hết tháng Ba âm lịch.', m: 'Chùa Hương Mỹ Đức Hà Nội' },
+  { n: 'Chùa Trấn Quốc', p: 'Hồ Tây, Hà Nội', r: 'Bắc', t: 'thap', d: 'Một trong những ngôi chùa cổ nhất Thăng Long, nằm trên đảo nhỏ bên Hồ Tây, có bảo tháp nhiều tầng.', m: 'Chùa Trấn Quốc Hà Nội' },
+  { n: 'Chùa Một Cột', p: 'Ba Đình, Hà Nội', r: 'Bắc', t: 'mai', d: 'Dựng năm 1049 thời vua Lý Thái Tông, có kiến trúc như một đóa sen nở trên một cột đá giữa hồ vuông.', m: 'Chùa Một Cột Hà Nội' },
+  { n: 'Chùa Hà', p: 'Cầu Giấy, Hà Nội', r: 'Bắc', t: 'mai', d: 'Được nhiều bạn trẻ tìm đến đầu năm để cầu duyên. Đông nhất vào dịp Tết và ngày rằm, nên đi sớm.', m: 'Chùa Hà Cầu Giấy Hà Nội' },
+  { n: 'Trúc Lâm Yên Tử', p: 'Quảng Ninh', r: 'Bắc', t: 'thap', d: 'Nơi Phật hoàng Trần Nhân Tông tu hành và sáng lập Thiền phái Trúc Lâm. Đường lên núi dài, hợp với người thích đi bộ.', m: 'Chùa Yên Tử Quảng Ninh' },
+  { n: 'Chùa Thiên Mụ', p: 'Huế', r: 'Trung', t: 'thap', d: 'Dựng năm 1601 bên bờ sông Hương, nổi bật với tháp Phước Duyên bảy tầng. Chiều muộn là lúc yên tĩnh nhất.', m: 'Chùa Thiên Mụ Huế' },
+  { n: 'Chùa Linh Ứng Bãi Bụt', p: 'Sơn Trà, Đà Nẵng', r: 'Trung', t: 'tuong', d: 'Có tượng Quan Thế Âm cao 67 m nhìn ra biển, nằm trên bán đảo Sơn Trà.', m: 'Chùa Linh Ứng Bãi Bụt Đà Nẵng' },
+  { n: 'Chùa Giác Lâm', p: 'Tân Bình, TP. Hồ Chí Minh', r: 'Nam', t: 'mai', d: 'Khởi dựng năm 1744, thuộc nhóm chùa cổ nhất Sài Gòn. Mái gỗ, tượng và hoành phi còn giữ nhiều nét xưa.', m: 'Chùa Giác Lâm Tân Bình' },
+  { n: 'Chùa Bà Núi Bà Đen', p: 'Tây Ninh', r: 'Nam', t: 'tuong', d: 'Chùa trên núi Bà Đen, có cáp treo lên cao và tượng Phật Bà Tây Bổ Đà Sơn cao 72 m trên đỉnh.', m: 'Núi Bà Đen Tây Ninh' }
+];
+const PG_TAG = { thap: 'Tháp', mai: 'Chùa cổ', tuong: 'Tượng Phật' };
+let pgRegion = 'all', pgSaved = store.get('saved', []);
+function paintPagodas(){
+  const q = $('pgSearch').value.trim().toLowerCase(), box = $('pgCards'); box.textContent = '';
+  const list = PAGODAS.filter(x => (pgRegion === 'all' || (pgRegion === 'saved' ? pgSaved.includes(x.n) : x.r === pgRegion)) && (!q || (x.n + ' ' + x.p).toLowerCase().includes(q)));
+  $('pgEmpty').hidden = list.length > 0;
+  list.forEach(x => {
+    const saved = pgSaved.includes(x.n), c = document.createElement('article'); c.className = 'card';
+    c.innerHTML = '<div class="plate"><svg viewBox="0 0 80 60" aria-hidden="true"><use href="#p-' + x.t + '"/></svg><span class="tag"></span></div><div class="card-body"><h3></h3><p class="where"></p><p></p><div class="acts"></div></div>';
+    c.querySelector('.tag').textContent = PG_TAG[x.t];
+    c.querySelector('h3').textContent = x.n;
+    c.querySelector('.where').textContent = x.p + ' · Miền ' + x.r;
+    c.querySelector('.card-body > p:nth-of-type(2)').textContent = x.d;
+    const acts = c.querySelector('.acts');
+    const a = document.createElement('a'); a.className = 'btn small'; a.target = '_blank'; a.rel = 'noopener'; a.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(x.m);
+    a.innerHTML = '<svg class="ico"><use href="#i-map"/></svg>Bản đồ';
+    const s = document.createElement('button'); s.type = 'button'; s.className = 'btn small'; s.setAttribute('aria-pressed', String(saved));
+    s.innerHTML = '<svg class="ico"><use href="#i-pin"/></svg>' + (saved ? 'Đã đánh dấu' : 'Muốn đến');
+    s.addEventListener('click', () => { pgSaved = saved ? pgSaved.filter(v => v !== x.n) : pgSaved.concat(x.n); store.set('saved', pgSaved); paintPagodas(); });
+    acts.append(a, s); box.appendChild(c);
+  });
+}
+$('pgSearch').addEventListener('input', paintPagodas);
+document.querySelectorAll('#pgRegion .chip').forEach(b => b.addEventListener('click', () => {
+  pgRegion = b.dataset.r; document.querySelectorAll('#pgRegion .chip').forEach(x => x.setAttribute('aria-pressed', String(x === b))); paintPagodas();
+}));
+paintPagodas();
+
+/* ---------- events ---------- */
+const SPECIAL = { '1/1': 'Tết Nguyên Đán', '15/1': 'Rằm tháng Giêng (Thượng nguyên)', '8/2': 'Vía Phật Thích Ca xuất gia', '15/2': 'Lễ Phật nhập Niết bàn', '19/2': 'Vía Quan Thế Âm đản sinh', '15/4': 'Lễ Phật Đản', '19/6': 'Vía Quan Thế Âm thành đạo', '15/7': 'Lễ Vu Lan', '19/9': 'Vía Quan Thế Âm xuất gia', '8/12': 'Lễ Thành đạo của Đức Phật' };
+function buildEvents(days){
+  const out = [], b = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate());
+  for (let i = 0; i < days; i++){
+    const d = new Date(b.getFullYear(), b.getMonth(), b.getDate() + i), [ld, lm, , lp] = lunarOf(d), key = ld + '/' + lm, mn = monthName(lm) + (lp ? ' nhuận' : '');
+    const sp = !lp && SPECIAL[key];
+    if (sp) out.push({ d, i, kind: 'le', title: sp, sub: 'Ngày ' + ld + ' tháng ' + mn + ' âm lịch' });
+    else if (ld === 1 || ld === 15) out.push({ d, i, kind: 'moc', title: (ld === 1 ? 'Mùng 1' : 'Rằm') + ' tháng ' + mn, sub: 'Ngày ' + ld + ' tháng ' + mn + ' âm lịch' });
+  }
+  return out;
+}
+const EVENTS = buildEvents(420);
+{
+  const nx = EVENTS.find(e => e.kind === 'moc' || e.kind === 'le');
+  if (nx) $('nextEvent').textContent = nx.i === 0 ? 'Hôm nay là ' + nx.title + '.' : 'Còn ' + nx.i + ' ngày nữa là ' + nx.title + ' (' + fmtDate(nx.d) + ').';
+}
+let evF = 'all';
+function paintEvents(){
+  const ol = $('events'); ol.textContent = '';
+  EVENTS.filter(e => evF === 'all' || e.kind === evF).slice(0, 10).forEach(e => {
+    const li = document.createElement('li'); li.className = 'ev' + (e.kind === 'le' ? ' big' : '');
+    li.innerHTML = '<div class="dd"></div><div><h3></h3><p></p></div><span class="left"></span>';
+    li.querySelector('.dd').innerHTML = pad(e.d.getDate()) + '<small></small>';
+    li.querySelector('small').textContent = 'Th ' + (e.d.getMonth() + 1);
+    li.querySelector('h3').textContent = e.title;
+    li.querySelector('p').textContent = WD[e.d.getDay()] + ', ' + fmtDate(e.d) + ' · ' + e.sub;
+    li.querySelector('.left').textContent = e.i === 0 ? 'Hôm nay' : e.i === 1 ? 'Ngày mai' : 'Còn ' + e.i + ' ngày';
+    ol.appendChild(li);
+  });
+}
+document.querySelectorAll('#evFilter .chip').forEach(b => b.addEventListener('click', () => {
+  evF = b.dataset.f; document.querySelectorAll('#evFilter .chip').forEach(x => x.setAttribute('aria-pressed', String(x === b))); paintEvents();
+}));
+paintEvents();
+</script>
+
+</body>
+</html>

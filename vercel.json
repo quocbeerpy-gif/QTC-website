@@ -19,6 +19,7 @@
     { "source": "/vuanghe", "destination": "/vuanghe.html" },
     { "source": "/duan", "destination": "/duan/index.html" },
     { "source": "/hrchealth", "destination": "/hrchealth/index.html" },
-    { "source": "/qtcaimathgame", "destination": "/qtcaimathgame.html" }
+    { "source": "/qtcaimathgame", "destination": "/qtcaimathgame.html" },
+    { "source": "/di-chua-online", "destination": "/di-chua-online.html" }
      ]
 }
