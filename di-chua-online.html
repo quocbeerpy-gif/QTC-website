@@ -200,6 +200,40 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 footer{padding-block:36px 48px;border-top:1px solid var(--line);font-size:.88rem;color:var(--muted)}
 footer .in{display:grid;gap:8px}
 
+/* tai khoan va cong duc */
+.acct{display:inline-flex;align-items:center;gap:8px;max-width:220px;padding:6px 14px;border-radius:99px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:.88rem;font-weight:500;min-height:38px}
+.acct:hover{border-color:var(--accent)}
+.acct.on{border-color:var(--accent)}
+.acct .ico{color:var(--accent)}
+.acct .who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.acct .pts{font-variant-numeric:tabular-nums;background:var(--accent-soft);border-radius:99px;padding:1px 9px;font-size:.8rem;font-weight:600}
+.plus1{position:fixed;z-index:50;pointer-events:none;font-weight:600;color:var(--accent);animation:plus1 .9s ease-out forwards}
+@keyframes plus1{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-28px)}}
+.modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(8,12,10,.62)}
+.modal-card{width:min(440px,100%);max-height:calc(100% - 32px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:26px;display:grid;gap:16px}
+.modal-card h2{font-size:1.7rem}
+.err{color:var(--lotus);font-size:.88rem}
+.saved{display:grid;gap:8px}
+.saved .chips{gap:8px}
+.merit-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:20px}
+.score-num{font-family:var(--f-display);font-size:clamp(3.6rem,10vw,5.6rem);line-height:.9;color:var(--accent);font-variant-numeric:tabular-nums}
+.lvl{font-family:var(--f-display);font-size:1.5rem}
+.kpis{display:flex;gap:28px;flex-wrap:wrap}
+.kpis div{display:grid}
+.kpis b{font-family:var(--f-display);font-weight:400;font-size:1.7rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpis span{font-size:.8rem;color:var(--muted)}
+.brk{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.brk li{display:grid;grid-template-columns:minmax(110px,150px) 1fr 40px;gap:10px;align-items:center;font-size:.9rem}
+.brk b{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.lists{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+.plain{list-style:none;padding:0;margin:0;display:grid;gap:8px;font-size:.92rem}
+.plain li{display:flex;gap:10px;justify-content:space-between;align-items:baseline;padding:8px 12px;border-radius:12px;background:var(--bg);border:1px solid var(--line);min-width:0}
+.plain li span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.plain li.me{border-color:var(--accent)}
+.plain .t{color:var(--muted);font-size:.8rem;white-space:nowrap;font-variant-numeric:tabular-nums}
+.acts-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+@media (max-width:860px){.merit-grid,.lists{grid-template-columns:1fr}}
+@media (max-width:520px){.acct{max-width:150px;padding:6px 10px}.brk li{grid-template-columns:100px 1fr 36px}}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--fg);color:var(--bg);padding:10px 20px;border-radius:99px;font-size:.9rem;opacity:0;pointer-events:none;transition:.25s;z-index:40;max-width:calc(100vw - 32px)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
@@ -247,6 +281,7 @@ footer .in{display:grid;gap:8px}
     <a class="brand" href="#top">Đi Chùa Online</a>
     <nav class="nav" aria-label="Mục lục">
       <a href="#top">Điện thờ</a>
+      <a href="#cong-duc">Công đức</a>
       <a href="#chuong-mo">Chuông và mõ</a>
       <a href="#cau-an">Cầu an</a>
       <a href="#niem-phat">Niệm Phật</a>
@@ -257,6 +292,7 @@ footer .in{display:grid;gap:8px}
       <a href="#an-toan">Lưu ý</a>
     </nav>
     <div class="tools">
+      <button class="acct" id="loginBtn" type="button" aria-label="Đăng nhập bằng tên hoặc pháp danh"><svg class="ico"><use href="#i-lotus"/></svg><span class="who">Đăng nhập</span></button>
       <button class="icon-btn" id="muteBtn" type="button" aria-label="Tắt âm thanh" aria-pressed="false"><svg class="ico"><use href="#i-sound"/></svg></button>
       <button class="icon-btn" id="themeBtn" type="button" aria-label="Đổi giao diện sáng tối"><svg class="ico"><use href="#i-theme"/></svg></button>
     </div>
@@ -294,6 +330,50 @@ footer .in{display:grid;gap:8px}
       </div>
       <p class="mini" id="hint3d" hidden>Kéo ngang để xoay quanh bàn thờ. Nút + và − để phóng to, thu nhỏ.</p>
       <p class="mini" id="incenseCount"></p>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="cong-duc">
+  <div class="in">
+    <div class="sec-head">
+      <p class="eyebrow">Công đức</p>
+      <h2>Sổ công đức</h2>
+      <p>Mỗi lần thắp hương, thắp đèn, dâng hoa, rung chuông, gõ mõ, niệm Phật, thiền thở hay viết lời cầu an được cộng 1 điểm. Vào bằng tên hoặc pháp danh, không cần mật khẩu. Hồ sơ lưu ngay trong trình duyệt này.</p>
+    </div>
+    <div class="panel" id="meritGuest">
+      <h3>Chưa đăng nhập</h3>
+      <p class="mini">Bạn vẫn dùng được mọi mục, nhưng điểm chỉ được lưu khi có hồ sơ. Nhập tên hoặc pháp danh là vào được ngay.</p>
+      <div class="row"><button class="btn primary" id="mGuestLogin" type="button"><svg class="ico"><use href="#i-lotus"/></svg>Đăng nhập</button></div>
+    </div>
+    <div id="meritUser" hidden>
+      <div class="merit-grid">
+        <div class="panel">
+          <p class="eyebrow">Xin chào <span id="mName"></span></p>
+          <div class="score-num" id="mTotal">0</div>
+          <p class="mini">điểm công đức</p>
+          <p class="lvl" id="mLevel"></p>
+          <div class="bar-track"><div class="bar-fill" id="mBar"></div></div>
+          <p class="mini" id="mNext"></p>
+          <div class="kpis">
+            <div><b id="mToday">0</b><span>điểm hôm nay</span></div>
+            <div><b id="mStreak">0</b><span>ngày liên tiếp</span></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Công đức theo hoạt động</h3>
+          <ul class="brk" id="mBreak"></ul>
+        </div>
+      </div>
+      <div class="lists">
+        <div class="panel"><h3>Hoạt động gần đây</h3><ul class="plain" id="mLog"></ul></div>
+        <div class="panel"><h3>Bảng công đức trên thiết bị này</h3><ul class="plain" id="mBoard"></ul></div>
+      </div>
+      <div class="acts-row">
+        <button class="btn" id="mSwitch" type="button">Đổi người</button>
+        <button class="btn" id="mLogout" type="button">Đăng xuất</button>
+        <button class="btn small" id="mDelete" type="button">Xóa hồ sơ này</button>
+      </div>
     </div>
   </div>
 </section>
@@ -544,6 +624,27 @@ footer .in{display:grid;gap:8px}
   </div>
 </footer>
 
+<div class="modal" id="loginModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <h2 id="loginTitle">Vào chùa</h2>
+    <p class="mini">Nhập tên hoặc pháp danh. Không cần mật khẩu, hồ sơ lưu ngay trong trình duyệt này. Nhập lại đúng tên đó lần sau sẽ vào lại hồ sơ cũ.</p>
+    <form id="loginForm" autocomplete="off" class="form">
+      <label for="loginName">Tên hoặc Pháp danh
+        <input type="text" id="loginName" maxlength="40" placeholder="Ví dụ: Diệu Hạnh">
+      </label>
+      <p class="err" id="loginErr" role="alert" hidden></p>
+      <div class="saved" id="loginSaved" hidden>
+        <p class="mini">Hồ sơ đã có trên thiết bị này</p>
+        <div class="chips" id="loginChips"></div>
+      </div>
+      <div class="row">
+        <button class="btn primary" type="submit">Vào chùa</button>
+        <button class="btn" type="button" id="loginCancel">Để sau</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -560,6 +661,111 @@ function setDayCount(name, n){ store.set(name, { date: todayKey(), n: n }); }
 let toastTimer;
 function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2400); }
 function pulse(el){ if(!el) return; el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); }
+
+/* ---------- ho so va cong duc ---------- */
+const MERIT_TYPES = { incense: 'Thắp hương', lamp: 'Thắp đèn', lotus: 'Dâng hoa sen', bell: 'Rung chuông', moc: 'Gõ mõ', mala: 'Niệm Phật', pray: 'Viết lời cầu an', breath: 'Thiền thở', pagoda: 'Đánh dấu chùa' };
+const LEVELS = [['Sơ phát tâm', 0], ['Tinh tấn', 50], ['Hộ trì', 200], ['Thanh tịnh', 600], ['Viên mãn', 1500]];
+let users = store.get('users', {}), curKey = store.get('current', null), guestHinted = false, lastFocus = null, delArmed = false;
+if (!users || typeof users !== 'object') users = {};
+if (curKey && !users[curKey]) curKey = null;
+const nameKey = n => n.trim().replace(/\s+/g, ' ').toLowerCase();
+const me = () => (curKey ? users[curKey] : null);
+function saveUsers(){ store.set('users', users); }
+function dayStr(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function streakOf(u){ let n = 0; const d = new Date(); if (!u.days[dayStr(d)]) d.setDate(d.getDate() - 1); while (u.days[dayStr(d)]){ n++; d.setDate(d.getDate() - 1); } return n; }
+function levelOf(p){ let i = 0; LEVELS.forEach((l, k) => { if (p >= l[1]) i = k; }); const cur = LEVELS[i], nxt = LEVELS[i + 1]; return { cur: cur, nxt: nxt, pct: nxt ? (p - cur[1]) / (nxt[1] - cur[1]) : 1 }; }
+function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function fmtTime(ts){ const d = new Date(ts), hm = pad(d.getHours()) + ':' + pad(d.getMinutes()); return dayStr(d) === todayKey() ? hm : pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + ' ' + hm; }
+function guestHint(){ if (guestHinted) return; guestHinted = true; toast('Đăng nhập bằng tên hoặc pháp danh để lưu công đức của bạn'); }
+function floatPlus(){
+  if (document.querySelectorAll('.plus1').length > 5) return;
+  const r = $('loginBtn').getBoundingClientRect(), p = el('span', 'plus1', '+1');
+  p.style.left = (r.left + r.width / 2) + 'px'; p.style.top = (r.bottom + 4) + 'px';
+  document.body.appendChild(p); setTimeout(() => p.remove(), 900);
+}
+function merit(type){
+  const u = me();
+  if (!u){ guestHint(); return; }
+  u.merit++; u.counts[type] = (u.counts[type] || 0) + 1;
+  const k = todayKey(); u.days[k] = (u.days[k] || 0) + 1;
+  u.log.unshift({ t: Date.now(), type: type }); if (u.log.length > 30) u.log.length = 30;
+  saveUsers(); paintAccount(); floatPlus();
+}
+function barTrack(p){ const t = el('div', 'bar-track'), f = el('div', 'bar-fill'); f.style.width = Math.round(Math.max(0, Math.min(1, p)) * 100) + '%'; t.appendChild(f); return t; }
+function paintMerit(u){
+  $('mName').textContent = u.name; $('mTotal').textContent = u.merit;
+  const lv = levelOf(u.merit);
+  $('mLevel').textContent = 'Bậc ' + lv.cur[0];
+  $('mNext').textContent = lv.nxt ? 'Còn ' + (lv.nxt[1] - u.merit) + ' điểm để lên bậc ' + lv.nxt[0] + '.' : 'Bạn đã đạt bậc cao nhất.';
+  $('mBar').style.width = Math.round(lv.pct * 100) + '%';
+  $('mToday').textContent = u.days[todayKey()] || 0; $('mStreak').textContent = streakOf(u);
+  const max = Math.max(1, ...Object.values(u.counts)), brk = $('mBreak'); brk.textContent = '';
+  Object.keys(MERIT_TYPES).forEach(k => { const n = u.counts[k] || 0, li = el('li'); li.append(el('span', null, MERIT_TYPES[k]), barTrack(n / max), el('b', null, String(n))); brk.appendChild(li); });
+  const log = $('mLog'); log.textContent = '';
+  if (!u.log.length){ log.appendChild(el('li', null, 'Chưa có hoạt động nào. Hãy thử thắp một nén hương.')); }
+  u.log.slice(0, 8).forEach(e => { const li = el('li'); li.append(el('span', null, (MERIT_TYPES[e.type] || 'Hoạt động') + '  +1'), el('span', 't', fmtTime(e.t))); log.appendChild(li); });
+  const board = $('mBoard'); board.textContent = '';
+  Object.keys(users).map(k => ({ k: k, u: users[k] })).sort((a, b) => b.u.merit - a.u.merit).slice(0, 5).forEach((r, i) => {
+    const li = el('li', r.k === curKey ? 'me' : ''); li.append(el('span', null, (i + 1) + '. ' + r.u.name), el('span', 't', r.u.merit + ' điểm')); board.appendChild(li);
+  });
+}
+function paintAccount(){
+  const u = me(), btn = $('loginBtn');
+  btn.textContent = '';
+  const ic = document.createElementNS('http://www.w3.org/2000/svg', 'svg'), use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+  ic.setAttribute('class', 'ico'); use.setAttribute('href', '#i-lotus'); ic.appendChild(use); btn.appendChild(ic);
+  if (u){
+    btn.append(el('span', 'who', u.name), el('b', 'pts', String(u.merit))); btn.classList.add('on');
+    btn.setAttribute('aria-label', u.name + ', ' + u.merit + ' điểm công đức. Mở sổ công đức');
+  } else {
+    btn.append(el('span', 'who', 'Đăng nhập')); btn.classList.remove('on');
+    btn.setAttribute('aria-label', 'Đăng nhập bằng tên hoặc pháp danh');
+  }
+  $('meritGuest').hidden = !!u; $('meritUser').hidden = !u;
+  if (u) paintMerit(u);
+}
+function paintSaved(){
+  const list = Object.keys(users).map(k => users[k]).sort((a, b) => b.merit - a.merit).slice(0, 6), box = $('loginChips'); box.textContent = '';
+  $('loginSaved').hidden = !list.length;
+  list.forEach(u => { const b = el('button', 'chip', u.name + ' · ' + u.merit); b.type = 'button'; b.addEventListener('click', () => login(u.name)); box.appendChild(b); });
+}
+function openLogin(){ lastFocus = document.activeElement; paintSaved(); $('loginErr').hidden = true; $('loginName').value = ''; $('loginModal').hidden = false; $('loginName').focus(); }
+function closeLogin(){ $('loginModal').hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+function login(raw){
+  const name = String(raw || '').trim().replace(/\s+/g, ' ');
+  if (name.length < 2){ $('loginErr').textContent = 'Hãy nhập ít nhất 2 ký tự cho tên hoặc pháp danh.'; $('loginErr').hidden = false; return false; }
+  const key = nameKey(name), isNew = !users[key];
+  if (isNew) users[key] = { name: name, created: Date.now(), merit: 0, counts: {}, days: {}, log: [] };
+  curKey = key; store.set('current', key); saveUsers(); delArmed = false; $('mDelete').textContent = 'Xóa hồ sơ này';
+  closeLogin(); paintAccount();
+  if (!$('pName').value.trim()){ $('pName').value = users[key].name; paintPreview(); }
+  toast(isNew ? 'Nam mô A Di Đà Phật, ' + users[key].name + '. Đã tạo hồ sơ mới' : 'Nam mô A Di Đà Phật, ' + users[key].name + '. Chào mừng bạn trở lại');
+  return true;
+}
+function logout(){ curKey = null; store.set('current', null); paintAccount(); toast('Đã đăng xuất. Hồ sơ vẫn được giữ trên thiết bị này'); }
+$('loginBtn').addEventListener('click', () => { if (me()) $('cong-duc').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }); else openLogin(); });
+$('mGuestLogin').addEventListener('click', openLogin);
+$('mSwitch').addEventListener('click', openLogin);
+$('mLogout').addEventListener('click', logout);
+$('mDelete').addEventListener('click', () => {
+  if (!delArmed){ delArmed = true; $('mDelete').textContent = 'Bấm lần nữa để xóa hẳn'; setTimeout(() => { delArmed = false; $('mDelete').textContent = 'Xóa hồ sơ này'; }, 4000); return; }
+  delete users[curKey]; saveUsers(); curKey = null; store.set('current', null); delArmed = false; $('mDelete').textContent = 'Xóa hồ sơ này'; paintAccount(); toast('Đã xóa hồ sơ');
+});
+$('loginForm').addEventListener('submit', ev => { ev.preventDefault(); login($('loginName').value); });
+$('loginCancel').addEventListener('click', closeLogin);
+$('loginModal').addEventListener('click', ev => { if (ev.target === $('loginModal')) closeLogin(); });
+document.addEventListener('keydown', ev => {
+  if ($('loginModal').hidden) return;
+  if (ev.key === 'Escape'){ closeLogin(); return; }
+  if (ev.key === 'Tab'){
+    const f = Array.from($('loginModal').querySelectorAll('input,button')).filter(x => !x.hidden && x.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (ev.shiftKey && document.activeElement === first){ ev.preventDefault(); last.focus(); }
+    else if (!ev.shiftKey && document.activeElement === last){ ev.preventDefault(); first.focus(); }
+  }
+});
+paintAccount();
 
 /*LUNAR-START*/
 function INT(d){ return Math.floor(d); }
@@ -725,7 +931,7 @@ function lightIncense(n){
   const now = performance.now() / 1000;
   for (let i = 0; i < n; i++) sticks.push({ born: now + i * .05, seed: Math.random() });
   setDayCount('incense', dayCount('incense') + n);
-  paintIncenseCount(); bell(.6);
+  paintIncenseCount(); bell(.6); merit('incense');
 }
 function paintIncenseCount(){
   const c = dayCount('incense');
@@ -819,8 +1025,8 @@ $('ctaLight').addEventListener('click', () => { lightIncense(3); setLamp(true); 
 $('btnIncense').addEventListener('click', () => lightIncense(1));
 function setLamp(v){ lampOn = v; $('btnLamp').setAttribute('aria-pressed', String(v)); }
 function setLotus(v){ lotusOn = v; $('btnLotus').setAttribute('aria-pressed', String(v)); }
-$('btnLamp').addEventListener('click', () => setLamp(!lampOn));
-$('btnLotus').addEventListener('click', () => setLotus(!lotusOn));
+$('btnLamp').addEventListener('click', () => { setLamp(!lampOn); if (lampOn) merit('lamp'); });
+$('btnLotus').addEventListener('click', () => { setLotus(!lotusOn); if (lotusOn) merit('lotus'); });
 $('btnClear').addEventListener('click', () => { sticks = []; smoke = []; setLamp(false); setLotus(false); });
 sticks = [];
 readPal(); resize(); paintIncenseCount();
@@ -831,13 +1037,13 @@ setLamp(true); setLotus(true);
 /* ---------- bell & moc ---------- */
 let bells = dayCount('bells');
 function paintBell(){ $('bellCount').textContent = bells ? 'Hôm nay đã thỉnh ' + bells + ' tiếng chuông.' : ''; }
-function ring(n){ for (let i = 0; i < n; i++){ setTimeout(() => { bell(1); bells++; setDayCount('bells', bells); paintBell(); pulse($('bellBtn')); }, i * 2600); } }
+function ring(n){ for (let i = 0; i < n; i++){ setTimeout(() => { bell(1); bells++; merit('bell'); setDayCount('bells', bells); paintBell(); pulse($('bellBtn')); }, i * 2600); } }
 $('bellBtn').addEventListener('click', () => ring(1));
 $('bell3Btn').addEventListener('click', () => ring(3));
 paintBell();
 let mocN = dayCount('moc');
 function paintMoc(){ $('mocCount').textContent = mocN; $('mocBar').style.width = Math.min(100, mocN / 108 * 100) + '%'; }
-function hitMoc(){ moc(1); mocN++; setDayCount('moc', mocN); paintMoc(); pulse($('mocBtn')); if (mocN === 108) toast('Đủ 108 tiếng mõ hôm nay'); }
+function hitMoc(){ moc(1); mocN++; merit('moc'); setDayCount('moc', mocN); paintMoc(); pulse($('mocBtn')); if (mocN === 108) toast('Đủ 108 tiếng mõ hôm nay'); }
 $('mocBtn').addEventListener('click', hitMoc);
 $('mocReset').addEventListener('click', () => { mocN = 0; setDayCount('moc', 0); paintMoc(); });
 let mocTimer = null;
@@ -881,7 +1087,7 @@ $('prayForm').addEventListener('submit', ev => {
   book = book.slice(0, 40); store.set('book', book); paintBook();
   if (!sticks.length) lightIncense(3); else bell(.7);
   $('pNote').value = ''; paintPreview();
-  toast('Đã dâng lời nguyện vào sổ');
+  toast('Đã dâng lời nguyện vào sổ'); merit('pray');
 });
 $('pCopy').addEventListener('click', () => {
   const txt = prayText(), fallback = () => { const r = document.createRange(); r.selectNodeContents($('pPreview')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Đã chọn văn bản, hãy chép thủ công'); };
@@ -907,7 +1113,7 @@ function paintMala(){
 function svgBeads(){ return $('malaSvg').querySelectorAll('circle'); }
 $('malaBtn').addEventListener('click', () => {
   if (mala.beads >= 108) mala.beads = 0;
-  mala.beads++; mala.total++; moc(.5);
+  mala.beads++; mala.total++; moc(.5); merit('mala');
   if (mala.beads === 108){ mala.rounds++; bell(.8); toast('Đủ một vòng 108 hạt'); }
   store.set('mala', mala); paintMala(); pulse($('malaNum'));
 });
@@ -938,7 +1144,7 @@ paintMala();
     running = false; clearInterval(timer); clearTimeout(phaseTimer);
     orb.style.transform = 'scale(.62)'; $('orbText').textContent = done ? 'Hoàn thành' : 'Sẵn sàng'; $('orbTime').textContent = fmt(minutes * 60);
     $('breathBtn').lastChild.textContent = 'Bắt đầu';
-    if (done){ bell(1); const n = store.get('sitMin', { date: todayKey(), n: 0 }); const total = (n.date === todayKey() ? n.n : 0) + minutes; store.set('sitMin', { date: todayKey(), n: total }); $('breathLog').textContent = 'Hôm nay bạn đã ngồi ' + total + ' phút.'; }
+    if (done){ bell(1); merit('breath'); const n = store.get('sitMin', { date: todayKey(), n: 0 }); const total = (n.date === todayKey() ? n.n : 0) + minutes; store.set('sitMin', { date: todayKey(), n: total }); $('breathLog').textContent = 'Hôm nay bạn đã ngồi ' + total + ' phút.'; }
   }
   $('breathBtn').addEventListener('click', () => {
     if (running){ stop(false); return; }
@@ -980,7 +1186,7 @@ function paintPagodas(){
     a.innerHTML = '<svg class="ico"><use href="#i-map"/></svg>Bản đồ';
     const s = document.createElement('button'); s.type = 'button'; s.className = 'btn small'; s.setAttribute('aria-pressed', String(saved));
     s.innerHTML = '<svg class="ico"><use href="#i-pin"/></svg>' + (saved ? 'Đã đánh dấu' : 'Muốn đến');
-    s.addEventListener('click', () => { pgSaved = saved ? pgSaved.filter(v => v !== x.n) : pgSaved.concat(x.n); store.set('saved', pgSaved); paintPagodas(); });
+    s.addEventListener('click', () => { pgSaved = saved ? pgSaved.filter(v => v !== x.n) : pgSaved.concat(x.n); store.set('saved', pgSaved); if (!saved) merit('pagoda'); paintPagodas(); });
     acts.append(a, s); box.appendChild(c);
   });
 }
