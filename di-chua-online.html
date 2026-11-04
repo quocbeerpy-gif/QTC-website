@@ -341,7 +341,7 @@ footer .in{display:grid;gap:8px}
         <button class="btn small" id="btnIncense" type="button"><svg class="ico"><use href="#i-incense"/></svg>Thêm nén hương</button>
         <button class="btn small" id="btnLamp" type="button" aria-pressed="false"><svg class="ico"><use href="#i-flame"/></svg>Thắp đèn</button>
         <button class="btn small" id="btnLotus" type="button" aria-pressed="false"><svg class="ico"><use href="#i-lotus"/></svg>Dâng hoa sen</button>
-        <button class="btn small" id="btnLed" type="button" aria-pressed="true" hidden>Hào quang: ngũ sắc</button>
+        <button class="btn small" id="btnLed" type="button" aria-pressed="true" hidden>Neon hào quang: bật</button>
         <button class="btn small" id="btnClear" type="button">Dọn bàn thờ</button>
       </div>
       <p class="mini" id="hint3d" hidden>Kéo ngang để xoay quanh bàn thờ. Nút + và − để phóng to, thu nhỏ.</p>
@@ -1302,12 +1302,9 @@ function build(){
   const smokeTex = radialTex([[0, 'rgba(255,255,255,.55)'], [.4, 'rgba(255,255,255,.22)'], [1, 'rgba(255,255,255,0)']]);
   function backdropTex(){
     const c = document.createElement('canvas'); c.width = c.height = 512;
-    const x = c.getContext('2d'), g1 = x.createRadialGradient(256, 230, 10, 256, 230, 330);
-    g1.addColorStop(0, '#5a2016'); g1.addColorStop(.55, '#2a0f0b'); g1.addColorStop(1, '#0b0605');
+    const x = c.getContext('2d'), g1 = x.createRadialGradient(256, 224, 10, 256, 224, 340);
+    g1.addColorStop(0, '#f2c944'); g1.addColorStop(.42, '#dba51c'); g1.addColorStop(.8, '#a87208'); g1.addColorStop(1, '#6e4a05');
     x.fillStyle = g1; x.fillRect(0, 0, 512, 512);
-    x.strokeStyle = 'rgba(214,166,58,.13)'; x.lineWidth = 1.5;
-    [60, 95, 130, 170, 215].forEach(r => { x.beginPath(); x.arc(256, 230, r, 0, 7); x.stroke(); });
-    for (let i = 0; i < 24; i++){ const a = i / 24 * Math.PI * 2; x.beginPath(); x.moveTo(256 + Math.cos(a) * 60, 230 + Math.sin(a) * 60); x.lineTo(256 + Math.cos(a) * 215, 230 + Math.sin(a) * 215); x.stroke(); }
     const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; return t;
   }
   function folds(geo, amp, k, hMax){
@@ -1342,12 +1339,12 @@ function build(){
 
   /* ---------- nền: sàn, phông, rèm, bồ đoàn ---------- */
   const floor = mk(new T.PlaneGeometry(16, 16), mat(0x1b1511, { roughness: .85 })); floor.rotation.x = -Math.PI / 2; scene.add(floor);
-  scene.add(mk(new T.PlaneGeometry(6.8, 6.8), new T.MeshStandardMaterial({ map: backdropTex(), roughness: .9 }), 0, 2.5, -1.15));
+  scene.add(mk(new T.PlaneGeometry(6.8, 6.8), new T.MeshBasicMaterial({ map: backdropTex(), toneMapped: false }), 0, 2.5, -1.15));
   [-1, 1].forEach(s => {
     const cg = new T.PlaneGeometry(1.2, 5, 28, 1), p = cg.attributes.position;
     for (let i = 0; i < p.count; i++) p.setZ(i, Math.sin(p.getX(i) * 11 + s) * .07);
     cg.computeVertexNormals();
-    scene.add(mk(cg, mat(0x5a0f0d, { roughness: .85, side: T.DoubleSide }), s * 2.2, 2.5, -.95));
+    scene.add(mk(cg, mat(0xc08a12, { roughness: .7, emissive: 0x3a2704, side: T.DoubleSide }), s * 2.2, 2.5, -.95));
   });
   const cushion = new T.Group();
   cushion.add(mk(new T.CylinderGeometry(.36, .38, .12, 32), mat(0xd9a21b, { roughness: .7 }), 0, .06, 0));
@@ -1379,63 +1376,69 @@ function build(){
   const auraDisc = mk(new T.CircleGeometry(1, 64), new T.MeshBasicMaterial({ color: 0xffc860, transparent: true, opacity: .09, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide })); auraDisc.scale.set(.8, 1.2, 1); auraDisc.userData.fx = true;
   const haloDisc = { material: { opacity: 0 } };
 
-  /* ---------- đèn LED hào quang phía sau tượng ---------- */
-  const ledTex = radialTex([[0, 'rgba(255,255,255,1)'], [.16, 'rgba(255,255,255,.95)'], [.4, 'rgba(255,255,255,.28)'], [1, 'rgba(255,255,255,0)']]);
-  const ledGroup = new T.Group(); ledGroup.position.set(0, 2.845, -1.12); scene.add(ledGroup);
-  const leds = [];
-  function addLed(ring, a, r, size){
-    const sp = new T.Sprite(new T.SpriteMaterial({ map: ledTex, color: 0xffffff, transparent: true, depthWrite: false, blending: T.AdditiveBlending, toneMapped: false }));
-    sp.scale.set(size, size, 1); sp.position.set(Math.cos(a) * r, Math.sin(a) * r, 0); ledGroup.add(sp);
-    leds.push({ sp: sp, ring: ring, a: a, r: r, size: size });
+  /* ---------- đèn neon ngũ sắc lấp lánh, tia hào quang quanh đầu tượng (một nửa cỡ trước) ---------- */
+  const HC = new T.Vector3(0, 2.92, -1.12);
+  const NEON_PAL = [0x2d7dff, 0xffffff, 0xff2d2d, 0xffd60a, 0xff8c00].map(h => new T.Color(h));
+  const cA = new T.Color(), cB = new T.Color();
+  function palAt(u, out){ const n = NEON_PAL.length; u = ((u % n) + n) % n; const i = Math.floor(u), f = u - i; return out.copy(NEON_PAL[i]).lerp(NEON_PAL[(i + 1) % n], f); }
+  function lineTex(w, h, draw){
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'); x.lineCap = 'round'; x.strokeStyle = '#fff'; x.shadowColor = '#fff'; draw(x);
+    const tx = new T.CanvasTexture(c); tx.encoding = T.sRGBEncoding; return tx;
   }
-  [[.797, 36, .085], [1.262, 56, .095], [1.727, 76, .105], [2.258, 98, .115]].forEach((rg, k) => { for (let i = 0; i < rg[1]; i++) addLed(k, i / rg[1] * Math.PI * 2, rg[0], rg[2]); });
-  for (let i = 0; i < 24; i++){ const a = i / 24 * Math.PI * 2; for (let r = .93; r < 2.84; r += .16){ if ([.797, 1.262, 1.727, 2.258].some(q => Math.abs(q - r) < .06)) continue; addLed(4, a, r, .075); } }
-  const stripM = [.797, 1.262, 1.727, 2.258, 2.855].map(r => {
-    const m = new T.Mesh(new T.TorusGeometry(r, .006, 6, 128), new T.MeshBasicMaterial({ color: 0xffc860, transparent: true, opacity: .5, blending: T.AdditiveBlending, depthWrite: false, toneMapped: false }));
-    ledGroup.add(m); return m;
+  const rayGlowTex = lineTex(128, 256, x => { x.globalAlpha = .8; x.lineWidth = 30; x.shadowBlur = 34; x.beginPath(); x.moveTo(64, 56); x.lineTo(64, 200); x.stroke(); });
+  const rayCoreTex = lineTex(128, 256, x => { x.lineWidth = 12; x.shadowBlur = 8; x.beginPath(); x.moveTo(64, 56); x.lineTo(64, 200); x.stroke(); });
+  const arcGlowTex = lineTex(512, 512, x => { x.globalAlpha = .8; x.lineWidth = 22; x.shadowBlur = 34; x.beginPath(); x.arc(256, 256, 146, -.4, .4); x.stroke(); });
+  const arcCoreTex = lineTex(512, 512, x => { x.lineWidth = 8; x.shadowBlur = 8; x.beginPath(); x.arc(256, 256, 146, -.4, .4); x.stroke(); });
+  const starTex = lineTex(128, 128, x => {
+    x.lineWidth = 3; x.shadowBlur = 10;
+    x.beginPath(); x.moveTo(10, 64); x.lineTo(118, 64); x.moveTo(64, 10); x.lineTo(64, 118); x.stroke();
+    x.lineWidth = 2; x.beginPath(); x.moveTo(30, 30); x.lineTo(98, 98); x.moveTo(98, 30); x.lineTo(30, 98); x.stroke();
+    x.fillStyle = '#fff'; x.beginPath(); x.arc(64, 64, 6, 0, 7); x.fill();
   });
-  // 24 đường thẳng LED tỏa ra từ vòng nhỏ nhất đến vòng ngoài cùng, trùng các đường trên phông
-  const rayPos = [], rayIdx = [];
-  for (let i = 0; i < 24; i++){
-    const a = i / 24 * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a), nx = -sn * .005, ny = c * .005, r0 = .797, r1 = 2.855, b = i * 4;
-    rayPos.push(c * r0 + nx, sn * r0 + ny, 0, c * r0 - nx, sn * r0 - ny, 0, c * r1 - nx, sn * r1 - ny, 0, c * r1 + nx, sn * r1 + ny, 0);
-    rayIdx.push(b, b + 1, b + 2, b, b + 2, b + 3);
+  const neonGroup = new T.Group(); scene.add(neonGroup);
+  const nm = (map, op) => new T.MeshBasicMaterial({ map: map, color: 0xffffff, transparent: true, opacity: op, depthWrite: false, toneMapped: false });
+  const RAYS = 36, rays = [], arcs = [];
+  for (let i = 0; i < RAYS; i++){
+    const a = i / RAYS * Math.PI * 2, long = i % 2 === 0, r0 = .5, r1 = long ? 1.5 : 1.1, rm = (r0 + r1) / 2, wid = long ? .2 : .16, ph = (r1 - r0) / .5625;
+    const g = new T.Mesh(new T.PlaneGeometry(wid, ph), nm(rayGlowTex, 1)), c = new T.Mesh(new T.PlaneGeometry(wid, ph), nm(rayCoreTex, 1));
+    [g, c].forEach((m, k) => { m.position.set(HC.x + Math.cos(a) * rm, HC.y + Math.sin(a) * rm, HC.z + k * .001); m.rotation.z = a - Math.PI / 2; neonGroup.add(m); });
+    rays.push({ g: g, c: c });
   }
-  const rayGeo = new T.BufferGeometry(); rayGeo.setAttribute('position', new T.Float32BufferAttribute(rayPos, 3)); rayGeo.setIndex(rayIdx);
-  const rayMesh = new T.Mesh(rayGeo, new T.MeshBasicMaterial({ color: 0xffc860, transparent: true, opacity: .55, blending: T.AdditiveBlending, depthWrite: false, toneMapped: false, side: T.DoubleSide }));
-  ledGroup.add(rayMesh);
-  const ledGlow = new T.Sprite(new T.SpriteMaterial({ map: glowTex, color: 0xffc860, transparent: true, opacity: .3, depthWrite: false, blending: T.AdditiveBlending, toneMapped: false }));
-  ledGlow.scale.set(6.4, 6.4, 1); ledGlow.position.z = -.02; ledGroup.add(ledGlow);
-  const LED_PAL = [0x3a8bff, 0xffd23a, 0xff3d3d, 0xffffff, 0xff9a2e].map(h => new T.Color(h));
-  const GOLD_A = new T.Color(0xff9d2a), GOLD_B = new T.Color(0xfff1b8), cA = new T.Color(), cB = new T.Color();
-  let ledMode = 'ngusac';
-  function palAt(u, out){ const n = LED_PAL.length; u = ((u % n) + n) % n; const i = Math.floor(u), f = u - i; return out.copy(LED_PAL[i]).lerp(LED_PAL[(i + 1) % n], f); }
+  for (let k = 0; k < 10; k++){
+    const g = new T.Mesh(new T.PlaneGeometry(1.4, 1.4), nm(arcGlowTex, 1)), c = new T.Mesh(new T.PlaneGeometry(1.4, 1.4), nm(arcCoreTex, 1));
+    [g, c].forEach((m, j) => { m.position.set(HC.x, HC.y, HC.z + .002 + j * .001); m.rotation.z = k / 10 * Math.PI * 2; neonGroup.add(m); });
+    arcs.push({ g: g, c: c });
+  }
+  const stars = [];
+  for (let i = 0; i < 24; i++){
+    const r = .55 + Math.random() * 1.3, a = Math.random() * Math.PI * 2;
+    const sp = new T.Sprite(new T.SpriteMaterial({ map: starTex, color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, blending: T.AdditiveBlending, toneMapped: false }));
+    sp.position.set(HC.x + Math.cos(a) * r, HC.y + Math.sin(a) * r, HC.z + .02); neonGroup.add(sp);
+    stars.push({ sp: sp, ph: Math.random() * 6.28, s0: .14 + Math.random() * .16, v: 1.6 + Math.random() * 2.6, c: i % 5 });
+  }
+  let neonOn = true;
   function ledUpdate(t){
-    ledGroup.visible = ledMode !== 'tat';
-    if (!ledGroup.visible) return;
-    const tt = reduce ? 0 : t, breath = .88 + .12 * Math.sin(tt * 1.3), multi = ledMode === 'ngusac';
-    leds.forEach(L => {
-      let b, u;
-      if (L.ring < 4){
-        const dir = L.ring % 2 ? -1 : 1, w = Math.max(0, Math.sin(L.a * 6 * dir - tt * 2.2 * dir));
-        b = .3 + .7 * w * w; u = L.a / (Math.PI * 2) * 5 + tt * .5 * dir + L.ring;
-      } else {
-        const w = .5 + .5 * Math.sin(L.r * 5 - tt * 3.2 + L.a * 3);
-        b = .25 + .75 * w * w; u = L.a / (Math.PI * 2) * 5 + L.r * .6 - tt * .4;
-      }
-      if (multi) palAt(u, cA); else cA.copy(GOLD_A).lerp(GOLD_B, b * .8);
-      L.sp.material.color.copy(cA);
-      L.sp.material.opacity = Math.min(1, b * breath);
-      const sz = L.size * (.8 + .5 * b); L.sp.scale.set(sz, sz, 1);
+    neonGroup.visible = neonOn;
+    if (!neonOn) return;
+    const tt = reduce ? 0 : t, ph = tt * .9;
+    rays.forEach((R, i) => {
+      palAt(i * .5 + ph, cA); R.g.material.color.copy(cA);
+      const w = reduce ? 1 : .5 + .5 * Math.sin(tt * (2.1 + (i % 5) * .35) + i * 1.7), op = .5 + .5 * w * w;
+      R.g.material.opacity = op; R.c.material.opacity = .55 + .45 * op;
     });
-    ledGlow.material.color.copy(multi ? palAt(tt * .35, cB) : GOLD_A);
-    ledGlow.material.opacity = .22 * breath + .05 * Math.sin(tt * .9);
-    stripM.forEach((m, k) => m.material.color.copy(multi ? palAt(tt * .35 + k * 1.2, cB) : GOLD_A));
-    rayMesh.material.color.copy(multi ? palAt(tt * .35 + 2.5, cB) : GOLD_A); rayMesh.material.opacity = .4 + .15 * Math.sin(tt * 1.3);
+    arcs.forEach((A, k) => {
+      palAt(k * .5 - ph * 1.3, cA); A.g.material.color.copy(cA);
+      const w = reduce ? 1 : .5 + .5 * Math.sin(tt * 2.4 + k * 1.3);
+      A.g.material.opacity = .7 + .3 * w; A.c.material.opacity = .9;
+    });
+    stars.forEach(S => {
+      const w = reduce ? .6 : Math.max(0, Math.sin(tt * S.v + S.ph)), k = w * w * w, sc = S.s0 * (.5 + k);
+      S.sp.material.opacity = k; S.sp.scale.set(sc, sc, 1); S.sp.material.color.copy(palAt(S.c + ph * 2, cB));
+    });
   }
   const ledBtn = $('btnLed'); ledBtn.hidden = false;
-  const LED_LABEL = { ngusac: 'Hào quang: ngũ sắc', vang: 'Hào quang: vàng', tat: 'Hào quang: tắt' }, LED_NEXT = { ngusac: 'vang', vang: 'tat', tat: 'ngusac' };
-  ledBtn.addEventListener('click', () => { ledMode = LED_NEXT[ledMode]; ledBtn.textContent = LED_LABEL[ledMode]; ledBtn.setAttribute('aria-pressed', String(ledMode !== 'tat')); });
+  ledBtn.addEventListener('click', () => { neonOn = !neonOn; ledBtn.textContent = neonOn ? 'Neon hào quang: bật' : 'Neon hào quang: tắt'; ledBtn.setAttribute('aria-pressed', String(neonOn)); });
 
   /* ---------- đèn dầu ---------- */
   const lampG = lathe([[.001, 0], [.1, 0], [.1, .025], [.05, .06], [.03, .12], [.03, .34], [.06, .38], [.14, .46], [.15, .5], [.12, .5], [.001, .44]], 32);
@@ -1483,6 +1486,20 @@ function build(){
     [[0xf08a24, -.05, .07, .02], [0xc4362c, .06, .06, -.01], [0xf5b52a, .0, .06, .07], [0xe6892a, .02, .11, .0], [0x7aa83a, -.07, .05, -.05]].forEach(f => {
       const fr = mk(new T.SphereGeometry(.045, 14, 10), mat(f[0], { roughness: .45 }), f[1], f[2] + .03, f[3] + (i ? .01 : 0)); g.add(fr);
     });
+  });
+
+  /* ---------- hai ly nước cúng ở hai bên ---------- */
+  const glassM = new T.MeshStandardMaterial({ color: 0xe6f4ff, roughness: .06, metalness: .1, transparent: true, opacity: .26, side: T.DoubleSide, depthWrite: false });
+  const waterM = new T.MeshStandardMaterial({ color: 0xbfe8ff, roughness: .1, transparent: true, opacity: .55, depthWrite: false });
+  [-.78, .78].forEach(x => {
+    const g = new T.Group(); g.position.set(x, .92, .64); scene.add(g);
+    g.add(mk(new T.CylinderGeometry(.065, .075, .01, 28), gold, 0, .005, 0));
+    const body = mk(new T.CylinderGeometry(.046, .036, .11, 28, 1, true), glassM, 0, .065, 0);
+    const base = mk(new T.CylinderGeometry(.036, .036, .014, 24), glassM, 0, .017, 0);
+    const water = mk(new T.CylinderGeometry(.042, .035, .08, 28), waterM, 0, .06, 0);
+    const surf = mk(new T.CircleGeometry(.042, 28), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .35, depthWrite: false }), 0, .1, 0); surf.rotation.x = -Math.PI / 2;
+    const rim = mk(new T.TorusGeometry(.046, .0025, 6, 28), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .55 }), 0, .12, 0); rim.rotation.x = Math.PI / 2;
+    [body, base, water, surf, rim].forEach(m => { m.userData.fx = true; g.add(m); });
   });
 
   /* ---------- nhang và khói ---------- */
