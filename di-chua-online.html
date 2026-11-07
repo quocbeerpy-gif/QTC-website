@@ -250,6 +250,7 @@ footer .in{display:grid;gap:8px}
 .modal-card{width:min(440px,100%);max-height:calc(100% - 32px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:26px;display:grid;gap:16px}
 .modal-card h2{font-size:1.7rem}
 .err{color:var(--lotus);font-size:.88rem}
+.auth-tabs{margin:2px 0 4px}
 .saved{display:grid;gap:8px}
 .saved .chips{gap:8px}
 .merit-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:20px}
@@ -711,7 +712,11 @@ footer .in{display:grid;gap:8px}
 <div class="modal" id="loginModal" hidden>
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
     <h2 id="loginTitle">Vào chùa</h2>
-    <p class="mini">Nhập tên hoặc pháp danh. Không cần mật khẩu, hồ sơ lưu ngay trong trình duyệt này. Nhập lại đúng tên đó lần sau sẽ vào lại hồ sơ cũ.</p>
+    <div class="chips auth-tabs" id="authTabs" role="group" aria-label="Đăng nhập hoặc đăng ký">
+      <button class="chip" type="button" data-m="login" aria-pressed="true">Đăng nhập</button>
+      <button class="chip" type="button" data-m="register" aria-pressed="false">Đăng ký pháp danh</button>
+    </div>
+    <p class="mini" id="authHint">Nhập pháp danh đã đăng ký để vào lại hồ sơ cũ. Không cần mật khẩu.</p>
     <form id="loginForm" autocomplete="off" class="form">
       <label for="loginName">Tên hoặc Pháp danh
         <input type="text" id="loginName" maxlength="40" placeholder="Ví dụ: Diệu Hạnh">
@@ -722,7 +727,7 @@ footer .in{display:grid;gap:8px}
         <div class="chips" id="loginChips"></div>
       </div>
       <div class="row">
-        <button class="btn primary" type="submit">Vào chùa</button>
+        <button class="btn primary" type="submit" id="loginSubmit">Vào chùa</button>
         <button class="btn" type="button" id="loginCancel">Để sau</button>
       </div>
     </form>
@@ -833,13 +838,23 @@ function paintSaved(){
   $('loginSaved').hidden = !list.length;
   list.forEach(u => { const b = el('button', 'chip', u.name + ' · ' + u.merit); b.type = 'button'; b.addEventListener('click', () => login(u.name)); box.appendChild(b); });
 }
-function openLogin(){ lastFocus = document.activeElement; paintSaved(); $('loginErr').hidden = true; $('loginName').value = ''; $('loginModal').hidden = false; $('loginName').focus(); }
+let authMode = 'login';
+function setAuthMode(m){
+  authMode = m;
+  document.querySelectorAll('#authTabs .chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m)));
+  const reg = m === 'register';
+  $('loginSubmit').textContent = reg ? 'Đăng ký pháp danh' : 'Vào chùa';
+  $('authHint').textContent = reg ? 'Chọn một pháp danh mới. Nếu đã có người dùng pháp danh này, web sẽ báo để bạn chọn lại. Không cần mật khẩu.' : 'Nhập pháp danh đã đăng ký để vào lại hồ sơ cũ. Không cần mật khẩu.';
+  $('loginSaved').hidden = reg || !Object.keys(users).length; $('loginErr').hidden = true;
+}
+document.querySelectorAll('#authTabs .chip').forEach(b => b.addEventListener('click', () => setAuthMode(b.dataset.m)));
+function openLogin(mode){ lastFocus = document.activeElement; paintSaved(); setAuthMode(mode === 'register' ? 'register' : 'login'); $('loginErr').hidden = true; $('loginName').value = ''; $('loginModal').hidden = false; $('loginName').focus(); }
 function closeLogin(){ $('loginModal').hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
-function login(raw){
+function login(raw, fresh){
   const name = String(raw || '').trim().replace(/\s+/g, ' ');
   if (name.length < 2){ $('loginErr').textContent = 'Hãy nhập ít nhất 2 ký tự cho tên hoặc pháp danh.'; $('loginErr').hidden = false; return false; }
-  const key = nameKey(name), isNew = !users[key];
-  if (isNew) users[key] = { name: name, created: Date.now(), merit: 0, counts: {}, days: {}, log: [] };
+  const key = nameKey(name), isNew = !!fresh;
+  if (!users[key]){ $('loginErr').textContent = 'Chưa có pháp danh "' + name + '". Hãy bấm "Đăng ký pháp danh" để tạo mới.'; $('loginErr').hidden = false; return false; }
   curKey = key; store.set('current', key); saveUsers(); delArmed = false; $('mDelete').textContent = 'Xóa hồ sơ này';
   closeLogin(); paintAccount();
   if (!$('pName').value.trim()){ $('pName').value = users[key].name; paintPreview(); }
@@ -855,7 +870,7 @@ $('mDelete').addEventListener('click', () => {
   if (!delArmed){ delArmed = true; $('mDelete').textContent = 'Bấm lần nữa để xóa hẳn'; setTimeout(() => { delArmed = false; $('mDelete').textContent = 'Xóa hồ sơ này'; }, 4000); return; }
   delete users[curKey]; saveUsers(); curKey = null; store.set('current', null); delArmed = false; $('mDelete').textContent = 'Xóa hồ sơ này'; paintAccount(); toast('Đã xóa hồ sơ');
 });
-$('loginForm').addEventListener('submit', ev => { ev.preventDefault(); login($('loginName').value); });
+$('loginForm').addEventListener('submit', ev => { ev.preventDefault(); if (window.authSubmit) window.authSubmit(authMode, $('loginName').value); else login($('loginName').value); });
 $('loginCancel').addEventListener('click', closeLogin);
 $('loginModal').addEventListener('click', ev => { if (ev.target === $('loginModal')) closeLogin(); });
 document.addEventListener('keydown', ev => {
@@ -2027,8 +2042,46 @@ async function loadTop(){
   }catch(e){}
 }
 const _merit = merit, _login = login;
+const COLL = BASE.slice(0, -1);
+const clean = raw => String(raw || '').trim().replace(/\s+/g, ' ');
+function err(t){ $('loginErr').textContent = t; $('loginErr').hidden = false; }
+async function cloudGet(key){
+  const r = await fetchT(url(key));
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error('http ' + r.status);
+  return (await r.json()).fields || {};
+}
+window.authSubmit = async function(mode, raw){
+  const name = clean(raw), key = nameKey(name), btn = $('loginSubmit'), label = btn.textContent;
+  if (name.length < 2){ err('Hãy nhập ít nhất 2 ký tự cho pháp danh.'); return; }
+  $('loginErr').hidden = true; btn.disabled = true; btn.textContent = 'Đang kiểm tra...';
+  try{
+    if (mode === 'login'){
+      if (!users[key]){
+        let f = null;
+        try{ f = await cloudGet(key); }catch(e){}
+        if (!f){ err('Chưa có pháp danh "' + name + '". Hãy bấm "Đăng ký pháp danh" để tạo mới.'); return; }
+        let rc = {}; try{ rc = JSON.parse((f.counts || {}).stringValue || '{}'); }catch(e){}
+        users[key] = { name: (f.name || {}).stringValue || name, created: Date.now(), merit: parseInt((f.merit || {}).integerValue || '0', 10), counts: rc, days: {}, log: [] }; saveUsers();
+      }
+      window.login(name);
+      return;
+    }
+    // đăng ký
+    if (users[key]){ err('Pháp danh "' + users[key].name + '" đã có người đăng ký. Vui lòng chọn pháp danh khác.'); return; }
+    let status = 0;
+    try{
+      const r = await fetchT(COLL + '?documentId=' + docId(key) + '&key=' + FB.apiKey, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(toFields({ name: name, merit: 0, counts: {} })) });
+      status = r.status;
+    }catch(e){ status = 0; }
+    if (status === 409){ err('Pháp danh "' + name + '" đã có người đăng ký. Vui lòng chọn pháp danh khác.'); return; }
+    users[key] = { name: name, created: Date.now(), merit: 0, counts: {}, days: {}, log: [] }; saveUsers();
+    window.login(name, true);
+    if (status !== 200) toast('Chưa kiểm tra được trùng pháp danh trên Firebase, hồ sơ tạm lưu trên máy này.');
+  } finally { btn.disabled = false; btn.textContent = label; }
+};
 window.merit = function(t){ const had = !!me(); _merit(t); if (had) later(); };
-window.login = function(n){ const ok = _login(n); if (ok) pull().then(loadTop); return ok; };
+window.login = function(n, fresh){ const ok = _login(n, fresh); if (ok) pull().then(loadTop); return ok; };
 if (me()) pull().then(loadTop);
 setInterval(() => { if (!document.hidden && me()) loadTop(); }, 60000);
 })();
