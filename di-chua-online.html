@@ -442,11 +442,11 @@ footer .in{display:grid;gap:8px}
     <div class="sec-head">
       <p class="eyebrow">Tụng đọc</p>
       <h2>Đọc kinh</h2>
-      <p>Chọn kinh, đọc theo từng câu. Bấm vào một câu hoặc dùng nút Câu sau để di chuyển. Đọc xong một lượt được +1 điểm công đức.</p>
+      <p>Chọn kinh, đọc theo từng câu. Bấm vào một câu hoặc dùng nút Câu sau để di chuyển. Đọc xong một lượt được +1 điểm công đức. Hiện có Bát Nhã Tâm Kinh, Chú Đại Bi và Chú Lăng Nghiêm (hội thứ nhất).</p>
     </div>
     <div class="chips" id="kinhList" role="group" aria-label="Chọn kinh" style="justify-content:center;margin-bottom:18px"></div>
     <article class="kinh-card" id="kinhCard">
-      <div class="kinh-head"><p class="eyebrow">Kinh Đại thừa</p><h3 id="kinhTitle"></h3><p class="han" id="kinhHan"></p><p class="mini" id="kinhNote"></p></div>
+      <div class="kinh-head"><p class="eyebrow" id="kinhKind">Kinh Đại thừa</p><h3 id="kinhTitle"></h3><p class="han" id="kinhHan"></p><p class="mini" id="kinhNote"></p></div>
       <div class="kinh-tools" role="group" aria-label="Công cụ đọc kinh">
         <button class="btn small" id="kFsDown" type="button" aria-label="Giảm cỡ chữ">A−</button>
         <button class="btn small" id="kFsUp" type="button" aria-label="Tăng cỡ chữ">A+</button>
@@ -1796,6 +1796,144 @@ const KINH = [{
       'Cố thuyết Bát nhã Ba la mật đa chú, tức thuyết chú viết:',
       '*Yết đế, yết đế, Ba la yết đế, Ba la tăng yết đế, Bồ đề Tát bà ha. (3 lần)']]
   ]
+}, {
+  id: 'daibi', name: 'Chú Đại Bi', short: 'Chú Đại Bi', han: '大悲咒', kind: 'Thần chú',
+  note: 'Thần Chú Đại Bi (84 câu), bản phiên âm Hán Việt phổ biến. Mỗi chùa có thể đọc khác đôi chút.',
+  parts: [
+    ['Khai kinh', ['*Nam mô Đại Bi Hội Thượng Phật Bồ Tát. (3 lần)', 'Thiên thủ thiên nhãn vô ngại Đại Bi tâm Đà ra ni.']],
+    ['Quy y Tam Bảo và Quán Thế Âm', [
+      'Nam mô hắc ra đát na đa ra dạ da.', 'Nam mô a rị da.', 'Bà lô yết đế thước bát ra da.', 'Bồ đề tát đỏa bà da.', 'Ma ha tát đỏa bà da.', 'Ma ha ca lô ni ca da.',
+      'Án.', 'Tát bàn ra phạt duệ.', 'Số đát na đát tỏa.', 'Nam mô tất kiết lật đỏa y mông a rị da.', 'Bà lô kiết đế thất Phật ra lăng đà bà.', 'Nam mô na ra cẩn trì.',
+      'Hê rị ma ha bàn đa sa mế.', 'Tát bà a tha đậu thâu bằng.', 'A thệ dựng.', 'Tát bà tát đa na ma bà dà.', 'Ma phạt đặc đậu.']],
+    ['Thần chú khai mở', [
+      'Đát điệt tha.', 'Án. A bà lô hê.', 'Lô ca đế.', 'Ca ra đế.', 'Di hê rị.', 'Ma ha bồ đề tát đỏa.', 'Tát bà tát bà.', 'Ma ra ma ra.', 'Ma hê ma hê rị đà dựng.',
+      'Cu lô cu lô yết mông.', 'Độ lô độ lô phạt xà da đế.', 'Ma ha phạt xà da đế.', 'Đà ra đà ra.', 'Địa rị ni.', 'Thất Phật ra da.', 'Giá ra giá ra.', 'Ma ma phạt ma ra.', 'Mục đế lệ.']],
+    ['Trì niệm', [
+      'Y hê y hê.', 'Thất na thất na.', 'A ra sâm Phật ra xá lợi.', 'Phạt sa phạt sâm.', 'Phật ra xá da.', 'Hô lô hô lô ma ra.', 'Hô lô hô lô hê rị.', 'Ta ra ta ra.', 'Tất rị tất rị.',
+      'Tô rô tô rô.', 'Bồ đề dạ bồ đề dạ.', 'Bồ đà dạ bồ đà dạ.', 'Di đế rị dạ.', 'Na ra cẩn trì.', 'Địa rị sắc ni na.', 'Ba dạ ma na.', 'Ta bà ha.']],
+    ['Thành tựu', [
+      'Tất đà dạ. Ta bà ha.', 'Ma ha tất đà dạ. Ta bà ha.', 'Tất đà du nghệ. Thất bàn ra dạ. Ta bà ha.', 'Na ra cẩn trì. Ta bà ha.', 'Ma ra na ra. Ta bà ha.',
+      'Tất ra tăng a mục khê da. Ta bà ha.', 'Ta bà ma ha a tất đà dạ. Ta bà ha.', 'Giả kiết ra a tất đà dạ. Ta bà ha.', 'Ba đà ma yết tất đà dạ. Ta bà ha.',
+      'Na ra cẩn trì bàn đà ra dạ. Ta bà ha.', 'Ma bà rị thắng yết ra dạ. Ta bà ha.']],
+    ['Kết chú', [
+      'Nam mô hắc ra đát na đa ra dạ da.', 'Nam mô a rị da.', 'Bà lô kiết đế.', 'Thước bàn ra dạ.', 'Ta bà ha.', 'Án. Tất điện đô.', 'Mạn đa ra.', 'Bạt đà gia.', 'Ta bà ha.',
+      '*Nam mô Đại Bi Quán Thế Âm Bồ Tát. (3 lần)']]
+  ]
+}, {
+ "id": "langnghiem1",
+ "name": "Chú Lăng Nghiêm · Hội thứ nhất",
+ "short": "Lăng Nghiêm · Hội 1",
+ "han": "楞嚴咒",
+ "kind": "Thần chú",
+ "note": "Hội thứ nhất của Chú Lăng Nghiêm, chép theo bản anh cung cấp. Các hội còn lại sẽ được thêm sau.",
+ "parts": [
+  [
+   "Khai kinh",
+   [
+    "*Nam mô Lăng Nghiêm Hội Thượng Phật Bồ Tát. (3 lần)"
+   ]
+  ],
+  [
+   "Kệ tán",
+   [
+    "Diệu trạm tổng trì bất động tôn",
+    "Thủ Lăng Nghiêm Vương thế hy hữu",
+    "Tiêu ngã ức kiếp điên đảo tưởng",
+    "Bất lịch tăng kỳ hoạch pháp thân",
+    "Nguyện kim đắc quả thành bảo vương",
+    "Hoàn độ như thị hằng sa chúng",
+    "Tương thử thâm tâm phụng trần sát",
+    "Thị tắc danh vi báo Phật ân",
+    "Phục thỉnh Thế Tôn vị chứng minh",
+    "Ngũ trược ác thế thệ tiên nhập",
+    "Như nhứt chúng sinh vị thành Phật",
+    "Chung bất ư thử thủ nê hoàn",
+    "Đại hùng đại lực đại từ bi",
+    "Hi cánh thẩm trừ vi tế hoặc",
+    "Linh ngã tảo đăng vô thượng giác",
+    "Ư thập phương giới tọa đạo tràng",
+    "Thuấn nhã đa tánh khả tiêu vong",
+    "Thước ca ra tâm vô động chuyển."
+   ]
+  ],
+  [
+   "Quy y",
+   [
+    "Nam mô thường trụ thập phương Phật.",
+    "Nam mô thường trụ thập phương Pháp.",
+    "Nam mô thường trụ thập phương Tăng.",
+    "Nam mô Thích Ca Mâu Ni Phật.",
+    "Nam mô Phật Đảnh Thủ Lăng Nghiêm.",
+    "Nam mô Quán Thế Âm Bồ Tát.",
+    "Nam mô Kim Cang Tạng Bồ Tát."
+   ]
+  ],
+  [
+   "Lời mở đầu",
+   [
+    "Nhĩ thời Thế Tôn, tùng nhục kế trung, dõng bá bảo quang, quang trung dõng xuất, thiên diệp bảo liên, hữu hóa Như Lai, tọa bảo hoa trung, đảnh phóng thập đạo, bá bảo quang minh, nhứt nhứt quang minh, giai biến thị hiện, thập hằng hà sa, Kim Cang mật tích, kình sơn trì sử, biến hư không giới, đại chúng ngưỡng quan, úy ái kiêm bảo, cầu Phật ai hựu, nhứt tâm thính Phật, vô kiến đảnh tướng, phóng quang Như Lai, tuyên thuyết thần chú:"
+   ]
+  ],
+  [
+   "Đệ nhất hội",
+   [
+    "Nam mô tát đát tha tô già đa da, a ra ha đế, tam miệu tam bồ đà tỏa.",
+    "Tát đát tha Phật đà câu tri sắc ni sam.",
+    "Nam mô tát bà bột đà bột địa, tát đa bệ tệ.",
+    "Nam mô tát đa nẩm tam miệu tam bồ đà câu tri nẩm.",
+    "Ta xá ra bà ca tăng già nẩm.",
+    "Nam mô lô kê a la hán đa nẩm.",
+    "Nam mô tô lô đa ba na nẩm.",
+    "Nam mô ta yết rị đà già di nẩm.",
+    "Nam mô lô kê tam miệu già đa nẩm.",
+    "Tam miệu già ba ra để ba đa na nẩm.",
+    "Nam mô đề bà ly sắt nỏa.",
+    "Nam mô tất đà da tỳ địa da đà ra ly sắt nỏa.",
+    "Xá ba noa yết ra ha, ta ha ta ra ma tha nẩm.",
+    "Nam mô bạt ra ha ma ni.",
+    "Nam mô nhân đà ra da.",
+    "Nam mô bà già bà đế, lô đà ra da, ô ma bát đế, ta hê dạ da.",
+    "Nam mô bà già bà đế.",
+    "Na ra dã noa da.",
+    "Bàn giá ma ha tam mộ đà ra.",
+    "Nam mô tất yết rị đa da.",
+    "Nam mô bà già bà đế, ma ha ca ra da.",
+    "Địa rị bác lặc na già ra.",
+    "Tỳ đà ra ba noa ca ra da.",
+    "A địa mục đế.",
+    "Thi ma xá na nê bà tất nể.",
+    "Ma đát rị già noa.",
+    "Nam mô tất yết rị đa da.",
+    "Nam mô bà già bà đế.",
+    "Đa tha già đa câu ra da.",
+    "Nam mô bát đầu ma câu ra da.",
+    "Nam mô bạt xà ra câu ra da.",
+    "Nam mô ma ni câu ra da.",
+    "Nam mô già xà câu ra da.",
+    "Nam mô bà già bà đế, đế rị trà du ra tây na, ba ra ha ra noa ra xà da, đa tha già đa da.",
+    "Nam mô bà già bà đế.",
+    "Nam mô a di đa bà da, đa tha già đa da, a ra ha đế, tam miệu tam bồ đà da.",
+    "Nam mô bà già bà đế, a sô bệ da, đa tha già đa da, a ra ha đế, tam miệu tam bồ đà da.",
+    "Nam mô bà già bà đế, bệ sa xà da câu lô phệ trụ rị da, bát ra bà ra xà da, đa tha già đa da.",
+    "Nam mô bà già bà đế, tam bổ sư bí đa, tát lân nại ra lặc xà da, đa tha già đa da, a ra ha đế, tam miệu tam bồ đà da.",
+    "Nam mô bà già bà đế, xá kê dã mẫu na duệ, đa tha già đa da, a ra ha đế, tam miệu tam bồ đà da.",
+    "Nam mô bà già bà đế, lặc đát na kê đô ra xà da, đa tha già đa da, a ra ha đế, tam miệu tam bồ đà da,",
+    "đế biều nam mô tát yết rị đa, ế đàm bà già bà đa, tát đát tha già đô sắc ni sam, tát đát đa bát đát lam.",
+    "Nam mô a bà ra thị đam, bác ra đế dương kỳ ra, tát ra bà bộ đa yết ra ha, ni yết ra ha yết ca ra ha ni, bạc ra bí địa da sất đà nể,",
+    "a ca ra mật rị trụ, bát rị đát ra da nảnh yết rị, tát ra bà bàn đà ra mục xoa ni, tát ra bà đột sắc tra, đột tất phạp bát na nễ phạt ra ni,",
+    "giả đô ra thất đế nẫm, yết ra ha ta ha tát ra nhã xà, tỳ đa băng ta na yết rị, a sắc tra băng xá đế nẫm, na xoa sát đác ra nhã xà,",
+    "ba ra tát đà na yết rị, a sắc tra nẫm, ma ha yết ra ha nhã xà, tỳ đa băng tát na yết rị, tát bà xá đô lô nể bà ra nhã xà,",
+    "hô lam đột tất phạp nan giá na xá ni, bí sa xá tất đác ra, a kiết ni ô đà ca ra nhã xà, a bát ra thị đa cụ ra ma ha bác ra thiện trì, ma ha điệp đa,",
+    "ma ha đế xà, ma ha thuế đa xà bà ra, ma ha bạt ra bàn đà ra bà tất nể, a rị da đa ra, tỳ rị câu tri,",
+    "thệ bà tỳ xà da, bạc xà ra ma lễ để, tỳ xá lô đa, bột đằng dõng ca, bạt xà ra chế hắt na a giá,",
+    "ma ra chế bà bác ra chất đa, bạc xà ra thiện trì, tỳ xá ra giá, phiến đa xá bệ đề bà bổ thị đa, tô ma lô ba,",
+    "ma ha thuế đa, a rị da đa ra, ma ha bà ra, a bác ra, bạt xà ra thương yết ra chế bà,",
+    "bạt xà ra câu ma rị, câu lam đà rị, bạt xà ra hắc tát đa giá tỳ địa gia kiền giá na ma rị ca, khuất tô mẫu bà yết ra đa na, bệ lô giá na câu rị da,",
+    "dạ ra thố sắc ni sam, tỳ chiết lam bà ma ni giá, bạt xà ra ca na ca ba ra bà, lô xà na bạt xà ra đốn trỉ giá, thuế đa giá ca ma ra sát xa thi ba ra bà,",
+    "ế đế di đế, mẫu đà ra yết noa, ta bệ ra sám, quật phạm đô, ấn thố na mạ mạ tỏa."
+   ]
+  ]
+ ]
 }];
 let kid = store.get('kinh', 'tamkinh'), idx = 0, fs = +store.get('kinhfs', 1.2) || 1.2, counts = store.get('kinhcount', {});
 if (!KINH.some(k => k.id === kid)) kid = KINH[0].id;
@@ -1808,7 +1946,7 @@ function mark(){
   $('kPrev').disabled = idx <= 0; $('kNext').disabled = idx >= ls.length - 1;
 }
 function paint(){
-  const k = book(); $('kinhTitle').textContent = k.name; $('kinhHan').textContent = k.han; $('kinhNote').textContent = k.note;
+  const k = book(); $('kinhTitle').textContent = k.name; $('kinhHan').textContent = k.han; $('kinhKind').textContent = k.kind || 'Kinh Đại thừa'; $('kinhNote').textContent = k.note;
   body.textContent = ''; let n = 0;
   k.parts.forEach(pt => {
     const h = document.createElement('div'); h.className = 'sec'; h.textContent = pt[0]; body.appendChild(h);
@@ -1837,7 +1975,7 @@ $('kFsDown').addEventListener('click', () => { fs = Math.max(.9, +(fs - .1).toFi
 $('kDone').addEventListener('click', () => {
   counts[kid] = (counts[kid] || 0) + 1; store.set('kinhcount', counts);
   $('kCount').textContent = 'Bạn đã đọc ' + counts[kid] + ' lượt.';
-  merit('sutra'); toast('Nam mô Bổn Sư Thích Ca Mâu Ni Phật. Đã hoàn thành một lượt đọc kinh');
+  merit('sutra'); toast('Nam mô Bổn Sư Thích Ca Mâu Ni Phật. Đã hoàn thành một lượt tụng đọc');
   idx = 0; mark();
 });
 paint();
