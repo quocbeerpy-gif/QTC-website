@@ -151,6 +151,19 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{padding:8px 16px;border-radius:99px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:.9rem;min-height:40px}
 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+/* kinh */
+.kinh-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;display:grid;gap:18px;max-width:760px;margin-inline:auto}
+.kinh-head{text-align:center;display:grid;gap:4px}
+.kinh-head h3{font-size:clamp(1.3rem,3.5vw,1.7rem)}
+.kinh-head .han{color:var(--muted);letter-spacing:.2em;font-size:.95rem}
+.kinh-tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
+.kinh-body{font-size:var(--kinh-fs,1.2rem);line-height:1.95;display:grid;gap:6px}
+.kinh-body .sec{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:10px}
+.kinh-body p{margin:0;padding:6px 12px;border-radius:12px;border-left:3px solid transparent;cursor:pointer}
+.kinh-body p:hover{background:var(--surface2)}
+.kinh-body p.cur{background:var(--surface2);border-left-color:var(--accent);font-weight:600}
+.kinh-body p.chu{text-align:center}
+.kinh-foot{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
 
 /* pagodas */
 .filters{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
@@ -208,6 +221,9 @@ footer .in{display:grid;gap:8px}
 /* tai khoan va cong duc */
 .acct{display:inline-flex;align-items:center;gap:8px;max-width:220px;padding:6px 14px;border-radius:99px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:.88rem;font-weight:500;min-height:38px}
 .acct:hover{border-color:var(--accent)}
+.robe{width:1.15em;height:1.15em;flex:none;vertical-align:-.2em;display:inline-block}
+.score-row{display:flex;align-items:center;gap:10px}
+.score-row .robe{width:34px;height:34px}
 .acct.on{border-color:var(--accent)}
 @property --ang{syntax:"<angle>";inherits:false;initial-value:0deg}
 .acct{position:relative;animation:acctGlow 2.6s ease-in-out infinite}
@@ -251,6 +267,14 @@ footer .in{display:grid;gap:8px}
 .plain li{display:flex;gap:10px;justify-content:space-between;align-items:baseline;padding:8px 12px;border-radius:12px;background:var(--bg);border:1px solid var(--line);min-width:0}
 .plain li span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .plain li.me{border-color:var(--accent)}
+.board{max-height:560px;overflow:auto}
+.board li{align-items:center}
+.board .rk{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--surface2);font-size:.8rem;font-weight:600;flex:none;font-variant-numeric:tabular-nums}
+.board li:nth-child(1) .rk{background:#e0a81c;color:#3a2800}
+.board li:nth-child(2) .rk{background:#c3c3bd;color:#2b2b28}
+.board li:nth-child(3) .rk{background:#c98a52;color:#2e1a08}
+.board .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board .robe{width:20px;height:20px}
 .plain .t{color:var(--muted);font-size:.8rem;white-space:nowrap;font-variant-numeric:tabular-nums}
 .acts-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
 @media (max-width:860px){.merit-grid,.lists{grid-template-columns:1fr}}
@@ -303,6 +327,7 @@ footer .in{display:grid;gap:8px}
     <nav class="nav" aria-label="Mục lục">
       <a href="#top">Điện thờ</a>
       <a href="#cong-duc">Công đức</a>
+      <a href="#doc-kinh">Đọc kinh</a>
       <a href="#chuong-mo">Chuông và mõ</a>
       <a href="#cau-an">Cầu an</a>
       <a href="#niem-phat">Niệm Phật</a>
@@ -384,7 +409,7 @@ footer .in{display:grid;gap:8px}
       <div class="merit-grid">
         <div class="panel">
           <p class="eyebrow">Xin chào <span id="mName"></span></p>
-          <div class="score-num" id="mTotal">0</div>
+          <div class="score-row"><span id="mRobe"></span><div class="score-num" id="mTotal">0</div></div>
           <p class="mini">điểm công đức</p>
           <p class="lvl" id="mLevel"></p>
           <div class="bar-track"><div class="bar-fill" id="mBar"></div></div>
@@ -401,7 +426,7 @@ footer .in{display:grid;gap:8px}
       </div>
       <div class="lists">
         <div class="panel"><h3>Hoạt động gần đây</h3><ul class="plain" id="mLog"></ul></div>
-        <div class="panel"><h3>Bảng công đức trên thiết bị này</h3><ul class="plain" id="mBoard"></ul></div>
+        <div class="panel"><h3>Bảng công đức · Top 20</h3><p class="mini" id="mBoardSrc"></p><ul class="plain board" id="mBoard"></ul></div>
       </div>
       <div class="acts-row">
         <button class="btn" id="mSwitch" type="button">Đổi người</button>
@@ -409,6 +434,31 @@ footer .in{display:grid;gap:8px}
         <button class="btn small" id="mDelete" type="button">Xóa hồ sơ này</button>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="band" id="doc-kinh">
+  <div class="in">
+    <div class="sec-head">
+      <p class="eyebrow">Tụng đọc</p>
+      <h2>Đọc kinh</h2>
+      <p>Chọn kinh, đọc theo từng câu. Bấm vào một câu hoặc dùng nút Câu sau để di chuyển. Đọc xong một lượt được +1 điểm công đức.</p>
+    </div>
+    <div class="chips" id="kinhList" role="group" aria-label="Chọn kinh" style="justify-content:center;margin-bottom:18px"></div>
+    <article class="kinh-card" id="kinhCard">
+      <div class="kinh-head"><p class="eyebrow">Kinh Đại thừa</p><h3 id="kinhTitle"></h3><p class="han" id="kinhHan"></p><p class="mini" id="kinhNote"></p></div>
+      <div class="kinh-tools" role="group" aria-label="Công cụ đọc kinh">
+        <button class="btn small" id="kFsDown" type="button" aria-label="Giảm cỡ chữ">A−</button>
+        <button class="btn small" id="kFsUp" type="button" aria-label="Tăng cỡ chữ">A+</button>
+        <button class="btn small" id="kPrev" type="button">Câu trước</button>
+        <button class="btn small" id="kNext" type="button">Câu sau</button>
+      </div>
+      <div class="kinh-body" id="kinhBody"></div>
+      <div class="kinh-foot">
+        <button class="btn primary" id="kDone" type="button">Đã đọc xong một lượt</button>
+        <span class="mini" id="kCount"></span>
+      </div>
+    </article>
   </div>
 </section>
 
@@ -697,7 +747,7 @@ function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add(
 function pulse(el){ if(!el) return; el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); }
 
 /* ---------- ho so va cong duc ---------- */
-const MERIT_TYPES = { incense: 'Thắp hương', lamp: 'Thắp đèn', lotus: 'Dâng hoa sen', bell: 'Rung chuông', moc: 'Gõ mõ', mala: 'Niệm Phật', pray: 'Viết lời cầu an', breath: 'Thiền thở', pagoda: 'Đánh dấu chùa' };
+const MERIT_TYPES = { incense: 'Thắp hương', lamp: 'Thắp đèn', lotus: 'Dâng hoa sen', bell: 'Rung chuông', moc: 'Gõ mõ', mala: 'Niệm Phật', pray: 'Viết lời cầu an', breath: 'Thiền thở', pagoda: 'Đánh dấu chùa', sutra: 'Đọc kinh' };
 const LEVELS = [['Sơ phát tâm', 0], ['Tinh tấn', 50], ['Hộ trì', 200], ['Thanh tịnh', 600], ['Viên mãn', 1500]];
 let users = store.get('users', {}), curKey = store.get('current', null), guestHinted = false, lastFocus = null, delArmed = false;
 if (!users || typeof users !== 'object') users = {};
@@ -727,7 +777,7 @@ function merit(type){
 }
 function barTrack(p){ const t = el('div', 'bar-track'), f = el('div', 'bar-fill'); f.style.width = Math.round(Math.max(0, Math.min(1, p)) * 100) + '%'; t.appendChild(f); return t; }
 function paintMerit(u){
-  $('mName').textContent = u.name; $('mTotal').textContent = u.merit;
+  $('mName').textContent = u.name; $('mTotal').textContent = u.merit; $('mRobe').textContent = ''; $('mRobe').appendChild(robeIcon(u.merit));
   const lv = levelOf(u.merit);
   $('mLevel').textContent = 'Bậc ' + lv.cur[0];
   $('mNext').textContent = lv.nxt ? 'Còn ' + (lv.nxt[1] - u.merit) + ' điểm để lên bậc ' + lv.nxt[0] + '.' : 'Bạn đã đạt bậc cao nhất.';
@@ -738,10 +788,30 @@ function paintMerit(u){
   const log = $('mLog'); log.textContent = '';
   if (!u.log.length){ log.appendChild(el('li', null, 'Chưa có hoạt động nào. Hãy thử thắp một nén hương.')); }
   u.log.slice(0, 8).forEach(e => { const li = el('li'); li.append(el('span', null, (MERIT_TYPES[e.type] || 'Hoạt động') + '  +1'), el('span', 't', fmtTime(e.t))); log.appendChild(li); });
-  const board = $('mBoard'); board.textContent = '';
-  Object.keys(users).map(k => ({ k: k, u: users[k] })).sort((a, b) => b.u.merit - a.u.merit).slice(0, 5).forEach((r, i) => {
-    const li = el('li', r.k === curKey ? 'me' : ''); li.append(el('span', null, (i + 1) + '. ' + r.u.name), el('span', 't', r.u.merit + ' điểm')); board.appendChild(li);
+  paintBoard();
+}
+window.__cloudTop = null;
+function paintBoard(){
+  const board = $('mBoard'); if (!board) return; board.textContent = '';
+  const m = {};
+  Object.keys(users).forEach(k => { m[k] = { name: users[k].name, merit: users[k].merit }; });
+  (window.__cloudTop || []).forEach(r => { const k = nameKey(r.name); if (!m[k] || r.merit > m[k].merit) m[k] = { name: r.name, merit: r.merit }; });
+  const list = Object.keys(m).map(k => ({ k: k, name: m[k].name, merit: m[k].merit })).sort((a, b) => b.merit - a.merit).slice(0, 20);
+  $('mBoardSrc').textContent = window.__cloudTop ? 'Xếp hạng chung của mọi người, cập nhật từ Firebase.' : 'Chỉ gồm hồ sơ trên thiết bị này (chưa lấy được bảng chung).';
+  list.forEach((r, i) => {
+    const li = el('li', r.k === curKey ? 'me' : '');
+    li.append(el('span', 'rk', String(i + 1)), el('span', 'nm', r.name), robeIcon(r.merit), el('span', 't', r.merit + ' điểm')); board.appendChild(li);
   });
+}
+function robeTier(p){ return p >= 10000 ? ['#b3261e', '#7d1812', 'Áo cà sa đỏ'] : p >= 1000 ? ['#e0a81c', '#9a6d08', 'Áo màu vàng'] : ['#9a9a94', '#63635e', 'Áo màu tro']; }
+function robeIcon(p){
+  const t = robeTier(p), ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('class', 'robe'); svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', t[2]);
+  const ti = document.createElementNS(ns, 'title'); ti.textContent = t[2] + ' (' + p + ' điểm)'; svg.appendChild(ti);
+  [['M8.5 3 12 6.5 15.5 3 21 6l-2 5-2.5-1V21H7.5V10L5 11 3 6z', t[0], t[1]], ['M12 6.5V21', 'none', t[1]], ['M7.5 12.5l9 4', 'none', t[1]]].forEach(a => {
+    const pa = document.createElementNS(ns, 'path'); pa.setAttribute('d', a[0]); pa.setAttribute('fill', a[1]); pa.setAttribute('stroke', a[2]); pa.setAttribute('stroke-width', '1.2'); pa.setAttribute('stroke-linejoin', 'round'); svg.appendChild(pa);
+  });
+  return svg;
 }
 function paintAccount(){
   const u = me(), btn = $('loginBtn');
@@ -749,7 +819,7 @@ function paintAccount(){
   const ic = document.createElementNS('http://www.w3.org/2000/svg', 'svg'), use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
   ic.setAttribute('class', 'ico'); use.setAttribute('href', '#i-lotus'); ic.appendChild(use); btn.appendChild(ic);
   if (u){
-    btn.append(el('span', 'who', u.name), el('b', 'pts', String(u.merit))); btn.classList.add('on');
+    btn.append(el('span', 'who', u.name), robeIcon(u.merit), el('b', 'pts', String(u.merit))); btn.classList.add('on');
     btn.setAttribute('aria-label', u.name + ', ' + u.merit + ' điểm công đức. Mở sổ công đức');
   } else {
     btn.append(el('span', 'who', 'Đăng nhập')); btn.classList.remove('on');
@@ -1707,6 +1777,122 @@ $('btnTempleLight').addEventListener('click', () => lightIncense(3));
 if (window.ResizeObserver) new ResizeObserver(() => { if (cur === 'linhthien') resize(); }).observe(stage);
 const saved = store.get('temple', 'quanam');
 if (saved === 'linhthien') select('linhthien');
+})();
+</script>
+<script>
+(function(){
+const KINH = [{
+  id: 'tamkinh', name: 'Bát Nhã Tâm Kinh', short: 'Bát Nhã Tâm Kinh', han: '般若波羅蜜多心經',
+  note: 'Bản phiên âm Hán Việt từ bản dịch của Ngài Huyền Trang.',
+  parts: [
+    ['Mở đầu', ['Quán Tự Tại Bồ Tát, hành thâm Bát nhã Ba la mật đa thời, chiếu kiến ngũ uẩn giai không, độ nhất thiết khổ ách.']],
+    ['Sắc không', ['Xá Lợi Tử! Sắc bất dị không, không bất dị sắc, sắc tức thị không, không tức thị sắc, thọ tưởng hành thức, diệc phục như thị.',
+      'Xá Lợi Tử! Thị chư pháp không tướng, bất sanh bất diệt, bất cấu bất tịnh, bất tăng bất giảm.']],
+    ['Không có gì để chấp', ['Thị cố không trung, vô sắc, vô thọ tưởng hành thức, vô nhãn nhĩ tỷ thiệt thân ý, vô sắc thanh hương vị xúc pháp, vô nhãn giới, nãi chí vô ý thức giới.',
+      'Vô vô minh, diệc vô vô minh tận, nãi chí vô lão tử, diệc vô lão tử tận, vô khổ tập diệt đạo, vô trí diệc vô đắc.']],
+    ['Không sợ hãi, Niết bàn', ['Dĩ vô sở đắc cố, Bồ đề tát đỏa, y Bát nhã Ba la mật đa cố, tâm vô quải ngại, vô quải ngại cố, vô hữu khủng bố, viễn ly điên đảo mộng tưởng, cứu cánh Niết bàn.',
+      'Tam thế chư Phật, y Bát nhã Ba la mật đa cố, đắc A nậu đa la Tam miệu Tam bồ đề.']],
+    ['Thần chú', ['Cố tri Bát nhã Ba la mật đa, thị đại thần chú, thị đại minh chú, thị vô thượng chú, thị vô đẳng đẳng chú, năng trừ nhứt thiết khổ, chơn thật bất hư.',
+      'Cố thuyết Bát nhã Ba la mật đa chú, tức thuyết chú viết:',
+      '*Yết đế, yết đế, Ba la yết đế, Ba la tăng yết đế, Bồ đề Tát bà ha. (3 lần)']]
+  ]
+}];
+let kid = store.get('kinh', 'tamkinh'), idx = 0, fs = +store.get('kinhfs', 1.2) || 1.2, counts = store.get('kinhcount', {});
+if (!KINH.some(k => k.id === kid)) kid = KINH[0].id;
+if (!counts || typeof counts !== 'object') counts = {};
+const body = $('kinhBody');
+const book = () => KINH.find(k => k.id === kid);
+function lines(){ return Array.prototype.slice.call(body.querySelectorAll('p[data-i]')); }
+function mark(){
+  const ls = lines(); ls.forEach((p, i) => p.classList.toggle('cur', i === idx));
+  $('kPrev').disabled = idx <= 0; $('kNext').disabled = idx >= ls.length - 1;
+}
+function paint(){
+  const k = book(); $('kinhTitle').textContent = k.name; $('kinhHan').textContent = k.han; $('kinhNote').textContent = k.note;
+  body.textContent = ''; let n = 0;
+  k.parts.forEach(pt => {
+    const h = document.createElement('div'); h.className = 'sec'; h.textContent = pt[0]; body.appendChild(h);
+    pt[1].forEach(t => {
+      const chu = t.charAt(0) === '*', p = document.createElement('p'); p.dataset.i = n++; p.textContent = chu ? t.slice(1) : t;
+      if (chu) p.className = 'chu'; p.tabIndex = 0;
+      const go = () => { idx = +p.dataset.i; mark(); };
+      p.addEventListener('click', go); p.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go(); } });
+      body.appendChild(p);
+    });
+  });
+  document.documentElement.style.setProperty('--kinh-fs', fs + 'rem');
+  $('kCount').textContent = counts[k.id] ? 'Bạn đã đọc ' + counts[k.id] + ' lượt.' : 'Chưa có lượt đọc nào.';
+  const box = $('kinhList'); box.textContent = '';
+  KINH.forEach(x => { const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = x.short; b.setAttribute('aria-pressed', String(x.id === kid)); b.addEventListener('click', () => { kid = x.id; idx = 0; store.set('kinh', kid); paint(); }); box.appendChild(b); });
+  mark();
+}
+function step(d){
+  const ls = lines(); idx = Math.max(0, Math.min(ls.length - 1, idx + d)); mark();
+  ls[idx].scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+}
+$('kNext').addEventListener('click', () => step(1));
+$('kPrev').addEventListener('click', () => step(-1));
+$('kFsUp').addEventListener('click', () => { fs = Math.min(2, +(fs + .1).toFixed(2)); store.set('kinhfs', fs); document.documentElement.style.setProperty('--kinh-fs', fs + 'rem'); });
+$('kFsDown').addEventListener('click', () => { fs = Math.max(.9, +(fs - .1).toFixed(2)); store.set('kinhfs', fs); document.documentElement.style.setProperty('--kinh-fs', fs + 'rem'); });
+$('kDone').addEventListener('click', () => {
+  counts[kid] = (counts[kid] || 0) + 1; store.set('kinhcount', counts);
+  $('kCount').textContent = 'Bạn đã đọc ' + counts[kid] + ' lượt.';
+  merit('sutra'); toast('Nam mô Bổn Sư Thích Ca Mâu Ni Phật. Đã hoàn thành một lượt đọc kinh');
+  idx = 0; mark();
+});
+paint();
+})();
+</script>
+<script>
+/* Đồng bộ công đức lên Firebase Firestore (REST). Lỗi mạng hoặc bị chặn thì web vẫn chạy bằng bộ nhớ trình duyệt. */
+(function(){
+const FB = { apiKey: "AIzaSyCeFecwFdMEO8MpLRLAW5iTW8Qj_pTWJjc", projectId: "chuaonline-8dfbd" };
+const BASE = 'https://firestore.googleapis.com/v1/projects/' + FB.projectId + '/databases/(default)/documents/users/';
+const docId = k => 'u_' + encodeURIComponent(k).replace(/%/g, '_').replace(/[.*]/g, '_');
+const url = (k, q) => BASE + docId(k) + (q || '') + (q ? '&' : '?') + 'key=' + FB.apiKey;
+const st = document.createElement('p'); st.className = 'mini'; st.id = 'cloudStatus'; st.textContent = '';
+const anchor = $('mNext'); if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(st, anchor.nextSibling);
+function say(t){ st.textContent = t; }
+function toFields(u){ return { fields: { name: { stringValue: u.name }, merit: { integerValue: String(u.merit) }, counts: { stringValue: JSON.stringify(u.counts || {}) }, updated: { integerValue: String(Date.now()) } } }; }
+function fetchT(u, o){ const c = new AbortController(), t = setTimeout(() => c.abort(), 9000); return fetch(u, Object.assign({ signal: c.signal }, o)).finally(() => clearTimeout(t)); }
+let timer = 0, busy = false;
+async function push(){
+  const u = me(); if (!u) return;
+  try{
+    const r = await fetchT(url(curKey, '?updateMask.fieldPaths=name&updateMask.fieldPaths=merit&updateMask.fieldPaths=counts&updateMask.fieldPaths=updated'), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(toFields(u)) });
+    if (r.ok) loadTop();
+    say(r.ok ? 'Đã đồng bộ lên Firebase' : 'Firebase chưa cho ghi (' + r.status + '). Công đức vẫn lưu trên máy này.');
+  }catch(e){ say('Chưa kết nối được Firebase. Công đức vẫn lưu trên máy này.'); }
+}
+function later(){ clearTimeout(timer); timer = setTimeout(push, 1500); }
+async function pull(){
+  const u = me(); if (!u || busy) return; busy = true; const key = curKey;
+  try{
+    const r = await fetchT(url(key));
+    if (r.status === 404){ await push(); return; }
+    if (!r.ok){ say('Firebase chưa cho đọc (' + r.status + '). Công đức vẫn lưu trên máy này.'); return; }
+    const d = await r.json(), f = d.fields || {}, rm = parseInt((f.merit || {}).integerValue || '0', 10);
+    if (rm > u.merit){
+      let rc = {}; try{ rc = JSON.parse((f.counts || {}).stringValue || '{}'); }catch(e){}
+      u.merit = rm; u.counts = rc; saveUsers(); paintAccount(); say('Đã lấy công đức từ Firebase: ' + rm + ' điểm');
+    } else { await push(); }
+  }catch(e){ say('Chưa kết nối được Firebase. Công đức vẫn lưu trên máy này.'); }
+  finally{ busy = false; }
+}
+async function loadTop(){
+  try{
+    const r = await fetchT('https://firestore.googleapis.com/v1/projects/' + FB.projectId + '/databases/(default)/documents:runQuery?key=' + FB.apiKey, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ structuredQuery: { from: [{ collectionId: 'users' }], orderBy: [{ field: { fieldPath: 'merit' }, direction: 'DESCENDING' }], limit: 20 } }) });
+    if (!r.ok) return;
+    const arr = await r.json();
+    window.__cloudTop = arr.filter(x => x.document).map(x => { const f = x.document.fields || {}; return { name: (f.name || {}).stringValue || 'Ẩn danh', merit: parseInt((f.merit || {}).integerValue || '0', 10) }; });
+    if (me()) paintBoard();
+  }catch(e){}
+}
+const _merit = merit, _login = login;
+window.merit = function(t){ const had = !!me(); _merit(t); if (had) later(); };
+window.login = function(n){ const ok = _login(n); if (ok) pull().then(loadTop); return ok; };
+if (me()) pull().then(loadTop);
+setInterval(() => { if (!document.hidden && me()) loadTop(); }, 60000);
 })();
 </script>
 
