@@ -6,9 +6,9 @@
 <meta name="theme-color" content="#d3202a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Nh-n D-n Mua Sắm">
+<meta name="apple-mobile-web-app-title" content="Nhân Dân Mua Sắm">
 <meta name="format-detection" content="telephone=no">
-<title>Nh-n D-n Mua Sắm</title>
+<title>Nhân Dân Mua Sắm</title>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f6f3f1;--card:#fff;--tx:#231a18;--mu:#7a6c68;--bd:#eadfda;--pr:#d3202a;--pr2:#ff5a36;--gold:#ffb81c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
@@ -98,7 +98,7 @@ html{-webkit-text-size-adjust:100%}body{-webkit-tap-highlight-color:transparent;
 <div class="top"><div class="w">
  <div class="tb"><a onclick="toggleTheme()">Giao diện sáng/tối</a></div>
  <div class="hd">
-  <div class="logo" onclick="setCat('all')"><i>★</i><div>Nh-n D-n<br>Mua Sắm<small>Giới thiệu sản phẩm</small></div></div>
+  <div class="logo" onclick="setCat('all')"><i>★</i><div>Nhân Dân<br>Mua Sắm<small>Giới thiệu sản phẩm</small></div></div>
   <div class="sb"><input id="q" placeholder="Tìm sản phẩm, danh mục…" aria-label="Tìm kiếm"><button onclick="setQ()">Tìm</button></div>
   <div class="sp"></div>
   <button class="adm" id="am" onclick="toggleAdm()">⚙ Quản lý</button>
@@ -116,7 +116,7 @@ html{-webkit-text-size-adjust:100%}body{-webkit-tap-highlight-color:transparent;
   <button class="more" id="more" onclick="S.show+=12;render()">Xem thêm</button>
  </div>
 </main>
-<footer><div class="w">© 2026 Nh-n D-n Mua Sắm · Thông tin sản phẩm mang tính giới thiệu. Thiết kế và Phát triển bởi TEAM HTC</div></footer>
+<footer><div class="w">© 2026 Nhân Dân Mua Sắm · Thông tin sản phẩm mang tính giới thiệu. Thiết kế và Phát triển bởi TEAM HTC</div></footer>
 
 <div class="ov" id="pM"><div class="md"><button class="x" onclick="closeMd()" aria-label="Đóng">×</button><div id="pB"></div></div></div>
 <div class="ov" id="fM"><div class="md" style="max-width:520px"><button class="x" onclick="closeMd()" aria-label="Đóng">×</button><div class="fm" id="fB"></div></div></div>
@@ -126,7 +126,7 @@ html{-webkit-text-size-adjust:100%}body{-webkit-tap-highlight-color:transparent;
 <script>
 var BG=["#ffe1ec","#e4e1ff","#dff1ff","#fff1d6","#ffe0e0","#e0f7ea","#e2f5d8","#f3f9d2","#f0e6dc","#e7e7f4"];
 var DC=[["Thời trang","👗"],["Điện thoại","📱"],["Máy tính","💻"],["Gia dụng","🍳"],["Làm đẹp","💄"],["Mẹ & bé","🧸"],["Thể thao","⚽"],["Thực phẩm","🥑"],["Đồng hồ","⌚"],["Sách","📚"]];
-var DP=[["Áo thun cotton unisex form rộng","👕",0,189000,35],["Váy hoa nhí dáng dài","👗",0,329000,40],["Giày sneaker trắng nam nữ","👟",0,459000,30],["Túi xách da công sở","👜",0,520000,25],["Điện thoại Galaxy A55 128GB","📱",1,8990000,18],["Tai nghe không d-y chống ồn","🎧",1,690000,45],["Sạc nhanh 65W đa cổng","🔌",1,249000,38],["Ốp lưng chống sốc trong suốt","📲",1,59000,50],["Laptop mỏng nhẹ 14 inch 16GB","💻",2,15490000,12],["Chuột không d-y yên tĩnh","🖱️",2,159000,40],["Bàn phím cơ RGB","⌨️",2,590000,30],["Màn hình 27 inch 2K 75Hz","🖥️",2,3790000,20],["Nồi chiên không dầu 6L","🍳",3,1290000,42],["Máy xay sinh tố đa năng","🥤",3,449000,35],["Bộ nồi inox 5 món","🍲",3,890000,28],["Robot hút bụi lau nhà","🧹",3,4490000,35],["Son lì l-u trôi 12 màu","💄",4,129000,48],["Kem chống nắng SPF50+","🧴",4,215000,30],["Sữa rửa mặt dịu nhẹ","🫧",4,139000,25],["Xe đẩy gấp gọn cho bé","🍼",5,1890000,22],["Gấu bông size lớn","🧸",5,179000,40],["Bỉm dán cao cấp 60 miếng","👶",5,299000,20],["Giày chạy bộ siêu nhẹ","🏃",6,790000,32],["Thảm tập yoga chống trượt","🧘",6,199000,45],["Quả bóng đá size 5","⚽",6,249000,25],["Cà phê rang xay 500g","☕",7,145000,15],["Hạt điều rang muối 500g","🥜",7,129000,22],["Mật ong rừng nguyên chất","🍯",7,235000,18],["Đồng hồ nam d-y da","⌚",8,1290000,38],["Đồng hồ thông minh theo dõi sức khỏe","⌚",8,1590000,40],["Tiểu thuyết bán chạy nhất năm","📖",9,89000,25],["Sách kỹ năng giao tiếp","📚",9,119000,30]];
+var DP=[["Áo thun cotton unisex form rộng","👕",0,189000,35],["Váy hoa nhí dáng dài","👗",0,329000,40],["Giày sneaker trắng nam nữ","👟",0,459000,30],["Túi xách da công sở","👜",0,520000,25],["Điện thoại Galaxy A55 128GB","📱",1,8990000,18],["Tai nghe không dây chống ồn","🎧",1,690000,45],["Sạc nhanh 65W đa cổng","🔌",1,249000,38],["Ốp lưng chống sốc trong suốt","📲",1,59000,50],["Laptop mỏng nhẹ 14 inch 16GB","💻",2,15490000,12],["Chuột không dây yên tĩnh","🖱️",2,159000,40],["Bàn phím cơ RGB","⌨️",2,590000,30],["Màn hình 27 inch 2K 75Hz","🖥️",2,3790000,20],["Nồi chiên không dầu 6L","🍳",3,1290000,42],["Máy xay sinh tố đa năng","🥤",3,449000,35],["Bộ nồi inox 5 món","🍲",3,890000,28],["Robot hút bụi lau nhà","🧹",3,4490000,35],["Son lì lâu trôi 12 màu","💄",4,129000,48],["Kem chống nắng SPF50+","🧴",4,215000,30],["Sữa rửa mặt dịu nhẹ","🫧",4,139000,25],["Xe đẩy gấp gọn cho bé","🍼",5,1890000,22],["Gấu bông size lớn","🧸",5,179000,40],["Bỉm dán cao cấp 60 miếng","👶",5,299000,20],["Giày chạy bộ siêu nhẹ","🏃",6,790000,32],["Thảm tập yoga chống trượt","🧘",6,199000,45],["Quả bóng đá size 5","⚽",6,249000,25],["Cà phê rang xay 500g","☕",7,145000,15],["Hạt điều rang muối 500g","🥜",7,129000,22],["Mật ong rừng nguyên chất","🍯",7,235000,18],["Đồng hồ nam dây da","⌚",8,1290000,38],["Đồng hồ thông minh theo dõi sức khỏe","⌚",8,1590000,40],["Tiểu thuyết bán chạy nhất năm","📖",9,89000,25],["Sách kỹ năng giao tiếp","📚",9,119000,30]];
 var S={cat:"all",q:"",sort:"",show:12,adm:false,cats:DC.map(function(c,i){return{n:c[0],e:c[1],bg:BG[i]}}),prods:DP.map(function(a,i){return{id:i+1,n:a[0],e:a[1],img:"",c:DC[a[2]][0],p:Math.round(a[3]*(100-a[4])/100/1000)*1000,o:a[3],d:"Sản phẩm chính hãng, bảo hành đầy đủ."}}),nid:100};
 try{var sv=JSON.parse(localStorage.getItem("ndms2")||"null");if(sv&&sv.cats&&sv.prods){S.cats=sv.cats;S.prods=sv.prods;S.nid=sv.nid||100}}catch(e){}
 function save(){try{localStorage.setItem("ndms2",JSON.stringify({cats:S.cats,prods:S.prods,nid:S.nid}))}catch(e){toast("Không lưu được (bộ nhớ trình duyệt đầy)")}}
